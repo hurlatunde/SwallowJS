@@ -11,18 +11,15 @@
 
 $().ready(function () {
     $.when(
-        $.getScript('/component/config.js'),
-        // $.getScript('/component/services.js'),
-        // $.getScript('/assets/js/plugins/mustache/mustache.min.js'),
-        // $.getScript('/assets/js/plugins/path/path.min.js'),
-        // $.getScript('/assets/js/vendor/bootstrap.min.js'),
-        // $.getScript('/component/layout.js'),
-        $.getScript('/component/Config/routes.js')
-        //$.getScript('/component/providers.js')
+        $.getScript('/component/js/Config/config.js'),
+        $.getScript('/component/js/plugins/mustache/mustache.min.js'),
+        $.getScript('/component/js/plugins/path/path.min.js'),
+        $.getScript('/component/js/view/layout.js'),
+        $.getScript('/component/js/Config/routes.js')
         // $.Deferred(function( deferred ){
         //     $( deferred.resolve );
         // })
     ).done(function(data){
-
+        logMessage('SwallowJs is working perfectly');
     });
 });
