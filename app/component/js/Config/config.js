@@ -8,23 +8,18 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
-/**
- * Default SwallowJs variables
- */
-var mainContainer;
-
 var CONFIG = (function () {
     var SwallowJs = {
-        'swallow_container': 'swallow',
-        'inner_loading': 'modal-11',
-        'inner_loading_text': 'loading_word',
+        'main_container': 'swallow',
         'loading': true,
         'debug': true
     };
 
     // Templates
-    var templates = {
-        'home':             '/templates/landing.html',
+    var layout = {
+        'home':                     '/layouts/home.html',
+        'page_loading':             '/layouts/elements/page_loading.html',
+        '404':                      '/layouts/elements/error/404.html',
     };
 
     var constants = {
@@ -40,11 +35,11 @@ var CONFIG = (function () {
     };
 
     return {
-        SwallowJs: function (name) {
+        private: function (name) {
             return SwallowJs[name];
         },
         layoutTemplate: function (name) {
-            return templates[name];
+            return layout[name];
         },
         firebaseConfig: function () {
             return firebase_config;
@@ -58,4 +53,27 @@ var CONFIG = (function () {
 /**
  * Default SwallowJs main container
  */
-mainContainer = $('#' + CONFIG.SwallowJs('swallow_container'));
+var swallowJsContainer = $('#' + CONFIG.private('main_container'));
+
+
+function logMessage() {
+    //if (!debugMode) return;
+    switch (arguments.length) {
+        case 0:
+            return;
+        case 1:
+            console.log(arguments[0]);
+            break;
+        case 2:
+            console.log(arguments[0], arguments[1]);
+            break;
+        case 3:
+            console.log(arguments[0], arguments[1], arguments[2]);
+            break;
+        case 4:
+            console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
+            break;
+        default:
+            console.log(arguments);
+    }
+}
