@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+    <meta name="description" content="Your awesome app description">
+    <meta name="keywords" content="Your awesome app keywords">
+    <meta name="author" content="app author">
+
+    <title>Your awesome title</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- SwallowJs mainly uses firebase as its data source  -->
+    <!--  moreInfo:- https://firebase.google.com/docs/web/setup  -->
+    <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
+    <!-- The above Firebase script *must* come first before jQuery & SwallowJs/boot -->
+
+
+    <!-- jQuery (necessary for swallow's JavaScrip) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- boot need for swallow to work(**** do not remove! ****) -->
+    <script src="/component/boot.js"></script>
+
+</head>
+<body>
+
+<!-- main system container -->
+<!-- Where all swallow routing take place -->
+<div id="swallow"></div>
+
+<!-- Include all compiled plugins (below), or include individual files as needed -->
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
