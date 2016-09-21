@@ -18,8 +18,8 @@ var CONFIG = (function () {
     // Templates
     var layout = {
         'home':                     '/layouts/home.html',
-        'page_loading':             '/layouts/elements/page_loading.html',
-        '404':                      '/layouts/elements/error/404.html',
+        'page_loading':             '/layouts/page_loading.html',
+        '404':                      '/layouts/error/404.html',
     };
 
     var constants = {
