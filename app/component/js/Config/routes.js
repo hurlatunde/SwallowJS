@@ -23,41 +23,23 @@ Path.root("#/");
  * landing page. (This is the first page you see)
  */
 Path.map("#/").to(function () {
-
-    // layoutUrl({element: swallowJsContainer, htmlSource: CONFIG.layoutTemplate('404')});
-    // var data = {
-    //     user_id: this.params["user_id"],
-    //     user_family: this.params["user_family"],
-    // };
-    // $.get(CONFIG.layoutTemplate('app_design'), function (template) {
-    //     var rendered = Mustache.render(template, data);
-    //     layoutUrl({element: swallowJsContainer, htmlSource: rendered, renderedHTML: true});
-    // });
-
-    //renderLayout(CONFIG.layoutTemplate('404'), swallowJsContainer, data)
-
-    renderLayout('djkbvjekbv', swallowJsContainer);
-
+    renderLayout('home', swallowJsContainer);
 }).enter(clearPanel);
 
-Path.map("#/users/:user_id/:user_family").to(function () {
-
-    var data = {
-        user_id: this.params["user_id"],
-        user_family: this.params["user_family"],
-    };
-    renderLayout('home', swallowJsContainer, data);
-
-}).enter(clearPanel);
-
-
+// Path.map("#/users/:user_id/:user_family").to(function () {
+//     var data = {
+//         user_id: this.params["user_id"],
+//         user_family: this.params["user_family"],
+//     };
+//     renderLayout('users', swallowJsContainer, data);
+// }).enter(clearPanel);
 
 
 /**
  * notFound
  */
 function notFound() {
-    layoutUrl({element: swallowJsContainer, htmlSource: CONFIG.layoutTemplate('404')});
+    renderLayout('404', swallowJsContainer);
 }
 
 /**

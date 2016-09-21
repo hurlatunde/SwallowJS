@@ -16,20 +16,6 @@ function layoutUrl(p) {
     var htmlSource = p.htmlSource;
     var renderedHTML = p.renderedHTML;
 
-    // var request = $.get(htmlSource);
-    // request.error(function(jqXHR, textStatus, errorThrown) {
-    //     // if (textStatus == 'timeout')
-    //     //     console.log('The server is not responding');
-    //
-    //     logMessage(textStatus);
-    //     logMessage(errorThrown);
-    //
-    //     if (textStatus == 'error')
-    //         //renderLayout(layout, container, data)
-    //         console.log(errorThrown);
-    //         console.log(jqXHR);
-    // });
-
     if (renderedHTML == true) {
         element.html(htmlSource);
     } else {
@@ -50,7 +36,9 @@ function includeElement(element, htmlSource) {
 }
 
 /**
- *
+ * @firstParams    layout name defined in js/Config/config.js
+ * @secondParams   parent container
+ * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
 function renderLayout(layout, container, data) {
     if (data == undefined) {
@@ -68,11 +56,25 @@ function renderLayout(layout, container, data) {
     }
 
     $.get(CONFIG.layoutTemplate(layout), function (template) {
+
         var rendered = Mustache.render(template, data);
         layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
+
+    }).error(function(jqXHR, textStatus, errorThrown) {
+        if (textStatus == 'error' && errorThrown == 'Not Found'){
+            data.error_message = "File not found ** /layouts/"+layout+".html **";
+            data.error_layout = layout;
+            data.not_found = false;
+            $.get(CONFIG.layoutTemplate('404'), function (template) {
+                var rendered = Mustache.render(template, data);
+                layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
+            });
+            return
+        }
     });
 }
 
 if (CONFIG.private('loading') == true) {
+    //renderLayout('page_loading', swallowJsContainer);
     layoutUrl({element: swallowJsContainer, htmlSource: CONFIG.layoutTemplate('page_loading')});
 }
