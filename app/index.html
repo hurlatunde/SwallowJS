@@ -13,7 +13,8 @@
     <title>Your awesome title</title>
 
     <!-- Bootstrap -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -23,15 +24,14 @@
     <![endif]-->
 
     <!-- SwallowJs mainly uses firebase as its data source  -->
-    <!--  moreInfo:- https://firebase.google.com/docs/web/setup  -->
-    <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script>
+    <!-- moreInfo:- https://firebase.google.com/docs/web/setup  -->
+    <!-- <script src="https://www.gstatic.com/firebasejs/3.4.0/firebase.js"></script> -->
     <!-- The above Firebase script *must* come first before jQuery & SwallowJs/boot -->
 
-
     <!-- jQuery (necessary for swallow's JavaScrip) -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <!-- boot need for swallow to work(**** do not remove! ****) -->
-    <script src="/component/boot.js"></script>
+    <script src="component/js/plugins/jquery-2.2.2.min.js"></script>
+    <!-- boot.js needed for swallow to work(**** do not remove! ****) -->
+    <script src="component/js/boot.js"></script>
 
 </head>
 <body>
@@ -41,6 +41,6 @@
 <div id="swallow"></div>
 
 <!-- Include all compiled plugins (below), or include individual files as needed -->
-<script src="js/bootstrap.min.js"></script>
+<script src="assets/js/bootstrap/bootstrap.min.js"></script>
 </body>
 </html>
