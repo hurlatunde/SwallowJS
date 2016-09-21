@@ -55,7 +55,6 @@ var CONFIG = (function () {
  */
 var swallowJsContainer = $('#' + CONFIG.private('main_container'));
 
-
 function logMessage() {
     //if (!debugMode) return;
     switch (arguments.length) {

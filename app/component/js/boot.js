@@ -1,5 +1,5 @@
 /**
- * The main Controller for handling required
+ * The main Controller for handling all system required
  * SwallowJs(tm) : SwallowJs Framework (http://docs.swallow.js)
  *
  * For full copyright and license information, please see the LICENSE.txt
@@ -20,6 +20,6 @@ $().ready(function () {
         //     $( deferred.resolve );
         // })
     ).done(function(data){
-        logMessage('SwallowJs is working perfectly');
+        logMessage('**** SwallowJs is working perfectly ****');
     });
 });

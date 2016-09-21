@@ -32,8 +32,34 @@
 
 <div class="container">
     <div class="error">
+        {{#error_message}}
+        <div class="error-code m-b-10 m-t-20"> Internal Error! <i class="fa fa-warning"></i></div>
+        {{/error_message}}
+
+        {{^error_message}}
         <div class="error-code m-b-10 m-t-20">404 <i class="fa fa-warning"></i></div>
+        {{/error_message}}
+
+        {{#error_message}}
+        <h3 class="font-bold" style="font-size: 18px;margin: 25px 0;">{{error_message}}</h3>
+
+        <div style="width: 50%; margin: 0 auto; text-align: left! important">
+            <figure class="highlight">
+                <pre>
+                    <code class="language-html" data-lang="html">
+    var layout = {
+    ......
+    '{{error_layout}}':   '/layouts/{{error_layout}}.html',
+    ......
+    };</code>
+                </pre>
+            </figure>
+        </div>
+
+        {{/error_message}}
+        {{^error_message}}
         <h3 class="font-bold">We couldn't find the page..</h3>
+        {{/error_message}}
 
         <div class="error-desc">
             Sorry, but the page you are looking for was either not found or does not exist. <br/>
