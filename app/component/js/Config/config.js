@@ -8,9 +8,16 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
+/**
+ * !Warning ## Most not be a string and most not contain [space] ##
+ * @type {{private, layoutTemplate, firebaseConfig, constants}}
+ */
+
 var CONFIG = (function () {
     var SwallowJs = {
         'main_container': 'swallow',
+        'app_version': 'v0.2.9',
+        'beta': true,
         'loading': true,
         'debug': true
     };
@@ -55,8 +62,29 @@ var CONFIG = (function () {
  */
 var swallowJsContainer = $('#' + CONFIG.private('main_container'));
 
+/**
+ *
+ * @type {any}
+ */
+var swallowVersion     = CONFIG.private('app_version');
+var debug              = CONFIG.private('debug');
+
+/**
+ * Default SwallowJs main page URL
+ */
+var baseUrl = getAbsolutePath();
+
+/**
+ * Default SwallowJs absolute Path
+ * getting current page
+ */
+var currentPathPage = getAbsolutePath(false);
+
+/**
+ *
+ */
 function logMessage() {
-    //if (!debugMode) return;
+    if (!debug) return;
     switch (arguments.length) {
         case 0:
             return;
@@ -75,4 +103,48 @@ function logMessage() {
         default:
             console.log(arguments);
     }
+}
+
+/**
+ *
+ * @param baseUrl
+ * @returns {string}
+ */
+function getAbsolutePath(baseUrl) {
+    var loc = window.location;
+    if (baseUrl == false) {
+        return window.location.pathname;
+    }
+    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+}
+
+/**
+ *
+ * @param length
+ * @returns {string}
+ */
+function generateRandomString(length) {
+    //var chars = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-+<>ABCDEFGHIJKLMNOP1234567890";
+    var chars = "abcdefghijklmnopqrstuvwxyz";
+    var pass = "";
+    for (var x = 0; x < length; x++) {
+        var i = Math.floor(Math.random() * chars.length);
+        pass += chars.charAt(i);
+    }
+    return pass;
+}
+
+/**
+ *
+ * @param formData
+ * @returns {Array of Objects}
+ */
+function formToArray(formData) {
+    var data;
+    data = {};
+    for (var i in formData) {
+        data[formData[i].name.trim()] = formData[i].value.trim();
+    }
+    return data;
 }

@@ -26,6 +26,10 @@ Path.map("#/").to(function () {
     renderLayout('home', swallowJsContainer);
 }).enter(clearPanel);
 
+Path.map("#/about").to(function () {
+    renderLayout('about', swallowJsContainer);
+}).enter(clearPanel);
+
 // Path.map("#/users/:user_id/:user_family").to(function () {
 //     var data = {
 //         user_id: this.params["user_id"],
@@ -34,6 +38,13 @@ Path.map("#/").to(function () {
 //     renderLayout('users', swallowJsContainer, data);
 // }).enter(clearPanel);
 
+/**
+ * This is a route with optional components.  Optional components in a route are contained
+ *  within brackets.  The route below will match both "#/about" and "#/about/author".
+ */
+// Path.map("#/about(/author)").to(function(){
+//
+// });
 
 /**
  * notFound
@@ -50,6 +61,21 @@ function clearPanel() {
 }
 
 /**
- * listen (Always as to be at the bottom ot this page)
+ * listen (Always as to be at the bottom of this page)
  */
 Path.listen();
+
+// /**
+//  * @redirectUrl
+//  * @param redirect_url '/users
+//  * @param params       '/users/122/884
+//  */
+// function redirectUrl(redirect_url, params) {
+//     var encoded = encodeURIComponent(redirect_url.toLowerCase());
+//     if (params) {
+//         var params = params.join('/');
+//         $(location).attr('href', baseUrl + '#/' + encoded + '/' + params);
+//     } else {
+//         $(location).attr('href', baseUrl + '#/' + encoded);
+//     }
+// }
