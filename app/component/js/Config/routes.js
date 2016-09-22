@@ -23,7 +23,11 @@ Path.root("#/");
  * landing page. (This is the first page you see)
  */
 Path.map("#/").to(function () {
-    renderLayout('home', swallowJsContainer);
+    renderLayout('home', swallowJsContainer, {see: 'ssssss'});
+}).enter(clearPanel);
+
+Path.map("#/about").to(function () {
+    renderLayout('about', swallowJsContainer);
 }).enter(clearPanel);
 
 // Path.map("#/users/:user_id/:user_family").to(function () {
@@ -34,6 +38,13 @@ Path.map("#/").to(function () {
 //     renderLayout('users', swallowJsContainer, data);
 // }).enter(clearPanel);
 
+/**
+ * This is a route with optional components.  Optional components in a route are contained
+ *  within brackets.  The route below will match both "#/about" and "#/about/author".
+ */
+// Path.map("#/about(/author)").to(function(){
+//
+// });
 
 /**
  * notFound
@@ -50,6 +61,6 @@ function clearPanel() {
 }
 
 /**
- * listen (Always as to be at the bottom ot this page)
+ * listen (Always as to be at the bottom of this page)
  */
 Path.listen();
