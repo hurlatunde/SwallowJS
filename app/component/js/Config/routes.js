@@ -23,7 +23,7 @@ Path.root("#/");
  * landing page. (This is the first page you see)
  */
 Path.map("#/").to(function () {
-    renderLayout('home', swallowJsContainer);
+    renderLayout('home', swallowJsContainer, {see: 'ssssss'});
 }).enter(clearPanel);
 
 Path.map("#/about").to(function () {
@@ -64,18 +64,3 @@ function clearPanel() {
  * listen (Always as to be at the bottom of this page)
  */
 Path.listen();
-
-// /**
-//  * @redirectUrl
-//  * @param redirect_url '/users
-//  * @param params       '/users/122/884
-//  */
-// function redirectUrl(redirect_url, params) {
-//     var encoded = encodeURIComponent(redirect_url.toLowerCase());
-//     if (params) {
-//         var params = params.join('/');
-//         $(location).attr('href', baseUrl + '#/' + encoded + '/' + params);
-//     } else {
-//         $(location).attr('href', baseUrl + '#/' + encoded);
-//     }
-// }

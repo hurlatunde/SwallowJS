@@ -36,3 +36,19 @@ function swallowInnerLoading(parentElement, params) {
         $(parentElement).append('');
     }
 }
+
+
+/**
+ * @redirectUrl
+ * @param redirect_url '/users
+ * @param params       '/users/122/884
+ */
+function redirectUrl(redirect_url, params) {
+    var encoded = encodeURIComponent(redirect_url.toLowerCase());
+    if (params) {
+        var params = params.join('/');
+        $(location).attr('href', baseUrl + '#/' + encoded + '/' + params);
+    } else {
+        $(location).attr('href', baseUrl + '#/' + encoded);
+    }
+}

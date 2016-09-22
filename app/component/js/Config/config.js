@@ -24,9 +24,10 @@ var CONFIG = (function () {
 
     // Templates
     var layout = {
-        'home':                     '/layouts/home.html',
-        'page_loading':             '/layouts/page_loading.html',
-        '404':                      '/layouts/error/404.html',
+        'home':              '/layouts/home.html',
+        'page_loading':      '/layouts/page_loading.html',
+        '404':               '/layouts/error/404.html',
+        'eeeee':   '/layouts/eeeee.html',
     };
 
     var constants = {
@@ -66,8 +67,8 @@ var swallowJsContainer = $('#' + CONFIG.private('main_container'));
  *
  * @type {any}
  */
-var swallowVersion     = CONFIG.private('app_version');
-var debug              = CONFIG.private('debug');
+var swallowVersion = CONFIG.private('app_version');
+var debug = CONFIG.private('debug');
 
 /**
  * Default SwallowJs main page URL
@@ -141,10 +142,10 @@ function generateRandomString(length) {
  * @returns {Array of Objects}
  */
 function formToArray(formData) {
-    var data;
-    data = {};
+    var dataArray;
+    dataArray = {};
     for (var i in formData) {
-        data[formData[i].name.trim()] = formData[i].value.trim();
+        dataArray[formData[i].name.trim()] = formData[i].value.trim();
     }
-    return data;
+    return dataArray;
 }
