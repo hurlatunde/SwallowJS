@@ -46,7 +46,7 @@ function parseTemplate(container, htmlSource, data) {
         data = {};
     }
 
-    // SwallowJs Defined vars
+    // SwallowJs pre-defined vars
     data.app_version = swallowVersion;
     data.base_url = baseUrl;
     data.current = currentPathPage;

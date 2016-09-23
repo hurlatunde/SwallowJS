@@ -83,6 +83,7 @@ var currentPathPage = getAbsolutePath(false);
 
 /**
  *
+ * @author Femi TAIWO
  */
 function logMessage() {
     if (!debug) return;
