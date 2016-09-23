@@ -15,9 +15,6 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
-Path.rescue(notFound);
-Path.root("#/");
-
 /**
  * index.html
  * landing page. (This is the first page you see)
@@ -45,6 +42,9 @@ Path.map("#/about").to(function () {
 // Path.map("#/about(/author)").to(function(){
 //
 // });
+
+Path.rescue(notFound);
+Path.root("#/");
 
 /**
  * notFound
