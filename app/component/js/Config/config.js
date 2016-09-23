@@ -27,7 +27,6 @@ var CONFIG = (function () {
         'home':              '/layouts/home.html',
         'page_loading':      '/layouts/page_loading.html',
         '404':               '/layouts/error/404.html',
-        'eeeee':   '/layouts/eeeee.html',
     };
 
     var constants = {
@@ -39,7 +38,8 @@ var CONFIG = (function () {
         apiKey: 'APP-API-KEY',
         authDomain: 'APP-AUTH-DOMAIN',
         databaseURL: 'APP-DATABASE-URL',
-        storageBucket: 'APP-STORAGE-BUCKET'
+        storageBucket: 'APP-STORAGE-BUCKET',
+        messagingSenderId: 'APP-MESSAGE-SENDER-ID'
     };
 
     return {
