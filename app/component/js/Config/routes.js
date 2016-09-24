@@ -63,4 +63,7 @@ function clearPanel() {
 /**
  * listen (Always as to be at the bottom of this page)
  */
-Path.listen();
+function initPath(){
+    Path.listen();
+    logMessage('**** SwallowJs is route is working perfectly ****');
+}

@@ -33,6 +33,7 @@ $().ready(function () {
         $.getScript('/component/js/view/layout.js'),
         $.getScript('/component/js/Config/routes.js')
     ).done(function (d) {
+        $(initPath);
         logMessage('**** SwallowJs is working perfectly ****');
 
         /**
