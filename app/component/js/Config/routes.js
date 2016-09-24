@@ -15,6 +15,13 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
+Path.rescue(notFound);
+Path.root("#/");
+
+/**
+ * add your route here
+ */
+
 /**
  * index.html
  * landing page. (This is the first page you see)
@@ -43,8 +50,40 @@ Path.map("#/about").to(function () {
 //
 // });
 
-Path.rescue(notFound);
-Path.root("#/");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * end your route here
+ */
 
 /**
  * notFound
@@ -63,4 +102,7 @@ function clearPanel() {
 /**
  * listen (Always as to be at the bottom of this page)
  */
-Path.listen();
+function initPath(){
+    Path.listen();
+    logMessage('**** SwallowJs is route is working perfectly ****');
+}
