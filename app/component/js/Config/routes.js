@@ -19,6 +19,10 @@ Path.rescue(notFound);
 Path.root("#/");
 
 /**
+ * add your route here
+ */
+
+/**
  * index.html
  * landing page. (This is the first page you see)
  */
@@ -45,6 +49,41 @@ Path.map("#/about").to(function () {
 // Path.map("#/about(/author)").to(function(){
 //
 // });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * end your route here
+ */
 
 /**
  * notFound
