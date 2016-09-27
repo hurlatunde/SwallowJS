@@ -82,6 +82,11 @@ var baseUrl = getAbsolutePath();
 var currentPathPage = getAbsolutePath(false);
 
 /**
+ * Default SwallowJs firebaseConfig
+ */
+var firebaseConfig = CONFIG.firebaseConfig('firebase_config')
+
+/**
  *
  * @author Femi TAIWO
  */
