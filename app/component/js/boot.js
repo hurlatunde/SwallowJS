@@ -20,11 +20,20 @@ $().ready(function () {
         $.getScript('/component/js/view/utilities.js'),
 
         /**
-         * @mustache   **https://github.com/janl/mustache.js/**
+         * @mustache   **https://github.com/janl/mustache.js**
          * @pathjs     **https://github.com/mtrpcic/pathjs**
          */
         $.getScript('/component/js/plugins/mustache/mustache.min.js'),
         $.getScript('/component/js/plugins/path/path.min.js'),
+
+        /**
+         * Data Source connection
+         * Firebase / Serve side
+         * SwallowJs system config (config.js)
+         * SwallowJs (utilities)
+         */
+        $.getScript('/component/js/service/initializeFirebaseConnection.js'),
+        $.getScript('/component/js/service/initializeServerSideConnection.js'),
 
         /**
          * SwallowJs (layout)
@@ -32,9 +41,28 @@ $().ready(function () {
          */
         $.getScript('/component/js/view/layout.js'),
         $.getScript('/component/js/Config/routes.js')
-    ).done(function (d) {
+    ).done(function (s) {
         $(initPath);
         logMessage('**** SwallowJs is working perfectly ****');
+
+        /**
+         * your javascript codes here
+         */
+
+
+
+
+
+        // FirebaseModal.saveData({
+        //    node: 'see', data: ({been:'sadvwvvvwacqw', been2:'sadvwvvvwacqw'})
+        // }, function(data) {
+        //     if(!data.error) {
+        //         logMessage(data);
+        //     } else {
+        //         logMessage(data);
+        //     }
+        // });
+
 
         /**
          * your javascript codes here
