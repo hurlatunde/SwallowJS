@@ -154,13 +154,13 @@ $.extend(FirebaseDataModal.prototype, {
      * @param callBackData
      */
     findAll: function(params, callBackData) {
-        var node = params.node;
+        var path = params.path;
         var limit = params.limit;
         var nodeRef;
 
         if (limit && limit != "") {
             if(Math.floor(limit) == limit && $.isNumeric(limit)) {
-                nodeRef = firebaseBaseDatabase.ref(node).limitToLast(limit);
+                nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit);
             } else {
                 var data = Array();
                 data.error = true;
@@ -168,7 +168,7 @@ $.extend(FirebaseDataModal.prototype, {
                 callBackData({error: data});
             }
         } else {
-            nodeRef = firebaseBaseDatabase.ref(node);
+            nodeRef = firebaseBaseDatabase.ref(path);
         }
 
         /**
