@@ -53,6 +53,7 @@ $().ready(function () {
 
 
 
+        // save
         // FirebaseModal.saveData({
         //    node: 'see', data: ({been:'sadvwvvvwacqw', been2:'sadvwvvvwacqw'})
         // }, function(data) {
@@ -62,6 +63,21 @@ $().ready(function () {
         //         logMessage(data);
         //     }
         // });
+
+        // update
+        // FirebaseModal.updateData({
+        //    path: 'see/-KSniAXFZJVrFIAg3gli', data: ({been:'s34567654wacqw', been2:'sadv3456765qw'})
+        // }, function(data) {
+        //     if(!data.error) {
+        //         logMessage(data);
+        //     } else {
+        //         logMessage(data);
+        //     }
+        // });
+
+
+        //findOne
+
 
 
         /**
