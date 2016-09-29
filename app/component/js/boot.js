@@ -77,7 +77,26 @@ $().ready(function () {
 
 
         //findOne
+        // FirebaseModal.findOne({
+        //     path: 'posts/post_one'
+        // }, function(data) {
+        //     if(!data.error) {
+        //         logMessage(data);
+        //     } else {
+        //         logMessage(data);
+        //     }
+        // });
 
+
+        // FirebaseModal.findAll({
+        //    path: 'posts'
+        // }, function(data) {
+        //     if(!data.error) {
+        //         logMessage(data);
+        //     } else {
+        //         logMessage(data);
+        //     }
+        // });
 
 
         /**

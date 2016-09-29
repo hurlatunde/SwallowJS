@@ -19,7 +19,7 @@ var FirebaseModal;
  * Check if firebase is configure
  */
 if (firebaseConfig.apiKey != 'APP-API-KEY' || firebaseConfig.databaseURL != 'APP-DATABASE-URL') {
-    logMessage('**** Firebase database config. Make sure that you un-comment line 28 in index.html ****');
+    logMessage('**** Firebase database config. ****');
 
     var mainApp = firebase.initializeApp(firebaseConfig);
 
@@ -137,8 +137,11 @@ $.extend(FirebaseDataModal.prototype, {
             callBackData({error: 'path required to interact with Firebase findOne'});
         }
 
+        logMessage(nodeRef);
+
         nodeRef.on('value', function (snapshot) {
             var data = snapshot.val();
+
             if (!data.node_id) {
                 data.node_id = snapshot.key;
             }
