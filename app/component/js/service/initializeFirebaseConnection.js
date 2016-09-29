@@ -19,32 +19,38 @@ var FirebaseModal;
  * Check if firebase is configure
  */
 if (firebaseConfig.apiKey != 'APP-API-KEY' || firebaseConfig.databaseURL != 'APP-DATABASE-URL') {
-    logMessage('**** Firebase database config ****');
+    logMessage('**** Firebase database config. Make sure that you un-comment line 28 in index.html ****');
 
     var mainApp = firebase.initializeApp(firebaseConfig);
+
     /**
      * Connecting to Firebase database system
      */
     firebaseBaseDatabase = mainApp.database();
 } else {
     firebaseBaseDatabase = null;
+    logMessage('**** Firebase database not config yet ****');
 }
 
-FirebaseDataModal = function(name_var) {
-    this.init(name_var);
-
-    function callBackResponse(params) {
-
-    }
+FirebaseDataModal = function() {
+    //this.init(name_var);
 };
 
 $.extend(FirebaseDataModal.prototype, {
     // object variables
-    widget_name: '',
+    //widget_name: '',
 
-    init: function(widget_name) {
-        // do initialization here
-        this.widget_name = widget_name;
+    /**
+     *
+     * @param node
+     * @return {*|string}
+     */
+    initKey: function(node) {
+        if (!node) {
+            logMessage('Error! You need a node to create any firebase key');
+            return;
+        }
+        return firebaseBaseDatabase.ref().child(node).push().key;
     },
 
     /**
@@ -67,11 +73,26 @@ $.extend(FirebaseDataModal.prototype, {
 
     /**
      *
-     * @param params
+     * @param params (String|Object)
      * @param callBackData
      */
-    save: function (params, callBackData) {
+    saveData: function (params, callBackData) {
+        var node = params.node;
+        var objectData = params.data;
+        var newGeneratedKey = this.initKey(node);
 
+        if (!node) {
+            callBackData({error: 'Node name required to interact with Firebase'});
+        }
+
+        if (!objectData.created) {
+            objectData.created = new Date().valueOf();
+        }
+        objectData.node_id = newGeneratedKey;
+
+        firebaseBaseDatabase.ref(node).child(newGeneratedKey).set(objectData, function (error) {
+            callBackData({error: error});
+        });
     },
 
     /**
@@ -137,5 +158,9 @@ $.extend(FirebaseDataModal.prototype, {
     }
 });
 
-
-FirebaseModal = new FirebaseDataModal('widget one');
+/**
+ *
+ */
+if (firebaseBaseDatabase != null) {
+    FirebaseModal = new FirebaseDataModal();
+}
