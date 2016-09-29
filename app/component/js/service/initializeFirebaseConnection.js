@@ -58,17 +58,24 @@ $.extend(FirebaseDataModal.prototype, {
      * @param params
      * @param callBackData
      */
-    delete: function (params, callBackData) {
+    deleteData: function (params, callBackData) {
+        var path = params.path;
+        var nodeRef = firebaseBaseDatabase.ref(path);
 
-    },
+        if (!path) {
+            callBackData({error: 'path required to interact with Firebase findOne'});
+        }
 
-    /**
-     *
-     * @param params
-     * @param callBackData
-     */
-    update: function (params, callBackData) {
 
+        nodeRef.on('value', function (snapshot) {
+            var data = snapshot.val();
+            if (!data.node_id) {
+                data.node_id = snapshot.key;
+            }
+            callBackData({data: data});
+        }, function (error) {
+            callBackData({error: error});
+        });
     },
 
     /**
@@ -97,11 +104,48 @@ $.extend(FirebaseDataModal.prototype, {
 
     /**
      *
+     * @param params (String|Object)
+     * @param callBackData
+     */
+    updateData: function (params, callBackData) {
+        var path = params.path;
+        var objectData = params.data;
+
+        if (!path) {
+            callBackData({error: 'path required to interact with Firebase update'});
+        }
+
+        if (!objectData.modified) {
+            objectData.modified = new Date().valueOf();
+        }
+        firebaseBaseDatabase.ref(path).update(objectData, function (error) {
+            callBackData({error: error});
+        });
+    },
+
+
+    /**
+     *
      * @param params
      * @param callBackData
      */
     findOne: function (params, callBackData) {
+        var path = params.path;
+        var nodeRef = firebaseBaseDatabase.ref(path);
 
+        if (!path) {
+            callBackData({error: 'path required to interact with Firebase findOne'});
+        }
+
+        nodeRef.on('value', function (snapshot) {
+            var data = snapshot.val();
+            if (!data.node_id) {
+                data.node_id = snapshot.key;
+            }
+            callBackData({data: data});
+        }, function (error) {
+            callBackData({error: error});
+        });
     },
 
     /**
