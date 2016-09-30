@@ -37,8 +37,6 @@ FirebaseDataModal = function() {
 };
 
 $.extend(FirebaseDataModal.prototype, {
-    // object variables
-    //widget_name: '',
 
     /**
      *
@@ -46,7 +44,7 @@ $.extend(FirebaseDataModal.prototype, {
      * @return {*|string}
      */
     initKey: function(node) {
-        if (!node) {
+        if (!node || node == "undefined") {
             logMessage('Error! You need a node to create any firebase key');
             return;
         }
@@ -62,10 +60,9 @@ $.extend(FirebaseDataModal.prototype, {
         var path = params.path;
         var nodeRef = firebaseBaseDatabase.ref(path);
 
-        if (!path) {
+        if (!path || path == "undefined") {
             callBackData({error: 'path required to interact with Firebase findOne'});
         }
-
 
         nodeRef.on('value', function (snapshot) {
             var data = snapshot.val();
@@ -84,11 +81,11 @@ $.extend(FirebaseDataModal.prototype, {
      * @param callBackData
      */
     saveData: function (params, callBackData) {
-        var node = params.node;
+        var path = params.path;
         var objectData = params.data;
-        var newGeneratedKey = this.initKey(node);
+        var newGeneratedKey = this.initKey(path);
 
-        if (!node) {
+        if (!path) {
             callBackData({error: 'Node name required to interact with Firebase'});
         }
 
@@ -97,7 +94,7 @@ $.extend(FirebaseDataModal.prototype, {
         }
         objectData.node_id = newGeneratedKey;
 
-        firebaseBaseDatabase.ref(node).child(newGeneratedKey).set(objectData, function (error) {
+        firebaseBaseDatabase.ref(path).child(newGeneratedKey).set(objectData, function (error) {
             callBackData({error: error});
         });
     },
@@ -137,12 +134,10 @@ $.extend(FirebaseDataModal.prototype, {
             callBackData({error: 'path required to interact with Firebase findOne'});
         }
 
-        logMessage(nodeRef);
-
         nodeRef.on('value', function (snapshot) {
             var data = snapshot.val();
 
-            if (!data.node_id) {
+            if (!data.node_id || data.node_id == undefined) {
                 data.node_id = snapshot.key;
             }
             callBackData({data: data});
