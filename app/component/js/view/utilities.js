@@ -56,10 +56,11 @@ function redirectUrl(redirect_url, params) {
 
 /**
  *
- * @param formData
+ * @param formData element
  * @returns {Array of Objects}
  */
-function formToArray(formData) {
+function formToArray(element) {
+    var formData = $("#"+element).serializeArray();
     var dataArray;
     dataArray = {};
     for (var i in formData) {
