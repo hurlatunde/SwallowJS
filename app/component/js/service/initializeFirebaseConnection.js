@@ -13,7 +13,7 @@
  */
 
 var firebaseBaseDatabase;
-var FirebaseModal;
+var FirebaseModel;
 
 /**
  * Check if firebase is configure
@@ -209,5 +209,5 @@ $.extend(FirebaseDataModal.prototype, {
  *
  */
 if (firebaseBaseDatabase != null) {
-    FirebaseModal = new FirebaseDataModal();
+    FirebaseModel = new FirebaseDataModal();
 }

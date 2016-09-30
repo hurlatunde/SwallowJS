@@ -148,17 +148,3 @@ function generateRandomString(length) {
     }
     return pass;
 }
-
-/**
- *
- * @param formData
- * @returns {Array of Objects}
- */
-function formToArray(formData) {
-    var dataArray;
-    dataArray = {};
-    for (var i in formData) {
-        dataArray[formData[i].name.trim()] = formData[i].value.trim();
-    }
-    return dataArray;
-}
