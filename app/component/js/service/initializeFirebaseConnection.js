@@ -93,7 +93,7 @@ if (typeof firebase !== 'undefined') {
                 callBackData({error: 'Node name required to interact with Firebase'});
             }
 
-            if (!objectData.created) {
+            if (!objectData.created || objectData.created == "undefined") {
                 objectData.created = new Date().valueOf();
             }
             objectData.node_id = newGeneratedKey;
@@ -116,7 +116,7 @@ if (typeof firebase !== 'undefined') {
                 callBackData({error: 'path required to interact with Firebase update'});
             }
 
-            if (!objectData.modified) {
+            if (!objectData.modified || objectData.modified == "undefined") {
                 objectData.modified = new Date().valueOf();
             }
             firebaseBaseDatabase.ref(path).update(objectData, function (error) {
@@ -144,7 +144,7 @@ if (typeof firebase !== 'undefined') {
                 if (!data.node_id || data.node_id == undefined) {
                     data.node_id = snapshot.key;
                 }
-                callBackData({data: data});
+                callBackData(data);
             }, function (error) {
                 callBackData({error: error});
             });
@@ -197,7 +197,7 @@ if (typeof firebase !== 'undefined') {
                 data.response = response;
                 data.response_count = count;
 
-                callBackData({data: data});
+                callBackData({data:data});
             }, function (error) {
                 callBackData({error: error});
             });
