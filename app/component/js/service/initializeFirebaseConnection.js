@@ -15,7 +15,7 @@
 if (typeof firebase !== 'undefined') {
 
     var firebaseBaseDatabase;
-    var FirebaseModel;
+    var FirebaseService;
 
     /**
      * Check if firebase is configure
@@ -208,7 +208,7 @@ if (typeof firebase !== 'undefined') {
      *
      */
     if (firebaseBaseDatabase != null) {
-        FirebaseModel = new FirebaseDataModel();
+        FirebaseService = new FirebaseDataModel();
     }
 
 } else {

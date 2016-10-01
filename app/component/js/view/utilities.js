@@ -68,3 +68,12 @@ function formToArray(element) {
     }
     return dataArray;
 }
+
+/**
+ *
+ * @param value
+ * @return {string|*}
+ */
+function isBlank(value) {
+    return $.trim(value);
+}
