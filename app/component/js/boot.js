@@ -76,15 +76,15 @@ $().ready(function () {
         // });
 
         // findOne
-        // FirebaseService.findOne({
-        //     path: 'posts/post_one'
-        // }, function(data) {
-        //     if(!data.error) {
-        //         logMessage(data);
-        //     } else {
-        //         logMessage(data);
-        //     }
-        // });
+        FirebaseService.findOne({
+            path: 'posts/post_one'
+        }, function(data) {
+            if(!data.error) {
+                logMessage(data);
+            } else {
+                logMessage(data);
+            }
+        });
 
 
         // FirebaseService.findAll({
