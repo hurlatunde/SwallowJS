@@ -16,7 +16,6 @@ if (typeof firebase !== 'undefined') {
 
     var firebaseBaseDatabase;
     var FirebaseService;
-    var findSingleData = {};
 
     /**
      * Check if firebase is configure
@@ -35,7 +34,6 @@ if (typeof firebase !== 'undefined') {
     }
 
     function firebaseObjectToArray(childSnapshot) {
-        var key = childSnapshot.key;
         var childData;
         if(typeof childSnapshot.val == 'function'){
             childData = childSnapshot.val();
@@ -43,38 +41,24 @@ if (typeof firebase !== 'undefined') {
             childData = childSnapshot;
         }
 
-        if( typeof childData === "object" ) {
-            var innerdata = Array();
-            for (var dataSet in childData){
-                var childDataObject = childData[dataSet];
-                var innerSetData = Array();
-                for (var childSet in childDataObject) {
-                    var innerChildDataObject = childDataObject[childSet];
-                    if( typeof innerChildDataObject === "object" ) {
-                        var dataReturn =  firebaseObjectToArrayInner(innerChildDataObject);
-                        //innerSetData.push(dataReturn);
-                    } else {
-                        //innerSetData.push(innerChildDataObject);
-                    }
-                }
-                //logMessage(innerSetData);
-                //innerdata.push(innerSetData);
+        var innerdata = Array();
 
-                // if( typeof childDataObject === "object" ) {
-                //     //var key = dataSet.key;
-                //     //var childData = dataSet.val();
-                //     //this.firebaseObjectToArray(key, childData);
-                // } else {
-                //     innerdata.push(childDataObject);
-                // }
-                //logMessage(childDataObject);
+        for (var dataSet in childData){
+            var innerSetData = {};
+            var childDataObject = childData[dataSet];
+
+            for (var childSet in childDataObject) {
+                var innerChildDataObject = childDataObject[childSet];
+                if( typeof innerChildDataObject === "object" ) {
+                    var dataReturn =  firebaseObjectToArrayInner(innerChildDataObject);
+                    innerSetData[childSet] = dataReturn;
+                } else {
+                    innerSetData[childSet] = innerChildDataObject;
+                }
             }
-            findSingleData[key] = innerdata;
-        } else {
-            findSingleData[key] = childData;
+            innerdata.push(innerSetData);
         }
-        //logMessage(data);
-        return findSingleData;
+        return innerdata;
     }
 
     function firebaseObjectToArrayInner(innerChildDataObject) {
@@ -82,23 +66,18 @@ if (typeof firebase !== 'undefined') {
         for (var dataSet in innerChildDataObject){
             var childDataObject = innerChildDataObject[dataSet];
 
-            var innerChildDataObject = {};
+            var innerChildDataObjectSet = {};
             for (var dataInnerSet in childDataObject){
                 var innerChildDataSet = childDataObject[dataInnerSet];
-                // logMessage(dataInnerSet);
-                // logMessage(innerChildDataSet);
-                innerChildDataObject[dataInnerSet] = innerChildDataSet;
-                // if( typeof innerChildDataSet === "object" ) {
-                //
-                // } else {
-                //     innerChildDataObject.push(innerChildDataSet);
-                // }
+                if( typeof innerChildDataSet === "object" ) {
+                    innerChildDataObjectSet[dataInnerSet] = firebaseObjectToArrayInner(innerChildDataSet)
+                } else {
+                    innerChildDataObjectSet[dataInnerSet] = innerChildDataSet;
+                }
             }
-            logMessage(innerChildDataObject);
-
-            //innerData.push(innerChildDataObject);
+            innerData.push(innerChildDataObjectSet);
         }
-        //logMessage(innerData);
+        return innerData;
     }
 
     /**
@@ -166,8 +145,7 @@ if (typeof firebase !== 'undefined') {
             }
             objectData.node_id = newGeneratedKey;
 
-            //return id evey save
-
+            //remember return id from every save
             firebaseBaseDatabase.ref(path).child(newGeneratedKey).set(objectData, function (error) {
                 callBackData({error: error});
             });
@@ -209,27 +187,25 @@ if (typeof firebase !== 'undefined') {
             }
 
             nodeRef.on('value', function (snapshot) {
-                var see = snapshot.val();
-
-                //var data;
+                var data = {};
                 snapshot.forEach(function (childSnapshot) {
-                    // var key = childSnapshot.key;
 
-                    // logMessage(childSnapshot);
-                    // logMessage(childSnapshot.key);
+                    var snapshot = childSnapshot.val();
+                    if( typeof snapshot === "object" ) {
+                        data[childSnapshot.key] = firebaseObjectToArray(snapshot);
+                    } else {
+                        data[childSnapshot.key] = snapshot;
+                    }
 
-                    // var childData = childSnapshot.val();
                     // logMessage(childData);
                     // return
-                    firebaseObjectToArray(childSnapshot);
-                    //logMessage(data);
+                    // var data = firebaseObjectToArray(childSnapshot);
                     // } else {
                     //     data[key] = childData;
                     // }
                 });
 
-                //logMessage(findSingleData);
-                return;
+                //logMessage(data);
 
                 // logMessage(data);
                 // for (i = 0; i < data.length; i++){
