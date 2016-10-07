@@ -189,39 +189,13 @@ if (typeof firebase !== 'undefined') {
             nodeRef.on('value', function (snapshot) {
                 var data = {};
                 snapshot.forEach(function (childSnapshot) {
-
                     var snapshot = childSnapshot.val();
                     if( typeof snapshot === "object" ) {
                         data[childSnapshot.key] = firebaseObjectToArray(snapshot);
                     } else {
                         data[childSnapshot.key] = snapshot;
                     }
-
-                    // logMessage(childData);
-                    // return
-                    // var data = firebaseObjectToArray(childSnapshot);
-                    // } else {
-                    //     data[key] = childData;
-                    // }
                 });
-
-                //logMessage(data);
-
-                // logMessage(data);
-                // for (i = 0; i < data.length; i++){
-                //     logMessage(data[i]);
-                // }
-
-                // snapshot.forEach(function (childSnapshot) {
-                //     var childData = childSnapshot.val();
-                //     childData.key = childSnapshot.key;
-                //     //data.push(childData);
-                // });
-                // if( (typeof A === "object") && (A !== null) )
-                // {
-                //     alert("A is object");
-                // }
-
                 if (!data.node_id || data.node_id == undefined) {
                     data.node_id = snapshot.key;
                 }
