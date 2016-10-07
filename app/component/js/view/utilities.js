@@ -52,3 +52,28 @@ function redirectUrl(redirect_url, params) {
         $(location).attr('href', baseUrl + '#/' + encoded);
     }
 }
+
+
+/**
+ *
+ * @param formData element
+ * @returns {Array of Objects}
+ */
+function formToArray(element) {
+    var formData = $("#"+element).serializeArray();
+    var dataArray;
+    dataArray = {};
+    for (var i in formData) {
+        dataArray[formData[i].name.trim()] = formData[i].value.trim();
+    }
+    return dataArray;
+}
+
+/**
+ *
+ * @param value
+ * @return {string|*}
+ */
+function isBlank(value) {
+    return $.trim(value);
+}

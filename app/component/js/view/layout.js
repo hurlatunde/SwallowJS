@@ -46,10 +46,32 @@ function parseTemplate(container, htmlSource, data) {
         data = {};
     }
 
-    // SwallowJs pre-defined vars
+    var currentPage = getAbsolutePath(false);
+
+    /**
+     * Default SwallowJs main page URL
+     */
+    data.base_url = getAbsolutePath();
+
+    /**
+     * Default SwallowJs absolute Path
+     * getting current page
+     */
+    data.current_page = currentPage;
+
+    /**
+     *
+     * @type {any}
+     */
     data.app_version = swallowVersion;
-    data.base_url = baseUrl;
-    data.current = currentPathPage;
+
+    if (currentPage == "/"){
+        data.home = true;
+    }
+
+    if (currentPage != "/"){
+        data[currentPage] = true;
+    }
 
     // check if data is an object or just trow an error
     // if(CONFIG.layoutTemplate(layout) == undefined){
