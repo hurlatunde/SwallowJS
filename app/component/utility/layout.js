@@ -28,7 +28,7 @@ function layoutUrl(p) {
 }
 
 /**
- * @firstParams    layout name defined in js/Config/config.js
+ * @firstParams    layout name defined in config.js
  * @secondParams   parent container
  * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
@@ -75,7 +75,7 @@ function parseTemplate(container, htmlSource, data) {
 
     // check if data is an object or just trow an error
     // if(CONFIG.layoutTemplate(layout) == undefined){
-    //     data.error_message = "No layout with "+layout+".html defined in js/Config/config.js";
+    //     data.error_message = "No layout with "+layout+".html defined in config.js";
     //     data.error_layout = layout;
     //     $.get(CONFIG.layoutTemplate('404'), function (template) {
     //         var rendered = Mustache.render(template, data);
@@ -103,7 +103,7 @@ function parseTemplate(container, htmlSource, data) {
 }
 
 /**
- * @firstParams    layout name defined in js/Config/config.js
+ * @firstParams    layout name defined in config.js
  * @secondParams   parent container
  * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
@@ -113,7 +113,7 @@ function renderLayout(layout, container, dataSet) {
     }
 
     if (CONFIG.layoutTemplate(layout) == undefined) {
-        dataSet.error_message = "No layout with " + layout + ".html defined in js/Config/config.js";
+        dataSet.error_message = "No layout with " + layout + ".html defined in config.js";
         dataSet.error_layout = layout;
         dataSet.not_found = true;
 
