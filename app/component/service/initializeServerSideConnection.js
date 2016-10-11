@@ -8,6 +8,6 @@
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
- * @package       component.js.service.initializeServerSideConnection.js
+ * @package       component.utility.service.initializeServerSideConnection.js
  * @since         SwallowJs(tm) v 0.2.9
  */

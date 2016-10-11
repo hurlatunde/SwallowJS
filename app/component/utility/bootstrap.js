@@ -32,3 +32,14 @@ var SwallowJsCONFIG = (function () {
  *
  */
 var swallowVersion = SwallowJsCONFIG.private('app_version');
+
+/**
+ * Default SwallowJs main page URL
+ */
+var baseUrl = getAbsolutePath();
+
+/**
+ * Default SwallowJs absolute Path
+ * getting current page
+ */
+var currentPathPage = getAbsolutePath(false);

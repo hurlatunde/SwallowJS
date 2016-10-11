@@ -6,7 +6,7 @@ if ("undefined" == typeof jQuery)throw new Error("SwallowJS requires jQuery");
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
- * @package       component.js.boot.js
+ * @package       component.boot.js
  * @since         SwallowJs(tm) v 0.2.9
  */
 

@@ -4,7 +4,7 @@
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
- * @package       component.js.Config.routes.js
+ * @package       config.js
  * @since         SwallowJs(tm) v 0.2.9
  */
 
@@ -75,44 +75,9 @@ var swallowJsContainer = $('#' + CONFIG.private('main_container'));
  */
 var debug = CONFIG.private('debug');
 
-/**
- * Default SwallowJs main page URL
- */
-var baseUrl = getAbsolutePath();
-
-/**
- * Default SwallowJs absolute Path
- * getting current page
- */
-var currentPathPage = getAbsolutePath(false);
 
 /**
  * Default SwallowJs firebaseConfig
  */
 var firebaseConfig = CONFIG.firebaseConfig('firebase_config')
 
-/**
- *
- * @author Femi TAIWO
- */
-function logMessage() {
-    if (!debug) return;
-    switch (arguments.length) {
-        case 0:
-            return;
-        case 1:
-            console.log(arguments[0]);
-            break;
-        case 2:
-            console.log(arguments[0], arguments[1]);
-            break;
-        case 3:
-            console.log(arguments[0], arguments[1], arguments[2]);
-            break;
-        case 4:
-            console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
-            break;
-        default:
-            console.log(arguments);
-    }
-}

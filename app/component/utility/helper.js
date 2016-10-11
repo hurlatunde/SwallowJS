@@ -38,6 +38,32 @@ function swallowInnerLoading(parentElement, params) {
 }
 
 /**
+ *
+ * @author Femi TAIWO
+ */
+function logMessage() {
+    if (!debug) return;
+    switch (arguments.length) {
+        case 0:
+            return;
+        case 1:
+            console.log(arguments[0]);
+            break;
+        case 2:
+            console.log(arguments[0], arguments[1]);
+            break;
+        case 3:
+            console.log(arguments[0], arguments[1], arguments[2]);
+            break;
+        case 4:
+            console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
+            break;
+        default:
+            console.log(arguments);
+    }
+}
+
+/**
  * @redirectUrl
  * @param redirect_url '/users
  * @param params       '/users/122/884
