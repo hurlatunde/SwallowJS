@@ -11,7 +11,7 @@
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
- * @package       component.js.Config.routes.js
+ * @package       routes.js
  * @since         SwallowJs(tm) v 0.2.9
  */
 

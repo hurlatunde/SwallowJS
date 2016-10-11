@@ -6,25 +6,27 @@ if ("undefined" == typeof jQuery)throw new Error("SwallowJS requires jQuery");
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
- * @package       component.js.boot.js
+ * @package       component.boot.js
  * @since         SwallowJs(tm) v 0.2.9
  */
 
 $().ready(function () {
     $.when(
         /**
-         * SwallowJs system config (config.js)
-         * SwallowJs (utilities)
+         * SwallowJs (utility/bootstrap)
+         * SwallowJs config (config.js)
+         * SwallowJs (utility/helper)
          */
-        $.getScript('/component/js/Config/config.js'),
-        $.getScript('/component/js/view/utilities.js'),
+        $.getScript('/component/utility/helper.js'),
+        $.getScript('/component/utility/bootstrap.js'),
+        $.getScript('/config.js'),
 
         /**
          * @mustache   **https://github.com/janl/mustache.js**
          * @pathjs     **https://github.com/mtrpcic/pathjs**
          */
-        $.getScript('/component/js/plugins/mustache/mustache.min.js'),
-        $.getScript('/component/js/plugins/path/path.min.js'),
+        $.getScript('/component/plugins/mustache/mustache.min.js'),
+        $.getScript('/component/plugins/path/path.min.js'),
 
         /**
          * Data Source connection
@@ -32,15 +34,16 @@ $().ready(function () {
          * SwallowJs system config (config.js)
          * SwallowJs (utilities)
          */
-        $.getScript('/component/js/service/initializeFirebaseConnection.js'),
-        $.getScript('/component/js/service/initializeServerSideConnection.js'),
+        $.getScript('/component/service/initializeFirebaseConnection.js'),
+        $.getScript('/component/service/initializeServerSideConnection.js'),
 
         /**
          * SwallowJs (layout)
          * SwallowJs (routes)
          */
-        $.getScript('/component/js/view/layout.js'),
-        $.getScript('/component/js/Config/routes.js')
+        $.getScript('/component/utility/layout.js'),
+        $.getScript('/routes.js')
+
     ).done(function (s) {
         $(initPath);
         logMessage('**** SwallowJs is working perfectly ****');
@@ -76,15 +79,15 @@ $().ready(function () {
         // });
 
         // findOne
-        FirebaseService.findOne({
-            path: 'posts/post_one'
-        }, function(data) {
-            if(!data.error) {
-                logMessage(data);
-            } else {
-                logMessage(data);
-            }
-        });
+        // FirebaseService.findOne({
+        //     path: 'posts/post_one'
+        // }, function(data) {
+        //     if(!data.error) {
+        //         logMessage(data);
+        //     } else {
+        //         logMessage(data);
+        //     }
+        // });
 
 
         // FirebaseService.findAll({

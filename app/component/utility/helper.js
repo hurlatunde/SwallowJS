@@ -4,14 +4,14 @@
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
- * @package       component.js.view.utilities.js
+ * @package       component.utility.helper.js
  * @since         SwallowJs(tm) v 0.2.9
  */
 
 function swallowInnerLoading(parentElement, params) {
     $('<link>')
         .appendTo('head')
-        .attr({type : 'text/css', rel : 'stylesheet'})
+        .attr({type: 'text/css', rel: 'stylesheet'})
         .attr('href', '/component/css/swallow_inner_loading.css');
     if (params == true) {
         $(parentElement).append('' +
@@ -37,6 +37,31 @@ function swallowInnerLoading(parentElement, params) {
     }
 }
 
+/**
+ *
+ * @author Femi TAIWO
+ */
+function logMessage() {
+    if (!debug) return;
+    switch (arguments.length) {
+        case 0:
+            return;
+        case 1:
+            console.log(arguments[0]);
+            break;
+        case 2:
+            console.log(arguments[0], arguments[1]);
+            break;
+        case 3:
+            console.log(arguments[0], arguments[1], arguments[2]);
+            break;
+        case 4:
+            console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
+            break;
+        default:
+            console.log(arguments);
+    }
+}
 
 /**
  * @redirectUrl
@@ -60,7 +85,7 @@ function redirectUrl(redirect_url, params) {
  * @returns {Array of Objects}
  */
 function formToArray(element) {
-    var formData = $("#"+element).serializeArray();
+    var formData = $("#" + element).serializeArray();
     var dataArray;
     dataArray = {};
     for (var i in formData) {
@@ -76,4 +101,34 @@ function formToArray(element) {
  */
 function isBlank(value) {
     return $.trim(value);
+}
+
+/**
+ *
+ * @param length
+ * @returns {string}
+ */
+function generateRandomString(length) {
+    //var chars = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-+<>ABCDEFGHIJKLMNOP1234567890";
+    var chars = "abcdefghijklmnopqrstuvwxyz";
+    var pass = "";
+    for (var x = 0; x < length; x++) {
+        var i = Math.floor(Math.random() * chars.length);
+        pass += chars.charAt(i);
+    }
+    return pass;
+}
+
+/**
+ *
+ * @param baseUrl
+ * @returns {string}
+ */
+function getAbsolutePath(baseUrl) {
+    var loc = window.location;
+    if (baseUrl == false) {
+        return window.location.pathname;
+    }
+    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }

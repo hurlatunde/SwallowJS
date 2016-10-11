@@ -4,7 +4,7 @@
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
- * @package       component.js.Config.routes.js
+ * @package       config.js
  * @since         SwallowJs(tm) v 0.2.9
  */
 
@@ -16,7 +16,6 @@
 var CONFIG = (function () {
     var SwallowJs = {
         'main_container': 'swallow',
-        'app_version': 'v0.2.9',
         'beta': true,
         'loading': true,
         'debug': true
@@ -74,77 +73,11 @@ var swallowJsContainer = $('#' + CONFIG.private('main_container'));
  *
  * @type {any}
  */
-var swallowVersion = CONFIG.private('app_version');
 var debug = CONFIG.private('debug');
 
-/**
- * Default SwallowJs main page URL
- */
-var baseUrl = getAbsolutePath();
-
-/**
- * Default SwallowJs absolute Path
- * getting current page
- */
-var currentPathPage = getAbsolutePath(false);
 
 /**
  * Default SwallowJs firebaseConfig
  */
 var firebaseConfig = CONFIG.firebaseConfig('firebase_config')
 
-/**
- *
- * @author Femi TAIWO
- */
-function logMessage() {
-    if (!debug) return;
-    switch (arguments.length) {
-        case 0:
-            return;
-        case 1:
-            console.log(arguments[0]);
-            break;
-        case 2:
-            console.log(arguments[0], arguments[1]);
-            break;
-        case 3:
-            console.log(arguments[0], arguments[1], arguments[2]);
-            break;
-        case 4:
-            console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
-            break;
-        default:
-            console.log(arguments);
-    }
-}
-
-/**
- *
- * @param baseUrl
- * @returns {string}
- */
-function getAbsolutePath(baseUrl) {
-    var loc = window.location;
-    if (baseUrl == false) {
-        return window.location.pathname;
-    }
-    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
-}
-
-/**
- *
- * @param length
- * @returns {string}
- */
-function generateRandomString(length) {
-    //var chars = "abcdefghijklmnopqrstuvwxyz!@#$%^&*()-+<>ABCDEFGHIJKLMNOP1234567890";
-    var chars = "abcdefghijklmnopqrstuvwxyz";
-    var pass = "";
-    for (var x = 0; x < length; x++) {
-        var i = Math.floor(Math.random() * chars.length);
-        pass += chars.charAt(i);
-    }
-    return pass;
-}
