@@ -10,6 +10,11 @@ if ("undefined" == typeof jQuery)throw new Error("SwallowJS requires jQuery");
  * @since         SwallowJs(tm) v 0.2.9
  */
 
+$('<link>')
+    .appendTo('head')
+    .attr({type: 'text/css', rel: 'stylesheet'})
+    .attr('href', '/component/utility/css/swallow_inner_loading.css');
+
 $().ready(function () {
     $.when(
         /**
@@ -51,7 +56,6 @@ $().ready(function () {
         /**
          * your javascript codes here
          */
-
 
 
 
