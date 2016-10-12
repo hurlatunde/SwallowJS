@@ -33,19 +33,12 @@ var CONFIG = (function () {
         'true': '1',
     };
 
-    // var firebase_config = {
-    //     apiKey: 'APP-API-KEY',
-    //     authDomain: 'APP-AUTH-DOMAIN',
-    //     databaseURL: 'APP-DATABASE-URL',
-    //     storageBucket: 'APP-STORAGE-BUCKET',
-    //     messagingSenderId: 'APP-MESSAGE-SENDER-ID'
-    // };
     var firebase_config = {
-        apiKey: 'AIzaSyCP9PMv-WPyOq1sKbfhU8C18OyqnipJb0o',
-        authDomain: 'swalllow-blog.firebaseapp.com',
-        databaseURL: 'https://swalllow-blog.firebaseio.com',
-        storageBucket: 'swalllow-blog.appspot.com',
-        messagingSenderId: '617722433053'
+        apiKey: 'APP-API-KEY',
+        authDomain: 'APP-AUTH-DOMAIN',
+        databaseURL: 'APP-DATABASE-URL',
+        storageBucket: 'APP-STORAGE-BUCKET',
+        messagingSenderId: 'APP-MESSAGE-SENDER-ID'
     };
 
     return {
@@ -58,7 +51,7 @@ var CONFIG = (function () {
         firebaseConfig: function () {
             return firebase_config;
         },
-        constants: function () {
+        constants: function (name) {
             return constants[name];
         }
     };

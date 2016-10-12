@@ -8,13 +8,23 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
-function swallowInnerLoading(parentElement, params) {
-    $('<link>')
-        .appendTo('head')
-        .attr({type: 'text/css', rel: 'stylesheet'})
-        .attr('href', '/component/css/swallow_inner_loading.css');
-    if (params == true) {
+function swallowLoading(parameters) {
+    var element = parameters.element;
+    var show = parameters.show;
+
+    var parentElement;
+
+    if (typeof element === "undefined" || element === null) {
+        parentElement = $('body');
+        parentElement.css('position','relative');
+    } else {
+        parentElement = $("#" + element);
+        parentElement.css('position','relative');
+    }
+
+    if (show == true) {
         $(parentElement).append('' +
+            '<div id="modal_loading">'+
             '<div class="md-modal md-modal-mini md-effect-11 inner_loading md-show" id="modal-11">' +
             '<div class="md-content"> ' +
             '<div id="spinner-holder "> ' +
@@ -26,15 +36,17 @@ function swallowInnerLoading(parentElement, params) {
             '</div> ' +
             '</div>' +
             '<div class="text-center"> ' +
-            '<p id="loading_word"> Loading... </p> ' +
+            '<p id="loading_message"> Loading... </p> ' +
+            '</div> ' +
             '</div> ' +
             '</div> ' +
             '</div> ' +
             '</div>'
         );
     } else {
-        $(parentElement).append('');
+        $( "#" + element +" #modal_loading").html('');
     }
+
 }
 
 /**
