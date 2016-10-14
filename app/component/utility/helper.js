@@ -144,3 +144,24 @@ function getAbsolutePath(baseUrl) {
     var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
     return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
+
+
+
+
+/***
+ *
+ *  Enabling auto route
+ *  @param enabled
+ **/
+
+function enableAutoRoute(enabled){
+    if(enabled){
+        logMessage("**** Auto route enabled ****");
+        var layouts = (CONFIG.layoutConfig('layout'));
+        for (var eachLayout in layouts) {
+            Path.map("#/"+eachLayout).to(function () {
+                renderLayout(eachLayout, swallowJsContainer);
+            }).enter(clearPanel);
+        }
+    }
+}
