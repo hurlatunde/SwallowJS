@@ -34,7 +34,7 @@ function layoutUrl(p) {
  */
 function includeElement(container, htmlSource, data) {
     container = $('#' + container);
-    parseTemplate(container, "elements/" + htmlSource + ".html", data);
+    parseTemplate(container, "layouts/elements/" + htmlSource + ".html", data);
 }
 
 /**
