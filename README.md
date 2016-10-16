@@ -1,6 +1,6 @@
-# swallow.js
+# SwallowJs
 
-SwallowJs currently working with jquery-2.2.2.min
+A lightweight web services framework that will help kick start your Javascript project So Ridiculously Fast & Easy-To-Use You’ll Think It’s Magic
 
 
 # Special Thanks
