@@ -55,32 +55,6 @@ Path.map("#/about").to(function () {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 /**
  * end your route here
  */

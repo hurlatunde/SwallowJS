@@ -1,4 +1,3 @@
-if ("undefined" == typeof jQuery)throw new Error("SwallowJS requires jQuery");
 /**
  * The main Controller for handling all system required
  * SwallowJs(tm) : SwallowJs Framework (http://docs.swallow.js)
@@ -10,10 +9,13 @@ if ("undefined" == typeof jQuery)throw new Error("SwallowJS requires jQuery");
  * @since         SwallowJs(tm) v 0.2.9
  */
 
+if ("undefined" == typeof jQuery)
+    throw new Error("SwallowJS requires jQuery");
+
 $('<link>')
     .appendTo('head')
     .attr({type: 'text/css', rel: 'stylesheet'})
-    .attr('href', '/swallow/utility/css/swallow_inner_loading.css');
+    .attr('href', '/swallow/utility/css/swallowjs.css');
 
 $().ready(function () {
     $.when(
@@ -56,8 +58,6 @@ $().ready(function () {
         /**
          * your javascript codes here
          */
-
-
 
 
         // save

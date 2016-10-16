@@ -32,8 +32,16 @@ function layoutUrl(p) {
  * @secondParams   parent container
  * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
-function includeElement(container, htmlSource, data) {
-    container = $('#' + container);
+function includeElement(htmlSource, data) {
+    var container;
+
+    if (document.getElementById(htmlSource) != null) {
+        logError(htmlSource+'**** Firebase database config. ****');
+    }
+
+    container = document.createElement('div');
+    container.id = htmlSource;
+    document.body.appendChild(container);
     parseTemplate(container, "layouts/elements/" + htmlSource + ".html", data);
 }
 

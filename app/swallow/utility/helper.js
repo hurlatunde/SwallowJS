@@ -75,6 +75,11 @@ function logMessage() {
     }
 }
 
+function logError(arguments) {
+    if (!debug) return;
+    console.log("%c"+arguments, "background: red; color: red; font-size: 20px");
+}
+
 /**
  * @redirectUrl
  * @param redirect_url '/users
