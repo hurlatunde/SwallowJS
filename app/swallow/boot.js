@@ -6,14 +6,14 @@ if ("undefined" == typeof jQuery)throw new Error("SwallowJS requires jQuery");
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
- * @package       swallowJs.boot.js
+ * @package       swallow.boot.js
  * @since         SwallowJs(tm) v 0.2.9
  */
 
 $('<link>')
     .appendTo('head')
     .attr({type: 'text/css', rel: 'stylesheet'})
-    .attr('href', '/swallowJs/utility/css/swallow_inner_loading.css');
+    .attr('href', '/swallow/utility/css/swallow_inner_loading.css');
 
 $().ready(function () {
     $.when(
@@ -22,16 +22,16 @@ $().ready(function () {
          * SwallowJs config (config.js)
          * SwallowJs (utility/helper)
          */
-        $.getScript('/swallowJs/utility/helper.js'),
-        $.getScript('/swallowJs/utility/bootstrap.js'),
+        $.getScript('/swallow/utility/helper.js'),
+        $.getScript('/swallow/utility/bootstrap.js'),
         $.getScript('/config.js'),
 
         /**
          * @mustache   **https://github.com/janl/mustache.js**
          * @pathjs     **https://github.com/mtrpcic/pathjs**
          */
-        $.getScript('/swallowJs/plugins/mustache/mustache.min.js'),
-        $.getScript('/swallowJs/plugins/path/path.min.js'),
+        $.getScript('/swallow/plugins/mustache/mustache.min.js'),
+        $.getScript('/swallow/plugins/path/path.min.js'),
 
         /**
          * Data Source connection
@@ -39,14 +39,14 @@ $().ready(function () {
          * SwallowJs system config (config.js)
          * SwallowJs (utilities)
          */
-        $.getScript('/swallowJs/service/initializeFirebaseConnection.js'),
-        $.getScript('/swallowJs/service/initializeServerSideConnection.js'),
+        $.getScript('/swallow/service/initializeFirebaseConnection.js'),
+        $.getScript('/swallow/service/initializeServerSideConnection.js'),
 
         /**
          * SwallowJs (layout)
          * SwallowJs (routes)
          */
-        $.getScript('/swallowJs/utility/layout.js'),
+        $.getScript('/swallow/utility/layout.js'),
         $.getScript('/routes.js')
 
     ).done(function (s) {
