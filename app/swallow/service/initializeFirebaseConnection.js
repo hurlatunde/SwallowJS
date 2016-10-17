@@ -267,5 +267,5 @@ if (typeof firebase !== 'undefined') {
     }
 
 } else {
-    logMessage('**** Currently not using Firebase. Activate by un-comment line 28 in the app index.html **** ');
+    logMessage('**** Firebase inactive, Activate by un-comment line 21 in the app index.html or comment-out line 28 in boot.js **** ');
 }

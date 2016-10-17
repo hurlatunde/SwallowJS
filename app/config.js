@@ -73,4 +73,3 @@ var debug = CONFIG.private('debug');
  * Default SwallowJs firebaseConfig
  */
 var firebaseConfig = CONFIG.firebaseConfig('firebase_config')
-

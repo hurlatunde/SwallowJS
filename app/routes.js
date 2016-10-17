@@ -27,6 +27,7 @@ Path.root("#/");
  * landing page. (This is the first page you see)
  */
 Path.map("#/").to(function () {
+    logMessage('get here');
     renderLayout('home', swallowJsContainer);
 }).enter(clearPanel);
 
