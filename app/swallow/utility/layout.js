@@ -16,7 +16,7 @@ function layoutUrl(p) {
     var htmlSource = p.htmlSource;
     var renderedHTML = p.renderedHTML;
 
-    if (renderedHTML == true) {
+    if (typeof renderedHTML !== "undefined" || renderedHTML == true) {
         element.html(htmlSource);
     } else {
         if (htmlSource) {
@@ -34,7 +34,7 @@ function layoutUrl(p) {
  */
 function includeElement(container, htmlSource, data) {
     container = $('#' + container);
-    parseTemplate(container, "elements/" + htmlSource + ".html", data);
+    parseTemplate(container, "layouts/elements/" + htmlSource + ".html", data);
 }
 
 /**

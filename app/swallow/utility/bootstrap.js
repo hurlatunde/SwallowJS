@@ -8,7 +8,9 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
-var SwallowJsCONFIG = (function () {
+var SwallowJsCONFIG;
+
+SwallowJsCONFIG = (function () {
     var SwallowJs = {
         'app_version': 'v1.2',
     };
@@ -28,15 +30,11 @@ var SwallowJsCONFIG = (function () {
     };
 })();
 
+
 /**
  *
  */
 var swallowVersion = SwallowJsCONFIG.private('app_version');
-
-/**
- * Default SwallowJs main page URL
- */
-var baseUrl = getAbsolutePath();
 
 /**
  * Default SwallowJs absolute Path

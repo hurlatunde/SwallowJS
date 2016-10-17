@@ -76,6 +76,51 @@ function logMessage() {
 }
 
 /**
+ *  \ref http://stackoverflow.com/questions/950087/how-to-include-a-javascript-file-in-another-javascript-file
+ * @param url
+ * @param callback
+ */
+function loadScript(url, callback) {
+    // var url = parameters.url;
+    // var callback = parameters.callback;
+
+    var head = document.getElementsByTagName('head')[0];
+    var script = document.createElement('script');
+    script.type = 'text/javascript';
+    script.src = url;
+
+    if (typeof callback !== "undefined" || callback !== null) {
+        script.onreadystatechange = callback;
+        script.onload = callback;
+    }
+    logMessage(script);
+    head.appendChild(script);
+}
+
+/**
+ * ref http://stackoverflow.com/questions/2145914/including-a-js-file-within-a-js-file
+ * @param src
+ * @param f
+ */
+function loadScript_(src, f) {
+    var head = document.getElementsByTagName("head")[0];
+    var script = document.createElement("script");
+    script.src = src;
+    var done = false;
+    script.onload = script.onreadystatechange = function () {
+        // attach to both events for cross browser finish detection:
+        if (!done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) {
+            done = true;
+            if (typeof f == 'function') f();
+            // cleans up a little memory:
+            script.onload = script.onreadystatechange = null;
+            head.removeChild(script);
+        }
+    };
+    head.appendChild(script);
+}
+
+/**
  * @redirectUrl
  * @param redirect_url '/users
  * @param params       '/users/122/884
