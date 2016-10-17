@@ -51,52 +51,5 @@ $().ready(function () {
         };
         getSc(firstPath);
     };
-    loadScript(includePath)
-
-
-    // save
-    //     // FirebaseService.saveData({
-    //     //     path: '/posts', data: ({author:"John Deauthor", body: "post body content.", title: "Another post title "})
-    //     // }, function(data) {
-    //     //     if(!data.error) {
-    //     //         logMessage(data);
-    //     //     } else {
-    //     //         logMessage(data);
-    //     //     }
-    //     // });
-    //
-    //     // update
-    //     // FirebaseService.updateData({
-    //     //    path: 'see/-KSniAXFZJVrFIAg3gli', data: ({been:'s34567654wacqw', been2:'sadv3456765qw'})
-    //     // }, function(data) {
-    //     //     if(!data.error) {
-    //     //         logMessage(data);
-    //     //     } else {
-    //     //         logMessage(data);
-    //     //     }
-    //     // });
-    //
-    //     // findOne
-    //     // FirebaseService.findOne({
-    //     //     path: 'posts/post_one'
-    //     // }, function(data) {
-    //     //     if(!data.error) {
-    //     //         logMessage(data);
-    //     //     } else {
-    //     //         logMessage(data);
-    //     //     }
-    //     // });
-    //
-    //
-    //     // FirebaseService.findAll({
-    //     //    path: 'posts'
-    //     // }, function(data) {
-    //     //     if(!data.error) {
-    //     //         logMessage(data);
-    //     //     } else {
-    //     //         logMessage(data);
-    //     //     }
-    //     // });
-    //
-
+    loadScript(includePath);
 });
