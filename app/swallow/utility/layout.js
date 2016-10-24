@@ -8,6 +8,8 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
+var baseUrl = getAbsolutePath();
+
 /**
  *
  */
@@ -20,7 +22,7 @@ function layoutUrl(p) {
         element.html(htmlSource);
     } else {
         if (htmlSource) {
-            element.load(htmlSource);
+            element.load(baseUrl+htmlSource);
         } else {
             element.load(CONFIG.layoutTemplate('404'));
         }
@@ -51,7 +53,7 @@ function parseTemplate(container, htmlSource, data) {
     /**
      * Default SwallowJs main page URL
      */
-    data.base_url = getAbsolutePath();
+    data.base_url = baseUrl;
 
     /**
      * Default SwallowJs absolute Path
@@ -113,11 +115,11 @@ function renderLayout(layout, container, dataSet) {
     }
 
     if (CONFIG.layoutTemplate(layout) == undefined) {
-        dataSet.error_message = "No layout with " + layout + ".html defined in config.js";
+        dataSet.error_message = "No layout with " + layout + ".html declared in config.js";
         dataSet.error_layout = layout;
         dataSet.not_found = true;
 
-        $.get('/layouts/error/404.html', function (template) {
+        $.get(CONFIG.layoutTemplate('404'), function (template) {
             var rendered = Mustache.render(template, dataSet);
             layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
         });
