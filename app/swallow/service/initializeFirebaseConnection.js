@@ -115,15 +115,10 @@ if (typeof firebase !== 'undefined') {
                 callBackData({error: 'path required to interact with Firebase findOne'});
             }
 
-            nodeRef.on('value', function (snapshot) {
-                var data = snapshot.val();
-                if (!data.node_id) {
-                    data.node_id = snapshot.key;
-                }
-                callBackData({data: data});
-            }, function (error) {
+            nodeRef.set(null,function (error) {
                 callBackData({error: error});
             });
+
         },
 
         /**
@@ -213,19 +208,25 @@ if (typeof firebase !== 'undefined') {
         findAll: function (params, callBackData) {
             var path = params.path;
             var limit = params.limit;
+            var customRef = params.customRef;
             var nodeRef;
 
-            if (limit && limit != "") {
-                if (Math.floor(limit) == limit && $.isNumeric(limit)) {
-                    nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit);
+
+            if(customRef && customRef != ""){
+                nodeRef = customRef;
+            }else{
+                if (limit && limit != "") {
+                    if (Math.floor(limit) == limit && $.isNumeric(limit)) {
+                        nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit);
+                    } else {
+                        var data = Array();
+                        data.error = true;
+                        data.error_message = 'Limit as to be a int not a string';
+                        callBackData({error: data});
+                    }
                 } else {
-                    var data = Array();
-                    data.error = true;
-                    data.error_message = 'Limit as to be a int not a string';
-                    callBackData({error: data});
+                    nodeRef = firebaseBaseDatabase.ref(path);
                 }
-            } else {
-                nodeRef = firebaseBaseDatabase.ref(path);
             }
 
             /**
@@ -256,7 +257,44 @@ if (typeof firebase !== 'undefined') {
             }, function (error) {
                 callBackData({error: error});
             });
+        },
+
+
+        /**
+         * Increment value
+         */
+        incrementValue: function (params,CallBackData) {
+            var path = params.path;
+            var incrementBy = params.incrementBy;
+            var nodeRef;
+
+            if (!path) {
+                callBackData({error: 'path required to interact with Firebase findOne'});
+            }else if (!incrementBy) {
+                callBackData({error: 'please add increment value'});
+            }else{
+                nodeRef = firebaseBaseDatabase.ref(path);
+                nodeRef.transaction(function(onlineValue) {
+                    var oldValue = onlineValue;
+                    if (onlineValue) {
+                        var intOnlineValue = parseInt(onlineValue);
+                        onlineValue = intOnlineValue + parseInt(incrementBy);
+                    }else{
+                        onlineValue = 0;
+                    }
+
+                    if(oldValue == onlineValue){
+                        CallBackData(false);
+                    }else{
+                        CallBackData(true);
+                    }
+                    return onlineValue;
+                });
+            }
         }
+
+
+
     });
 
     /**
