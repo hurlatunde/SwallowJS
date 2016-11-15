@@ -15,9 +15,6 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
-Path.rescue(notFound);
-Path.root("#/");
-
 /**
  * add your route here
  */
@@ -51,33 +48,3 @@ Path.map("#/about").to(function () {
 //
 // });
 
-
-
-
-
-
-/**
- * end your route here
- */
-
-/**
- * notFound
- */
-function notFound() {
-    renderLayout('404', swallowJsContainer);
-}
-
-/**
- * clearPanel (You can put some code in here to do fancy DOM transitions, such as fade-out or slide-in.)
- */
-function clearPanel() {
-    // You can put some code in here to do fancy DOM transitions, such as fade-out or slide-in.
-}
-
-/**
- * listen (Always as to be at the bottom of this page)
- */
-function initPath(){
-    Path.listen();
-    logMessage('**** SwallowJs is route is working perfectly ****');
-}

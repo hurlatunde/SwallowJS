@@ -17,6 +17,39 @@ function layoutUrl(p) {
     var element = p.element;
     var htmlSource = p.htmlSource;
     var renderedHTML = p.renderedHTML;
+    var res;
+    var data = {};
+    //var pathSting;
+
+    if (htmlSource.indexOf("---") >= 0) {
+        res = htmlSource.split("---");
+        res = cleanArray(res);
+        var childLayout = res.pop();
+
+        var parentLayout;
+        for (i = 0; i < res.length; i++) {
+            var str = res[i].trim();
+            if (str.indexOf("view:") >= 0) {
+                parentLayout = str.replace('view:','');
+                break;
+            } else {
+                logMessage("Error parsing parent layout. please add view");
+                break;
+            }
+        }
+
+        parentLayout = parentLayout.trim();
+        parentLayout = "layouts/view/"+parentLayout;
+
+        // pathSting = p.pathSting;
+        // pathSting = pathSting.trim().split('/');
+        // pathSting = pathSting.pop();
+        // pathSting = pathSting.replace('.html','');
+
+        data.body = childLayout;
+        parseTemplate(element, parentLayout, data);
+        return;
+    }
 
     if (typeof renderedHTML !== "undefined" || renderedHTML == true) {
         element.html(htmlSource);
@@ -87,8 +120,10 @@ function parseTemplate(container, htmlSource, data) {
     // }
 
     $.get(htmlSource, function (template) {
+        Mustache.escape = function (value) {return value;};
         var rendered = Mustache.render(template, data);
-        layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
+        Mustache.clearCache(template);
+        layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, pathSting: htmlSource});
     }).error(function (jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error' && errorThrown == 'Not Found') {
             logMessage("Error parsing");
