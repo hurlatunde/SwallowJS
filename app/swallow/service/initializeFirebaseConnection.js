@@ -14,6 +14,15 @@
 
 if (typeof firebase !== 'undefined') {
 
+    function getCurrentUser() {
+        var user = firebase.auth().currentUser;
+        if (user) {
+            return user;
+        } else {
+            return false;
+        }
+    }
+
     var firebaseBaseDatabase;
     var FirebaseService;
 
@@ -115,10 +124,15 @@ if (typeof firebase !== 'undefined') {
                 callBackData({error: 'path required to interact with Firebase findOne'});
             }
 
-            nodeRef.set(null,function (error) {
+            nodeRef.on('value', function (snapshot) {
+                var data = snapshot.val();
+                if (!data.node_id) {
+                    data.node_id = snapshot.key;
+                }
+                callBackData({data: data});
+            }, function (error) {
                 callBackData({error: error});
             });
-
         },
 
         /**
@@ -145,6 +159,7 @@ if (typeof firebase !== 'undefined') {
                 callBackData({error: error});
             });
         },
+
 
         /**
          *
@@ -175,13 +190,29 @@ if (typeof firebase !== 'undefined') {
          */
         findOne: function (params, callBackData) {
             var path = params.path;
-            var nodeRef = firebaseBaseDatabase.ref(path);
+            var customQuery = params.custom;
+            var listenerType = params.listenerType;
+            var eventType = params.eventType;
+
+            if(!listenerType || listenerType == "undefined"){
+                listenerType = "on";
+            }
+
+            if(!eventType || eventType == "undefined"){
+                eventType = "value";
+            }
+
+            if(customQuery){
+                var nodeRef = firebaseBaseDatabase.ref(path)+customQuery;
+            } else {
+                var nodeRef = firebaseBaseDatabase.ref(path)
+            }
 
             if (!path) {
                 callBackData({error: 'path required to interact with Firebase findOne'});
             }
 
-            nodeRef.on('value', function (snapshot) {
+            var definedFunction = function (snapshot) {
                 var data = {};
                 snapshot.forEach(function (childSnapshot) {
                     var snapshot = childSnapshot.val();
@@ -195,9 +226,20 @@ if (typeof firebase !== 'undefined') {
                     data.node_id = snapshot.key;
                 }
                 callBackData(data);
-            }, function (error) {
+            };
+
+            var errorFunction = function (error) {
                 callBackData({error: error});
-            });
+            };
+
+
+            if(listenerType == 'on'){
+                onListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else if(listenerType == 'once'){
+                onceListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else{
+                console.error('**** Invalid listener type ('+listenerType+') specified. Forgot to specify on or once in params.listenerType ****');
+            }
         },
 
         /**
@@ -208,13 +250,25 @@ if (typeof firebase !== 'undefined') {
         findAll: function (params, callBackData) {
             var path = params.path;
             var limit = params.limit;
-            var customRef = params.customRef;
+            var customQuery = params.customRef;
+            var listenerType = params.listenerType;
+            var eventType = params.eventType;
             var nodeRef;
 
 
-            if(customRef && customRef != ""){
-                nodeRef = customRef;
-            }else{
+
+            if(!listenerType || listenerType == "undefined"){
+                listenerType = "on";
+            }
+
+            if(!eventType || eventType == "undefined"){
+                eventType = "value";
+            }
+
+
+            if(customQuery && customQuery != ""){
+                nodeRef = customQuery;
+            } else {
                 if (limit && limit != "") {
                     if (Math.floor(limit) == limit && $.isNumeric(limit)) {
                         nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit);
@@ -232,7 +286,8 @@ if (typeof firebase !== 'undefined') {
             /**
              * Make request to firebase database and listen to changes
              */
-            nodeRef.on('value', function (snapshot) {
+
+            var definedFunction = function (snapshot) {
                 logMessage('**** Firebase database data return ****');
                 var count = snapshot.numChildren();
                 var response;
@@ -245,7 +300,7 @@ if (typeof firebase !== 'undefined') {
                     data.push(childData);
                 });
 
-                if (count > 0) {
+                if(count > 0) {
                     response = true;
                 } else {
                     response = false;
@@ -254,49 +309,30 @@ if (typeof firebase !== 'undefined') {
                 data.response_count = count;
 
                 callBackData({data:data});
-            }, function (error) {
+            };
+
+            var errorFunction =  function (error) {
                 callBackData({error: error});
-            });
-        },
+            };
 
-
-        /**
-         * Increment value
-         */
-        incrementValue: function (params,CallBackData) {
-            var path = params.path;
-            var incrementBy = params.incrementBy;
-            var nodeRef;
-
-            if (!path) {
-                callBackData({error: 'path required to interact with Firebase findOne'});
-            }else if (!incrementBy) {
-                callBackData({error: 'please add increment value'});
+            if(listenerType == 'on'){
+                onListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else if(listenerType == 'once'){
+                onceListener(nodeRef,eventType,definedFunction,errorFunction);
             }else{
-                nodeRef = firebaseBaseDatabase.ref(path);
-                nodeRef.transaction(function(onlineValue) {
-                    var oldValue = onlineValue;
-                    if (onlineValue) {
-                        var intOnlineValue = parseInt(onlineValue);
-                        onlineValue = intOnlineValue + parseInt(incrementBy);
-                    }else{
-                        onlineValue = 0;
-                    }
-
-                    if(oldValue == onlineValue){
-                        CallBackData(false);
-                    }else{
-                        CallBackData(true);
-                    }
-                    return onlineValue;
-                });
+                console.error('**** Invalid listener type ('+listenerType+') specified. Forgot to specify on or once in params.listenerType ****');
             }
         }
-
-
-
     });
 
+
+    function onListener(nodeRef,value,definedFunction,errorFunction) {
+        nodeRef.on(value,definedFunction,errorFunction)
+    }
+
+    function onceListener(nodeRef,value,definedFunction,errorFunction) {
+        nodeRef.once(value,definedFunction,errorFunction)
+    }
     /**
      *
      */
@@ -305,5 +341,5 @@ if (typeof firebase !== 'undefined') {
     }
 
 } else {
-    logMessage('**** Firebase inactive, Activate by un-comment line 21 in the app index.html or comment-out line 28 in boot.js **** ');
+    logMessage('**** Firebase inactive, Activate by un-comment line 21 in the app index.html  **** ');
 }
