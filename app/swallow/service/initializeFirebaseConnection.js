@@ -16,6 +16,7 @@ if (typeof firebase !== 'undefined') {
 
     var firebaseBaseDatabase;
     var FirebaseService;
+    var storageRef;
 
     /**
      * Check if firebase is configure
@@ -28,6 +29,7 @@ if (typeof firebase !== 'undefined') {
          * Connecting to Firebase database system
          */
         firebaseBaseDatabase = mainApp.database();
+        storageRef = firebase.storage().ref();
     } else {
         firebaseBaseDatabase = null;
         logMessage('**** Firebase database not config yet ****');
@@ -35,22 +37,22 @@ if (typeof firebase !== 'undefined') {
 
     function firebaseObjectToArray(childSnapshot) {
         var childData;
-        if(typeof childSnapshot.val == 'function'){
+        if (typeof childSnapshot.val == 'function') {
             childData = childSnapshot.val();
-        }else{
+        } else {
             childData = childSnapshot;
         }
 
         var innerdata = Array();
 
-        for (var dataSet in childData){
+        for (var dataSet in childData) {
             var innerSetData = {};
             var childDataObject = childData[dataSet];
 
             for (var childSet in childDataObject) {
                 var innerChildDataObject = childDataObject[childSet];
-                if( typeof innerChildDataObject === "object" ) {
-                    var dataReturn =  firebaseObjectToArrayInner(innerChildDataObject);
+                if (typeof innerChildDataObject === "object") {
+                    var dataReturn = firebaseObjectToArrayInner(innerChildDataObject);
                     innerSetData[childSet] = dataReturn;
                 } else {
                     innerSetData[childSet] = innerChildDataObject;
@@ -63,13 +65,13 @@ if (typeof firebase !== 'undefined') {
 
     function firebaseObjectToArrayInner(innerChildDataObject) {
         var innerData = Array();
-        for (var dataSet in innerChildDataObject){
+        for (var dataSet in innerChildDataObject) {
             var childDataObject = innerChildDataObject[dataSet];
 
             var innerChildDataObjectSet = {};
-            for (var dataInnerSet in childDataObject){
+            for (var dataInnerSet in childDataObject) {
                 var innerChildDataSet = childDataObject[dataInnerSet];
-                if( typeof innerChildDataSet === "object" ) {
+                if (typeof innerChildDataSet === "object") {
                     innerChildDataObjectSet[dataInnerSet] = firebaseObjectToArrayInner(innerChildDataSet)
                 } else {
                     innerChildDataObjectSet[dataInnerSet] = innerChildDataSet;
@@ -115,7 +117,7 @@ if (typeof firebase !== 'undefined') {
                 callBackData({error: 'path required to interact with Firebase findOne'});
             }
 
-            nodeRef.set(null,function (error) {
+            nodeRef.set(null, function (error) {
                 callBackData({error: error});
             });
 
@@ -185,7 +187,7 @@ if (typeof firebase !== 'undefined') {
                 var data = {};
                 snapshot.forEach(function (childSnapshot) {
                     var snapshot = childSnapshot.val();
-                    if( typeof snapshot === "object" ) {
+                    if (typeof snapshot === "object") {
                         data[childSnapshot.key] = firebaseObjectToArray(snapshot);
                     } else {
                         data[childSnapshot.key] = snapshot;
@@ -212,9 +214,9 @@ if (typeof firebase !== 'undefined') {
             var nodeRef;
 
 
-            if(customRef && customRef != ""){
+            if (customRef && customRef != "") {
                 nodeRef = customRef;
-            }else{
+            } else {
                 if (limit && limit != "") {
                     if (Math.floor(limit) == limit && $.isNumeric(limit)) {
                         nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit);
@@ -253,7 +255,7 @@ if (typeof firebase !== 'undefined') {
                 data.response = response;
                 data.response_count = count;
 
-                callBackData({data:data});
+                callBackData({data: data});
             }, function (error) {
                 callBackData({error: error});
             });
@@ -263,36 +265,70 @@ if (typeof firebase !== 'undefined') {
         /**
          * Increment value
          */
-        incrementValue: function (params,CallBackData) {
+        incrementValue: function (params, CallBackData) {
             var path = params.path;
             var incrementBy = params.incrementBy;
             var nodeRef;
 
             if (!path) {
                 callBackData({error: 'path required to interact with Firebase findOne'});
-            }else if (!incrementBy) {
+            } else if (!incrementBy) {
                 callBackData({error: 'please add increment value'});
-            }else{
+            } else {
                 nodeRef = firebaseBaseDatabase.ref(path);
-                nodeRef.transaction(function(onlineValue) {
+                nodeRef.transaction(function (onlineValue) {
                     var oldValue = onlineValue;
                     if (onlineValue) {
                         var intOnlineValue = parseInt(onlineValue);
                         onlineValue = intOnlineValue + parseInt(incrementBy);
-                    }else{
+                    } else {
                         onlineValue = 0;
                     }
 
-                    if(oldValue == onlineValue){
+                    if (oldValue == onlineValue) {
                         CallBackData(false);
-                    }else{
+                    } else {
                         CallBackData(true);
                     }
                     return onlineValue;
                 });
             }
-        }
+        },
 
+
+        /**
+         * path - path where you want to upload to
+         * @param parameters
+         */
+        fireBaseImageUpload: function (parameters) {
+            var file = parameters.file;
+            var path = parameters.path;
+            var namePart = parameters.namePhat;
+            var callBackData = parameters.callBackData;
+            var name;
+
+            var metaData = {'contentType': file.type};
+            var arr = file.name.split('.');
+            if (namePart != null) {
+                name = namePart;
+            } else {
+                name = generateRandomString(6);
+            }
+
+            var fullPath = path + '/' + name + '.' + arr.slice(-1)[0];
+
+            var uploadFile = storageRef.child(fullPath).put(file, metaData);
+            callBackData({id: name});
+            uploadFile.on('state_changed', function (snapshot) {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                callBackData({progress: progress, element: name});
+            }, function (error) {
+                callBackData({error: error, element: name});
+            }, function () {
+                var downloadURL = uploadFile.snapshot.downloadURL;
+                callBackData({downloadURL: downloadURL, element: name});
+            });
+        }
 
 
     });
