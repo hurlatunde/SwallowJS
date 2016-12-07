@@ -9,6 +9,9 @@
  */
 
 var baseUrl = getAbsolutePath();
+var currentParentLayout = '';
+var swallowData = {};
+var inner = false;
 
 /**
  *
@@ -17,9 +20,18 @@ function layoutUrl(p) {
     var element = p.element;
     var htmlSource = p.htmlSource;
     var renderedHTML = p.renderedHTML;
+    var logic = p.logic;
     var res;
     var data = {};
-    //var pathSting;
+    var parentLayoutSet;
+
+    if (typeof logic === "undefined" || logic === null) {
+        logic = false;
+    }
+
+    if (logic == false ){
+        currentParentLayout = '';
+    }
 
     if (htmlSource.indexOf("---") >= 0) {
         res = htmlSource.split("---");
@@ -38,7 +50,21 @@ function layoutUrl(p) {
             }
         }
 
-        parentLayout = parentLayout.trim();
+        parentLayoutSet = parentLayout.trim();
+        parentLayout = parentLayoutSet;
+
+        switch (currentParentLayout) {
+            case '':
+                inner = false;
+                break;
+            case parentLayoutSet:
+                inner = true;
+                break;
+            default:
+                inner = false;
+        }
+
+        currentParentLayout = parentLayout;
         parentLayout = "layouts/view/"+parentLayout;
 
         // pathSting = p.pathSting;
@@ -46,9 +72,18 @@ function layoutUrl(p) {
         // pathSting = pathSting.pop();
         // pathSting = pathSting.replace('.html','');
 
-        data.body = childLayout;
-        parseTemplate(element, parentLayout, data);
-        return;
+        if (inner == true) {
+            var newElement = element.selector;
+            newElement = newElement.replace('#','');
+            newElement = $('#'+isBlank(newElement));
+            var rendered = Mustache.render(childLayout, swallowData);
+            layoutUrl({element: newElement, htmlSource: rendered, renderedHTML: true});
+            return;
+        } else {
+            data.body = childLayout;
+            parseTemplate(swallowJsContainer, parentLayout, data);
+            return;
+        }
     }
 
     if (typeof renderedHTML !== "undefined" || renderedHTML == true) {
@@ -76,7 +111,7 @@ function includeElement(container, htmlSource, data) {
  *
  * $Data params as to be an object
  */
-function parseTemplate(container, htmlSource, data) {
+function parseTemplate(container, htmlSource, data, p) {
     if (typeof data === "undefined" || data === null) {
         data = {};
     }
@@ -87,6 +122,13 @@ function parseTemplate(container, htmlSource, data) {
      * Default SwallowJs main page URL
      */
     data.base_url = baseUrl;
+
+
+    /**
+     * Default SwallowJs current page URL
+     */
+
+    data.here = baseUrl+window.location.hash;
 
     /**
      * Default SwallowJs absolute Path
@@ -108,22 +150,13 @@ function parseTemplate(container, htmlSource, data) {
         data[currentPage] = true;
     }
 
-    // check if data is an object or just trow an error
-    // if(CONFIG.layoutTemplate(layout) == undefined){
-    //     data.error_message = "No layout with "+layout+".html defined in config.js";
-    //     data.error_layout = layout;
-    //     $.get(CONFIG.layoutTemplate('404'), function (template) {
-    //         var rendered = Mustache.render(template, data);
-    //         layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
-    //     });
-    //     return
-    // }
-
+    swallowData = data;
     $.get(htmlSource, function (template) {
         Mustache.escape = function (value) {return value;};
         var rendered = Mustache.render(template, data);
         Mustache.clearCache(template);
-        layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, pathSting: htmlSource});
+        //layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, pathSting: htmlSource});
+        layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
     }).error(function (jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error' && errorThrown == 'Not Found') {
             logMessage("Error parsing");
@@ -133,7 +166,7 @@ function parseTemplate(container, htmlSource, data) {
             $.get(CONFIG.layoutTemplate('404'), function (template) {
                 Mustache.parse(template);
                 var rendered = Mustache.render(template, data);
-                layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
+                layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
             });
         }
     });
@@ -159,7 +192,13 @@ function renderLayout(layout, container, dataSet) {
             layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
         });
     } else {
-        parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet);
+        $.get(CONFIG.layoutTemplate(layout), function (template) {
+            if (template.indexOf("---") >= 0) {
+                parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet, true);
+            } else {
+                parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet, false);
+            }
+        });
     }
 }
 

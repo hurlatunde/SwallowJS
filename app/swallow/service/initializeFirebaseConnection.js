@@ -14,6 +14,15 @@
 
 if (typeof firebase !== 'undefined') {
 
+    function getCurrentUser() {
+        var user = firebase.auth().currentUser;
+        if (user) {
+            return user;
+        } else {
+            return false;
+        }
+    }
+
     var firebaseBaseDatabase;
     var FirebaseService;
     var storageRef;
@@ -117,10 +126,15 @@ if (typeof firebase !== 'undefined') {
                 callBackData({error: 'path required to interact with Firebase findOne'});
             }
 
-            nodeRef.set(null, function (error) {
+            nodeRef.on('value', function (snapshot) {
+                var data = snapshot.val();
+                if (!data.node_id) {
+                    data.node_id = snapshot.key;
+                }
+                callBackData({data: data});
+            }, function (error) {
                 callBackData({error: error});
             });
-
         },
 
         /**
@@ -131,7 +145,13 @@ if (typeof firebase !== 'undefined') {
         saveData: function (params, callBackData) {
             var path = params.path;
             var objectData = params.data;
-            var newGeneratedKey = this.initKey(path);
+            var newGeneratedKey;
+
+            if(!objectData.node_id) {
+                newGeneratedKey = this.initKey(path);
+            } else {
+                newGeneratedKey = objectData.node_id;
+            }
 
             if (!path) {
                 callBackData({error: 'Node name required to interact with Firebase'});
@@ -140,13 +160,22 @@ if (typeof firebase !== 'undefined') {
             if (!objectData.created || objectData.created == "undefined") {
                 objectData.created = new Date().valueOf();
             }
-            objectData.node_id = newGeneratedKey;
 
-            //remember return id from every save
+            if(!objectData.node_id) {
+                objectData.node_id = newGeneratedKey;
+            }
+
+            var created = objectData.created;
             firebaseBaseDatabase.ref(path).child(newGeneratedKey).set(objectData, function (error) {
-                callBackData({error: error});
+                if (error) {
+                    callBackData({error: error});
+                } else {
+                    callBackData({node_id: newGeneratedKey});
+                }
             });
+            firebaseBaseDatabase.ref(path).child(newGeneratedKey).setPriority(created);
         },
+
 
         /**
          *
@@ -165,7 +194,11 @@ if (typeof firebase !== 'undefined') {
                 objectData.modified = new Date().valueOf();
             }
             firebaseBaseDatabase.ref(path).update(objectData, function (error) {
-                callBackData({error: error});
+                if (error) {
+                    callBackData({error: error});
+                } else {
+                    callBackData('success');
+                }
             });
         },
 
@@ -177,26 +210,74 @@ if (typeof firebase !== 'undefined') {
          */
         findOne: function (params, callBackData) {
             var path = params.path;
-            var nodeRef = firebaseBaseDatabase.ref(path);
+            var customRef = params.customRef;
+            var nodeRef;
 
-            if (!path) {
-                callBackData({error: 'path required to interact with Firebase findOne'});
+            if (customRef && customRef != "") {
+                nodeRef = customRef;
+            } else {
+                if (!path) {
+                    callBackData({error: 'path required to interact with Firebase findOne'});
+                }
+                nodeRef = firebaseBaseDatabase.ref(path)
             }
 
             nodeRef.on('value', function (snapshot) {
-                var data = {};
-                snapshot.forEach(function (childSnapshot) {
-                    var snapshot = childSnapshot.val();
-                    if (typeof snapshot === "object") {
-                        data[childSnapshot.key] = firebaseObjectToArray(snapshot);
-                    } else {
-                        data[childSnapshot.key] = snapshot;
+                var data = snapshot.val();
+                if (jQuery.isEmptyObject(data)) {
+                    callBackData(data);
+                } else {
+                    if (!data.node_id || data.node_id == undefined) {
+                        data.node_id = snapshot.key;
                     }
-                });
-                if (!data.node_id || data.node_id == undefined) {
-                    data.node_id = snapshot.key;
+                    callBackData(data);
                 }
-                callBackData(data);
+
+            }, function (error) {
+                callBackData({error: error});
+            });
+        },
+
+        /**
+         *
+         * @param params (String|Object)
+         * @param callBackData function
+         */
+        customRef: function (params, callBackData) {
+            var customRef = params.customRef;
+            var nodeRef;
+
+            if (customRef && customRef != "") {
+                nodeRef = customRef;
+            } else {
+                if (!path) {
+                    callBackData({error: 'path required to interact with Firebase findOne'});
+                }
+                nodeRef = firebaseBaseDatabase.ref(path);
+            }
+
+            nodeRef.on('value', function (snapshot) {
+                logMessage('**** Firebase database data return ****');
+                var count = snapshot.numChildren();
+                var response;
+
+                var data = Array();
+                snapshot.forEach(function (childSnapshot) {
+                    var key = childSnapshot.key;
+                    var childData = childSnapshot.val();
+                    childData.key = key;
+                    data.push(childData);
+                });
+
+                if (count > 0) {
+                    response = true;
+                } else {
+                    response = false;
+                }
+                data.response = response;
+                data.response_count = count;
+
+                callBackData({data: data});
             }, function (error) {
                 callBackData({error: error});
             });
@@ -210,25 +291,20 @@ if (typeof firebase !== 'undefined') {
         findAll: function (params, callBackData) {
             var path = params.path;
             var limit = params.limit;
-            var customRef = params.customRef;
             var nodeRef;
 
 
-            if (customRef && customRef != "") {
-                nodeRef = customRef;
-            } else {
-                if (limit && limit != "") {
-                    if (Math.floor(limit) == limit && $.isNumeric(limit)) {
-                        nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit);
-                    } else {
-                        var data = Array();
-                        data.error = true;
-                        data.error_message = 'Limit as to be a int not a string';
-                        callBackData({error: data});
-                    }
+            if (limit && limit != "") {
+                if (Math.floor(limit) == limit && $.isNumeric(limit)) {
+                    nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit).orderByPriority();
                 } else {
-                    nodeRef = firebaseBaseDatabase.ref(path);
+                    var data = Array();
+                    data.error = true;
+                    data.error_message = 'Limit as to be a int not a string';
+                    callBackData({error: data});
                 }
+            } else {
+                nodeRef = firebaseBaseDatabase.ref(path).orderByPriority();
             }
 
             /**
@@ -261,17 +337,16 @@ if (typeof firebase !== 'undefined') {
             });
         },
 
-
         /**
          * Increment value
          */
-        incrementValue: function (params, CallBackData) {
+        incrementValue: function (params, callBackData) {
             var path = params.path;
             var incrementBy = params.incrementBy;
             var nodeRef;
 
             if (!path) {
-                callBackData({error: 'path required to interact with Firebase findOne'});
+                callBackData({error: 'path required to interact with Firebase incrementValue'});
             } else if (!incrementBy) {
                 callBackData({error: 'please add increment value'});
             } else {
@@ -282,38 +357,31 @@ if (typeof firebase !== 'undefined') {
                         var intOnlineValue = parseInt(onlineValue);
                         onlineValue = intOnlineValue + parseInt(incrementBy);
                     } else {
-                        onlineValue = 0;
+                        onlineValue = 1;
                     }
 
                     if (oldValue == onlineValue) {
-                        CallBackData(false);
+                        callBackData(false);
                     } else {
-                        CallBackData(true);
+                        callBackData('success');
+                        return onlineValue;
                     }
-                    return onlineValue;
                 });
             }
         },
-
 
         /**
          * path - path where you want to upload to
          * @param parameters
          */
-        fireBaseImageUpload: function (parameters) {
+        fireBaseImageUpload: function (parameters, callBackData) {
             var file = parameters.file;
             var path = parameters.path;
-            var namePart = parameters.namePhat;
-            var callBackData = parameters.callBackData;
             var name;
 
             var metaData = {'contentType': file.type};
             var arr = file.name.split('.');
-            if (namePart != null) {
-                name = namePart;
-            } else {
-                name = generateRandomString(6);
-            }
+            name = generateRandomString(12);
 
             var fullPath = path + '/' + name + '.' + arr.slice(-1)[0];
 
@@ -330,7 +398,6 @@ if (typeof firebase !== 'undefined') {
             });
         }
 
-
     });
 
     /**
@@ -341,5 +408,5 @@ if (typeof firebase !== 'undefined') {
     }
 
 } else {
-    logMessage('**** Firebase inactive, Activate by un-comment line 21 in the app index.html or comment-out line 28 in boot.js **** ');
+    logMessage('**** Firebase inactive, Activate by un-comment line 21 in the app index.html  **** ');
 }
