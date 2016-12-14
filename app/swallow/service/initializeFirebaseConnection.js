@@ -14,15 +14,6 @@
 
 if (typeof firebase !== 'undefined') {
 
-    function getCurrentUser() {
-        var user = firebase.auth().currentUser;
-        if (user) {
-            return user;
-        } else {
-            return false;
-        }
-    }
-
     var firebaseBaseDatabase;
     var FirebaseService;
     var storageRef;
@@ -147,7 +138,7 @@ if (typeof firebase !== 'undefined') {
             var objectData = params.data;
             var newGeneratedKey;
 
-            if(!objectData.node_id) {
+            if (!objectData.node_id) {
                 newGeneratedKey = this.initKey(path);
             } else {
                 newGeneratedKey = objectData.node_id;
@@ -161,7 +152,7 @@ if (typeof firebase !== 'undefined') {
                 objectData.created = new Date().valueOf();
             }
 
-            if(!objectData.node_id) {
+            if (!objectData.node_id) {
                 objectData.node_id = newGeneratedKey;
             }
 
@@ -173,9 +164,8 @@ if (typeof firebase !== 'undefined') {
                     callBackData({node_id: newGeneratedKey});
                 }
             });
-            firebaseBaseDatabase.ref(path).child(newGeneratedKey).setPriority(created);
+            firebaseBaseDatabase.ref(path).child(newGeneratedKey).setPriority('created',0 - Date.now());
         },
-
 
         /**
          *
@@ -202,7 +192,6 @@ if (typeof firebase !== 'undefined') {
             });
         },
 
-
         /**
          *
          * @param params (String|Object)
@@ -210,32 +199,47 @@ if (typeof firebase !== 'undefined') {
          */
         findOne: function (params, callBackData) {
             var path = params.path;
-            var customRef = params.customRef;
-            var nodeRef;
+            var listenerType = params.listenerType;
+            var eventType = params.eventType;
 
-            if (customRef && customRef != "") {
-                nodeRef = customRef;
-            } else {
-                if (!path) {
-                    callBackData({error: 'path required to interact with Firebase findOne'});
-                }
-                nodeRef = firebaseBaseDatabase.ref(path)
+            if(!listenerType || listenerType == "undefined"){
+                listenerType = "on";
             }
 
-            nodeRef.on('value', function (snapshot) {
-                var data = snapshot.val();
-                if (jQuery.isEmptyObject(data)) {
-                    callBackData(data);
-                } else {
-                    if (!data.node_id || data.node_id == undefined) {
-                        data.node_id = snapshot.key;
-                    }
-                    callBackData(data);
-                }
+            if(!eventType || eventType == "undefined"){
+                eventType = "value";
+            }
 
-            }, function (error) {
+            var nodeRef = firebaseBaseDatabase.ref(path);
+
+            if (!path) {
+                callBackData({error: 'path required to interact with Firebase findOne'});
+            }
+
+            var definedFunction = function (snapshot) {
+                var data = {};
+                snapshot.forEach(function (childSnapshot) {
+                    var snapshot = childSnapshot.val();
+                    data[childSnapshot.key] = snapshot;
+                });
+                if (!data.node_id || data.node_id == undefined) {
+                    data.node_id = snapshot.key;
+                }
+                callBackData(data);
+            };
+
+            var errorFunction = function (error) {
                 callBackData({error: error});
-            });
+            };
+
+
+            if(listenerType == 'on'){
+                onListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else if(listenerType == 'once'){
+                onceListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else{
+                console.error('**** Invalid listener type ('+listenerType+') specified. Forgot to specify on or once in params.listenerType ****');
+            }
         },
 
         /**
@@ -291,8 +295,17 @@ if (typeof firebase !== 'undefined') {
         findAll: function (params, callBackData) {
             var path = params.path;
             var limit = params.limit;
+            var listenerType = params.listenerType;
+            var eventType = params.eventType;
             var nodeRef;
 
+            if (!listenerType || listenerType == "undefined") {
+                listenerType = "on";
+            }
+
+            if (!eventType || eventType == "undefined") {
+                eventType = "value";
+            }
 
             if (limit && limit != "") {
                 if (Math.floor(limit) == limit && $.isNumeric(limit)) {
@@ -310,7 +323,8 @@ if (typeof firebase !== 'undefined') {
             /**
              * Make request to firebase database and listen to changes
              */
-            nodeRef.on('value', function (snapshot) {
+
+            var definedFunction = function (snapshot) {
                 logMessage('**** Firebase database data return ****');
                 var count = snapshot.numChildren();
                 var response;
@@ -332,9 +346,19 @@ if (typeof firebase !== 'undefined') {
                 data.response_count = count;
 
                 callBackData({data: data});
-            }, function (error) {
+            };
+
+            var errorFunction = function (error) {
                 callBackData({error: error});
-            });
+            };
+
+            if (listenerType == 'on') {
+                onListener(nodeRef, eventType, definedFunction, errorFunction);
+            } else if (listenerType == 'once') {
+                onceListener(nodeRef, eventType, definedFunction, errorFunction);
+            } else {
+                console.error('**** Invalid listener type (' + listenerType + ') specified. Forgot to specify on or once in params.listenerType ****');
+            }
         },
 
         /**
@@ -399,6 +423,14 @@ if (typeof firebase !== 'undefined') {
         }
 
     });
+
+    function onListener(nodeRef, value, definedFunction, errorFunction) {
+        nodeRef.on(value, definedFunction, errorFunction)
+    }
+
+    function onceListener(nodeRef, value, definedFunction, errorFunction) {
+        nodeRef.once(value, definedFunction, errorFunction)
+    }
 
     /**
      *
