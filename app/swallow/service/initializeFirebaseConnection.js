@@ -16,6 +16,7 @@ if (typeof firebase !== 'undefined') {
 
     var firebaseBaseDatabase;
     var FirebaseService;
+    var storageRef;
 
     /**
      * Check if firebase is configure
@@ -28,6 +29,7 @@ if (typeof firebase !== 'undefined') {
          * Connecting to Firebase database system
          */
         firebaseBaseDatabase = mainApp.database();
+        storageRef = firebase.storage().ref();
     } else {
         firebaseBaseDatabase = null;
         logMessage('**** Firebase database not config yet ****');
@@ -35,22 +37,22 @@ if (typeof firebase !== 'undefined') {
 
     function firebaseObjectToArray(childSnapshot) {
         var childData;
-        if(typeof childSnapshot.val == 'function'){
+        if (typeof childSnapshot.val == 'function') {
             childData = childSnapshot.val();
-        }else{
+        } else {
             childData = childSnapshot;
         }
 
         var innerdata = Array();
 
-        for (var dataSet in childData){
+        for (var dataSet in childData) {
             var innerSetData = {};
             var childDataObject = childData[dataSet];
 
             for (var childSet in childDataObject) {
                 var innerChildDataObject = childDataObject[childSet];
-                if( typeof innerChildDataObject === "object" ) {
-                    var dataReturn =  firebaseObjectToArrayInner(innerChildDataObject);
+                if (typeof innerChildDataObject === "object") {
+                    var dataReturn = firebaseObjectToArrayInner(innerChildDataObject);
                     innerSetData[childSet] = dataReturn;
                 } else {
                     innerSetData[childSet] = innerChildDataObject;
@@ -63,13 +65,13 @@ if (typeof firebase !== 'undefined') {
 
     function firebaseObjectToArrayInner(innerChildDataObject) {
         var innerData = Array();
-        for (var dataSet in innerChildDataObject){
+        for (var dataSet in innerChildDataObject) {
             var childDataObject = innerChildDataObject[dataSet];
 
             var innerChildDataObjectSet = {};
-            for (var dataInnerSet in childDataObject){
+            for (var dataInnerSet in childDataObject) {
                 var innerChildDataSet = childDataObject[dataInnerSet];
-                if( typeof innerChildDataSet === "object" ) {
+                if (typeof innerChildDataSet === "object") {
                     innerChildDataObjectSet[dataInnerSet] = firebaseObjectToArrayInner(innerChildDataSet)
                 } else {
                     innerChildDataObjectSet[dataInnerSet] = innerChildDataSet;
@@ -134,7 +136,13 @@ if (typeof firebase !== 'undefined') {
         saveData: function (params, callBackData) {
             var path = params.path;
             var objectData = params.data;
-            var newGeneratedKey = this.initKey(path);
+            var newGeneratedKey;
+
+            if (!objectData.node_id) {
+                newGeneratedKey = this.initKey(path);
+            } else {
+                newGeneratedKey = objectData.node_id;
+            }
 
             if (!path) {
                 callBackData({error: 'Node name required to interact with Firebase'});
@@ -143,12 +151,20 @@ if (typeof firebase !== 'undefined') {
             if (!objectData.created || objectData.created == "undefined") {
                 objectData.created = new Date().valueOf();
             }
-            objectData.node_id = newGeneratedKey;
 
-            //remember return id from every save
+            if (!objectData.node_id) {
+                objectData.node_id = newGeneratedKey;
+            }
+
+            var created = objectData.created;
             firebaseBaseDatabase.ref(path).child(newGeneratedKey).set(objectData, function (error) {
-                callBackData({error: error});
+                if (error) {
+                    callBackData({error: error});
+                } else {
+                    callBackData({node_id: newGeneratedKey});
+                }
             });
+            firebaseBaseDatabase.ref(path).child(newGeneratedKey).setPriority('created',0 - Date.now());
         },
 
         /**
@@ -168,10 +184,13 @@ if (typeof firebase !== 'undefined') {
                 objectData.modified = new Date().valueOf();
             }
             firebaseBaseDatabase.ref(path).update(objectData, function (error) {
-                callBackData({error: error});
+                if (error) {
+                    callBackData({error: error});
+                } else {
+                    callBackData('success');
+                }
             });
         },
-
 
         /**
          *
@@ -180,57 +199,67 @@ if (typeof firebase !== 'undefined') {
          */
         findOne: function (params, callBackData) {
             var path = params.path;
+            var listenerType = params.listenerType;
+            var eventType = params.eventType;
+
+            if(!listenerType || listenerType == "undefined"){
+                listenerType = "on";
+            }
+
+            if(!eventType || eventType == "undefined"){
+                eventType = "value";
+            }
+
             var nodeRef = firebaseBaseDatabase.ref(path);
 
             if (!path) {
                 callBackData({error: 'path required to interact with Firebase findOne'});
             }
 
-            nodeRef.on('value', function (snapshot) {
+            var definedFunction = function (snapshot) {
                 var data = {};
                 snapshot.forEach(function (childSnapshot) {
                     var snapshot = childSnapshot.val();
-                    if( typeof snapshot === "object" ) {
-                        data[childSnapshot.key] = firebaseObjectToArray(snapshot);
-                    } else {
-                        data[childSnapshot.key] = snapshot;
-                    }
+                    data[childSnapshot.key] = snapshot;
                 });
                 if (!data.node_id || data.node_id == undefined) {
                     data.node_id = snapshot.key;
                 }
                 callBackData(data);
-            }, function (error) {
+            };
+
+            var errorFunction = function (error) {
                 callBackData({error: error});
-            });
+            };
+
+
+            if(listenerType == 'on'){
+                onListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else if(listenerType == 'once'){
+                onceListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else{
+                console.error('**** Invalid listener type ('+listenerType+') specified. Forgot to specify on or once in params.listenerType ****');
+            }
         },
 
         /**
          *
          * @param params (String|Object)
-         * @param callBackData
+         * @param callBackData function
          */
-        findAll: function (params, callBackData) {
-            var path = params.path;
-            var limit = params.limit;
+        customRef: function (params, callBackData) {
+            var customRef = params.customRef;
             var nodeRef;
 
-            if (limit && limit != "") {
-                if (Math.floor(limit) == limit && $.isNumeric(limit)) {
-                    nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit);
-                } else {
-                    var data = Array();
-                    data.error = true;
-                    data.error_message = 'Limit as to be a int not a string';
-                    callBackData({error: data});
-                }
+            if (customRef && customRef != "") {
+                nodeRef = customRef;
             } else {
+                if (!path) {
+                    callBackData({error: 'path required to interact with Firebase findOne'});
+                }
                 nodeRef = firebaseBaseDatabase.ref(path);
             }
 
-            /**
-             * Make request to firebase database and listen to changes
-             */
             nodeRef.on('value', function (snapshot) {
                 logMessage('**** Firebase database data return ****');
                 var count = snapshot.numChildren();
@@ -252,12 +281,156 @@ if (typeof firebase !== 'undefined') {
                 data.response = response;
                 data.response_count = count;
 
-                callBackData({data:data});
+                callBackData({data: data});
             }, function (error) {
                 callBackData({error: error});
             });
+        },
+
+        /**
+         *
+         * @param params (String|Object)
+         * @param callBackData
+         */
+        findAll: function (params, callBackData) {
+            var path = params.path;
+            var limit = params.limit;
+            var listenerType = params.listenerType;
+            var eventType = params.eventType;
+            var nodeRef;
+
+            if (!listenerType || listenerType == "undefined") {
+                listenerType = "on";
+            }
+
+            if (!eventType || eventType == "undefined") {
+                eventType = "value";
+            }
+
+            if (limit && limit != "") {
+                if (Math.floor(limit) == limit && $.isNumeric(limit)) {
+                    nodeRef = firebaseBaseDatabase.ref(path).limitToLast(limit).orderByPriority();
+                } else {
+                    var data = Array();
+                    data.error = true;
+                    data.error_message = 'Limit as to be a int not a string';
+                    callBackData({error: data});
+                }
+            } else {
+                nodeRef = firebaseBaseDatabase.ref(path).orderByPriority();
+            }
+
+            /**
+             * Make request to firebase database and listen to changes
+             */
+
+            var definedFunction = function (snapshot) {
+                logMessage('**** Firebase database data return ****');
+                var count = snapshot.numChildren();
+                var response;
+
+                var data = Array();
+                snapshot.forEach(function (childSnapshot) {
+                    var key = childSnapshot.key;
+                    var childData = childSnapshot.val();
+                    childData.key = key;
+                    data.push(childData);
+                });
+
+                if (count > 0) {
+                    response = true;
+                } else {
+                    response = false;
+                }
+                data.response = response;
+                data.response_count = count;
+
+                callBackData({data: data});
+            };
+
+            var errorFunction = function (error) {
+                callBackData({error: error});
+            };
+
+            if (listenerType == 'on') {
+                onListener(nodeRef, eventType, definedFunction, errorFunction);
+            } else if (listenerType == 'once') {
+                onceListener(nodeRef, eventType, definedFunction, errorFunction);
+            } else {
+                console.error('**** Invalid listener type (' + listenerType + ') specified. Forgot to specify on or once in params.listenerType ****');
+            }
+        },
+
+        /**
+         * Increment value
+         */
+        incrementValue: function (params, callBackData) {
+            var path = params.path;
+            var incrementBy = params.incrementBy;
+            var nodeRef;
+
+            if (!path) {
+                callBackData({error: 'path required to interact with Firebase incrementValue'});
+            } else if (!incrementBy) {
+                callBackData({error: 'please add increment value'});
+            } else {
+                nodeRef = firebaseBaseDatabase.ref(path);
+                nodeRef.transaction(function (onlineValue) {
+                    var oldValue = onlineValue;
+                    if (onlineValue) {
+                        var intOnlineValue = parseInt(onlineValue);
+                        onlineValue = intOnlineValue + parseInt(incrementBy);
+                    } else {
+                        onlineValue = 1;
+                    }
+
+                    if (oldValue == onlineValue) {
+                        callBackData(false);
+                    } else {
+                        callBackData('success');
+                        return onlineValue;
+                    }
+                });
+            }
+        },
+
+        /**
+         * path - path where you want to upload to
+         * @param parameters
+         */
+        fireBaseImageUpload: function (parameters, callBackData) {
+            var file = parameters.file;
+            var path = parameters.path;
+            var name;
+
+            var metaData = {'contentType': file.type};
+            var arr = file.name.split('.');
+            name = generateRandomString(12);
+
+            var fullPath = path + '/' + name + '.' + arr.slice(-1)[0];
+
+            var uploadFile = storageRef.child(fullPath).put(file, metaData);
+            callBackData({id: name});
+            uploadFile.on('state_changed', function (snapshot) {
+                var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                callBackData({progress: progress, element: name});
+            }, function (error) {
+                callBackData({error: error, element: name});
+            }, function () {
+                var downloadURL = uploadFile.snapshot.downloadURL;
+                callBackData({downloadURL: downloadURL, element: name});
+            });
         }
+
     });
+
+    function onListener(nodeRef, value, definedFunction, errorFunction) {
+        nodeRef.on(value, definedFunction, errorFunction)
+    }
+
+    function onceListener(nodeRef, value, definedFunction, errorFunction) {
+        nodeRef.once(value, definedFunction, errorFunction)
+    }
 
     /**
      *
@@ -267,5 +440,5 @@ if (typeof firebase !== 'undefined') {
     }
 
 } else {
-    logMessage('**** Firebase inactive, Activate by un-comment line 21 in the app index.html or comment-out line 28 in boot.js **** ');
+    logMessage('**** Firebase inactive, Activate by un-comment line 21 in the app index.html  **** ');
 }
