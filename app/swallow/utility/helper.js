@@ -8,6 +8,10 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
+/**
+ *
+ * @param parameters
+ */
 function swallowLoading(parameters) {
     var element = parameters.element;
     var show = parameters.show;
@@ -16,15 +20,15 @@ function swallowLoading(parameters) {
 
     if (typeof element === "undefined" || element === null) {
         parentElement = $('body');
-        parentElement.css('position','relative');
+        //parentElement.css('position', 'relative');
     } else {
         parentElement = $("#" + element);
-        parentElement.css('position','relative');
+        //parentElement.css('position', 'relative');
     }
 
     if (show == true) {
         $(parentElement).append('' +
-            '<div id="modal_loading">'+
+            '<div id="modal_loading">' +
             '<div class="md-modal md-modal-mini md-effect-11 inner_loading md-show" id="modal-11">' +
             '<div class="md-content"> ' +
             '<div id="spinner-holder "> ' +
@@ -36,7 +40,7 @@ function swallowLoading(parameters) {
             '</div> ' +
             '</div>' +
             '<div class="text-center"> ' +
-            '<p id="loading_message"> Loading... </p> ' +
+            '<p id="loading_message"> <img src="assets/img/flextream.png" style="margin-top: 8px; max-height: 30px;"> </p> ' +
             '</div> ' +
             '</div> ' +
             '</div> ' +
@@ -44,9 +48,24 @@ function swallowLoading(parameters) {
             '</div>'
         );
     } else {
-        $( "#" + element +" #modal_loading").html('');
+        $("#" + element + " #modal_loading").html('');
     }
 
+}
+
+/**
+ *  Will remove all false values: undefined, null, 0, false, NaN and "" (empty string)
+ * @param actual
+ * @return {Array}
+ */
+function cleanArray(actual) {
+    var newArray = new Array();
+    for (var i = 0; i < actual.length; i++) {
+        if (actual[i]) {
+            newArray.push(actual[i]);
+        }
+    }
+    return newArray;
 }
 
 /**
@@ -80,44 +99,54 @@ function logMessage() {
  * @param url
  * @param callback
  */
-function loadScript(url, callback) {
-    // var url = parameters.url;
-    // var callback = parameters.callback;
 
-    var head = document.getElementsByTagName('head')[0];
-    var script = document.createElement('script');
-    script.type = 'text/javascript';
-    script.src = url;
+function loadScript(includePath) {
+    for (i = 0; i < includePath.length; i++) {
+        var jsFilePath = includePath[i];
 
-    if (typeof callback !== "undefined" || callback !== null) {
-        script.onreadystatechange = callback;
-        script.onload = callback;
+        //http://stackoverflow.com/questions/15987668/only-add-script-to-head-if-doesnt-exist
+        var exitingScript = $('head script[src="' + jsFilePath + '"]');
+        if (exitingScript.length > 0) {
+            exitingScript.remove();
+        }
+
+        var s = document.createElement("script");
+        s.type = "text/javascript";
+        s.src = jsFilePath;
+        $('head').append(s);
+        // document.getElementsByTagName("head")[0].appendChild(s);
     }
-    logMessage(script);
-    head.appendChild(script);
 }
 
-/**
- * ref http://stackoverflow.com/questions/2145914/including-a-js-file-within-a-js-file
- * @param src
- * @param f
- */
-function loadScript_(src, f) {
-    var head = document.getElementsByTagName("head")[0];
-    var script = document.createElement("script");
-    script.src = src;
-    var done = false;
-    script.onload = script.onreadystatechange = function () {
-        // attach to both events for cross browser finish detection:
-        if (!done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) {
-            done = true;
-            if (typeof f == 'function') f();
-            // cleans up a little memory:
-            script.onload = script.onreadystatechange = null;
-            head.removeChild(script);
+var getSc = function (firstPath, includePath, f) {
+    logMessage(firstPath);
+    var length = includePath.length;
+    $.getScript(firstPath, function (data, textStatus, jqxhr) {
+        if (textStatus === "success") {
+            f++;
+            firstPath = includePath[f];
+            if (f != (length - 1)) {
+                getSc(firstPath, includePath, f);
+            }
         }
-    };
-    head.appendChild(script);
+    });
+};
+
+/**
+ *  \ref http://stackoverflow.com/questions/5680657/adding-css-file-with-jquery
+ * @param href
+ */
+function loadCss(href) {
+    var ss = document.styleSheets;
+    for (var i = 0, max = ss.length; i < max; i++) {
+        if (ss[i].href == href)
+            return;
+    }
+    var link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.type = "text/css";
+    link.href = href;
+    document.getElementsByTagName("head")[0].appendChild(link);
 }
 
 /**
@@ -125,14 +154,16 @@ function loadScript_(src, f) {
  * @param redirect_url '/users
  * @param params       '/users/122/884
  */
-function redirectUrl(redirect_url, params) {
-    var encoded = encodeURIComponent(redirect_url.toLowerCase());
-    if (params) {
-        var params = params.join('/');
-        $(location).attr('href', baseUrl + '#/' + encoded + '/' + params);
-    } else {
-        $(location).attr('href', baseUrl + '#/' + encoded);
-    }
+function redirectUrl(redirect_url) {
+    //var encoded = encodeURIComponent(redirect_url);
+    var encoded = redirect_url;
+    $(location).attr('href', baseUrl + '#/' + encoded);
+    // if (params) {
+    //     var p = params.join('/');
+    //     $(location).attr('href', baseUrl + '#/' + encoded + '/' + p);
+    // } else {
+    //     $(location).attr('href', baseUrl + '#/' + encoded);
+    // }
 }
 
 
@@ -184,8 +215,34 @@ function generateRandomString(length) {
 function getAbsolutePath(baseUrl) {
     var loc = window.location;
     if (baseUrl == false) {
-        return window.location.pathname;
+        var hash = window.location.hash;
+        hash = hash.trim().split('/');
+        hash = cleanArray(hash);
+        return hash[1];
     }
     var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
     return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
+
+/**
+ *
+ * @param value
+ * @return {string}
+ */
+function numberFormart(value) {
+    return value.toFixed(2).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, "1,");
+}
+
+/**
+ *
+ * @param element
+ * @return {*}
+ */
+function getInputFile(element) {
+    return $('#'+element)[0].files[0];
+}
+
+function shuffleArray(o) {
+    for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    return o;
+};
