@@ -24,13 +24,13 @@
  * landing page. (This is the first page you see)
  */
 Path.map("#/").to(function () {
-    logMessage('get here');
     renderLayout('home', swallowJsContainer);
 }).enter(clearPanel);
 
 Path.map("#/about").to(function () {
     renderLayout('about', swallowJsContainer);
 }).enter(clearPanel);
+
 
 // Path.map("#/users/:user_id/:user_family").to(function () {
 //     var data = {
@@ -39,6 +39,7 @@ Path.map("#/about").to(function () {
 //     };
 //     renderLayout('users', swallowJsContainer, data);
 // }).enter(clearPanel);
+
 
 /**
  * This is a route with optional components.  Optional components in a route are contained
