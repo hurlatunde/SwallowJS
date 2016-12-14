@@ -29,10 +29,6 @@ function layoutUrl(p) {
         logic = false;
     }
 
-    if (logic == false ){
-        currentParentLayout = '';
-    }
-
     if (htmlSource.indexOf("---") >= 0) {
         res = htmlSource.split("---");
         res = cleanArray(res);
@@ -63,6 +59,9 @@ function layoutUrl(p) {
             default:
                 inner = false;
         }
+
+        // logMessage(currentParentLayout);
+        // logMessage(inner);
 
         currentParentLayout = parentLayout;
         parentLayout = "layouts/view/"+parentLayout;
@@ -105,6 +104,26 @@ function layoutUrl(p) {
 function includeElement(container, htmlSource, data) {
     container = $('#' + container);
     parseTemplate(container, "layouts/elements/" + htmlSource + ".html", data);
+}
+
+function appendElement(container, htmlSource, data) {
+    container = $('#' + container);
+    var htmlSource = "layouts/elements/" + htmlSource + ".html";
+
+    $.get(htmlSource, function (template) {
+        Mustache.escape = function (value) {return value;};
+        var rendered = Mustache.render(template, data);
+        Mustache.clearCache(template);
+        container.append(rendered).hide().show('slow');
+
+    }).error(function (jqXHR, textStatus, errorThrown) {
+        if (textStatus == 'error' && errorThrown == 'Not Found') {
+            logMessage("Error parsing");
+            // data.error_message = "File not found ** " + htmlSource + " **";
+            // data.error_layout = htmlSource;
+            // data.not_found = false;
+        }
+    });
 }
 
 /**
@@ -194,11 +213,16 @@ function renderLayout(layout, container, dataSet) {
     } else {
         $.get(CONFIG.layoutTemplate(layout), function (template) {
             if (template.indexOf("---") >= 0) {
+                //logMessage('parent');
                 parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet, true);
             } else {
+                //logMessage('no parent');
+                currentParentLayout = '';
                 parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet, false);
             }
         });
+        // console.log(SwallowParentTemplate);
+        // parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet);
     }
 }
 
