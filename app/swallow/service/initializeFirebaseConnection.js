@@ -285,6 +285,15 @@ if (typeof firebase !== 'undefined') {
             }, function (error) {
                 callBackData({error: error});
             });
+
+
+            if(listenerType == 'on'){
+                onListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else if(listenerType == 'once'){
+                onceListener(nodeRef,eventType,definedFunction,errorFunction);
+            }else{
+                console.error('**** Invalid listener type ('+listenerType+') specified. Forgot to specify on or once in params.listenerType ****');
+            }
         },
 
         /**
