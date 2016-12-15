@@ -40,7 +40,7 @@ function swallowLoading(parameters) {
             '</div> ' +
             '</div>' +
             '<div class="text-center"> ' +
-            '<p id="loading_message"> <img src="assets/img/flextream.png" style="margin-top: 8px; max-height: 30px;"> </p> ' +
+            '<p id="loading_message"> Loading.... Please wait </p> ' +
             '</div> ' +
             '</div> ' +
             '</div> ' +
