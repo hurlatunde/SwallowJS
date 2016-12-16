@@ -429,9 +429,66 @@ if (typeof firebase !== 'undefined') {
                 var downloadURL = uploadFile.snapshot.downloadURL;
                 callBackData({downloadURL: downloadURL, element: name});
             });
+        },
+
+
+        /**
+         * Load more pagination
+         */
+        swallowLoadMore: function (params,CallBackData) {
+            var path = params.path;
+            pageLimit = params.pageLimit;
+
+            var caterCount = pageLimit + 1;
+
+            var nodeRef;
+
+            if (!path) {
+                callBackData({error: 'path required'});
+            }else if (!pageLimit) {
+                callBackData({error: 'You need to specify a limit'});
+            }else if (pageLimit < 2) {
+                callBackData({error: 'You need to minimum limit of 2'});
+            }else{
+                pageCount ++;
+                if(linkKey == '') {
+                    nodeRef = firebase.database().ref(path).orderByKey().limitToLast(caterCount);
+                }else{
+                    nodeRef = firebase.database().ref(path).orderByKey().limitToLast(caterCount).endAt(linkKey);
+                    caterCount = caterCount * pageCount;
+                }
+            }
+
+
+            var paramsToFindAll = {
+                customRef:nodeRef,
+                eventType:'value'
+            };
+
+
+            FirebaseService.findAll(paramsToFindAll,function (response) {
+                response.data.reverse();
+
+                var contentLength = response.data.length;
+
+
+                //if(pageLimit < contentLength) {
+                var isLastItem = setLastKey(response);
+                var chunkData = response.data.chunk_inefficient(pageLimit);
+                response.data = chunkData[0];
+                //}
+
+                //
+                if(isLastItem == false) {
+                    CallBackData({error:null,data:response.data});
+                }else{
+                    CallBackData({error:true,message:'No more data to fetch'});
+                }
+            });
         }
 
     });
+
 
     function onListener(nodeRef, value, definedFunction, errorFunction) {
         nodeRef.on(value, definedFunction, errorFunction)
@@ -441,6 +498,43 @@ if (typeof firebase !== 'undefined') {
         nodeRef.once(value, definedFunction, errorFunction)
     }
 
+
+    setLastKey = function (modifiedData) {
+        var countReturned = modifiedData.data.length;
+        var lastOne = 0;
+        var lastItem = false;
+        if(countReturned > 0){
+            lastOne = countReturned - 1;
+        }
+        var lastObject = modifiedData.data[lastOne];
+        var lastItem = (linkKey == lastObject.key);
+        if(linkKey == lastObject.key){
+            lastItem = true;
+        }else{
+            lastItem = false;
+        }
+
+        logMessage("linkKey",linkKey,"lastObject",lastObject.key);
+
+        if(lastObject != null){
+            linkKey = lastObject.key.toString();
+        }
+
+
+        return lastItem;
+    };
+
+
+    Object.defineProperty(Array.prototype, 'chunk_inefficient', {
+        value: function(chunkSize) {
+            var array=this;
+            return [].concat.apply([],
+                array.map(function(elem,i) {
+                    return i%chunkSize ? [] : [array.slice(i,i+chunkSize)];
+                })
+            );
+        }
+    });
     /**
      *
      */
