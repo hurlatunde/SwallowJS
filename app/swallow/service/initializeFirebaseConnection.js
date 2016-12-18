@@ -216,6 +216,9 @@ if (typeof firebase !== 'undefined') {
                 callBackData({error: 'path required to interact with Firebase findOne'});
             }
 
+            /**
+             * Make request to firebase database and listen to changes
+             */
             var definedFunction = function (snapshot) {
                 var data = {};
                 snapshot.forEach(function (childSnapshot) {
