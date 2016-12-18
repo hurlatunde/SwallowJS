@@ -164,7 +164,7 @@ if (typeof firebase !== 'undefined') {
                     callBackData({node_id: newGeneratedKey});
                 }
             });
-            firebaseBaseDatabase.ref(path).child(newGeneratedKey).setPriority('created',0 - Date.now());
+            firebaseBaseDatabase.ref(path).child(newGeneratedKey).setPriority('created');
         },
 
         /**
@@ -249,6 +249,8 @@ if (typeof firebase !== 'undefined') {
          */
         customRef: function (params, callBackData) {
             var customRef = params.customRef;
+            var listenerType = params.listenerType;
+            var eventType = params.eventType;
             var nodeRef;
 
             if (customRef && customRef != "") {
@@ -260,7 +262,18 @@ if (typeof firebase !== 'undefined') {
                 nodeRef = firebaseBaseDatabase.ref(path);
             }
 
-            nodeRef.on('value', function (snapshot) {
+            if (!listenerType || listenerType == "undefined") {
+                listenerType = "on";
+            }
+
+            if (!eventType || eventType == "undefined") {
+                eventType = "value";
+            }
+
+            /**
+             * Make request to firebase database and listen to changes
+             */
+            var definedFunction = function (snapshot) {
                 logMessage('**** Firebase database data return ****');
                 var count = snapshot.numChildren();
                 var response;
@@ -282,17 +295,18 @@ if (typeof firebase !== 'undefined') {
                 data.response_count = count;
 
                 callBackData({data: data});
-            }, function (error) {
+            };
+
+            var errorFunction = function (error) {
                 callBackData({error: error});
-            });
+            };
 
-
-            if(listenerType == 'on'){
-                onListener(nodeRef,eventType,definedFunction,errorFunction);
-            }else if(listenerType == 'once'){
-                onceListener(nodeRef,eventType,definedFunction,errorFunction);
-            }else{
-                console.error('**** Invalid listener type ('+listenerType+') specified. Forgot to specify on or once in params.listenerType ****');
+            if (listenerType == 'on') {
+                onListener(nodeRef, eventType, definedFunction, errorFunction);
+            } else if (listenerType == 'once') {
+                onceListener(nodeRef, eventType, definedFunction, errorFunction);
+            } else {
+                console.error('**** Invalid listener type (' + listenerType + ') specified. Forgot to specify on or once in params.listenerType ****');
             }
         },
 
@@ -332,7 +346,6 @@ if (typeof firebase !== 'undefined') {
             /**
              * Make request to firebase database and listen to changes
              */
-
             var definedFunction = function (snapshot) {
                 logMessage('**** Firebase database data return ****');
                 var count = snapshot.numChildren();
@@ -393,11 +406,16 @@ if (typeof firebase !== 'undefined') {
                         onlineValue = 1;
                     }
 
-                    if (oldValue == onlineValue) {
-                        callBackData(false);
-                    } else {
-                        callBackData('success');
+                    if (oldValue != onlineValue) {
                         return onlineValue;
+                    }
+                }, function(error, committed) {
+                    if (error) {
+                        callBackData({error: 'incrementValue failed abnormally! '+error});
+                    } else if (!committed) {
+                        callBackData({error: 'incrementValue aborted'});
+                    } else {
+                        callBackData('incrementValue completed');
                     }
                 });
             }
