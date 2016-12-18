@@ -22,13 +22,13 @@ $().ready(function () {
     var includePath = [
         'swallow/utility/helper.js',
         'swallow/utility/bootstrap.js',
-        '/config.js',
+        'config.js',
         'swallow/plugins/mustache/mustache.min.js',
         'swallow/plugins/path/path.min.js',
         'swallow/service/initializeFirebaseConnection.js',
         'swallow/service/initializeServerSideConnection.js',
         'swallow/utility/layout.js',
-        '/routes.js'
+        'routes.js'
     ];
 
     var loadScript = function (includePath){
