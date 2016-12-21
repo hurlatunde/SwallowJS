@@ -430,16 +430,45 @@ if (typeof firebase !== 'undefined') {
                 callBackData({downloadURL: downloadURL, element: name});
             });
         },
+        /**
+         * Initiate Pagination
+         */
+        initLoadMore:function(params){
+            var paginatorName = params.path;
+            var pageLimit = params.pageLimit;
+
+            if (!paginatorName) {
+                logMessage("A path is required");
+                return false;
+            }
+            if (!pageLimit) {
+                logMessage("You need to specify a page limit");
+                return false;
+            }
+
+            localStorage.setItem('paginatorName',paginatorName);
+            localStorage.setItem(paginatorName+'-linkKey','');
+            localStorage.setItem(paginatorName+'-pageLimit',params.pageLimit);
+            localStorage.setItem(paginatorName+'-pageCount',0);
+            localStorage.setItem(paginatorName+'-path',params.path);
 
 
+            return FirebaseService;
+        },
         /**
          * Load more pagination
          */
-        swallowLoadMore: function (params,CallBackData) {
-            var path = params.path;
-            pageLimit = params.pageLimit;
+        swallowLoadMore: function (CallBackData) {
+
+            var paginatorName = localStorage.getItem('paginatorName');
+            var path = localStorage.getItem(paginatorName+'-path');
+            var pageCount = parseInt(localStorage.getItem(paginatorName+'-pageCount'));
+            var pageLimit = parseInt(localStorage.getItem(paginatorName+'-pageLimit'));
+            var linkKey = localStorage.getItem(paginatorName+'-linkKey');
+
 
             var caterCount = pageLimit + 1;
+            logMessage(caterCount);
 
             var nodeRef;
 
@@ -473,7 +502,7 @@ if (typeof firebase !== 'undefined') {
 
 
                 //if(pageLimit < contentLength) {
-                var isLastItem = setLastKey(response);
+                var isLastItem = setLastKey(paginatorName,response);
                 var chunkData = response.data.chunk_inefficient(pageLimit);
                 response.data = chunkData[0];
                 //}
@@ -485,7 +514,9 @@ if (typeof firebase !== 'undefined') {
                     CallBackData({error:true,message:'No more data to fetch'});
                 }
             });
-        }
+
+
+        }d
 
     });
 
