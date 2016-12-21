@@ -516,7 +516,7 @@ if (typeof firebase !== 'undefined') {
             });
 
 
-        }d
+        }
 
     });
 
