@@ -250,11 +250,19 @@ if (typeof firebase !== 'undefined') {
          * @param params (String|Object)
          * @param callBackData function
          */
-        customRef: function (params, callBackData) {
-            var customRef = params.customRef;
+        customQuery: function (params, callBackData) {
+            var customRef = params.query;
             var listenerType = params.listenerType;
             var eventType = params.eventType;
             var nodeRef;
+
+            if (!listenerType || listenerType == "undefined") {
+                listenerType = "on";
+            }
+
+            if (!eventType || eventType == "undefined") {
+                eventType = "value";
+            }
 
             if (customRef && customRef != "") {
                 nodeRef = customRef;
@@ -428,31 +436,117 @@ if (typeof firebase !== 'undefined') {
          * path - path where you want to upload to
          * @param parameters
          */
-        fireBaseImageUpload: function (parameters, callBackData) {
+        fileUpload: function (parameters, callBackData) {
             var file = parameters.file;
             var path = parameters.path;
             var name;
 
             var metaData = {'contentType': file.type};
             var arr = file.name.split('.');
+            var fileSize = formatBytes(file.size);
+            var fileType = file.type;
+            var n = file.name;
             name = generateRandomString(12);
 
-            var fullPath = path + '/' + name + '.' + arr.slice(-1)[0];
+            //var fullPath = path + '/' + name + '.' + arr.slice(-1)[0];
+            var fullPath = path + '/' + file.name;
 
             var uploadFile = storageRef.child(fullPath).put(file, metaData);
-            callBackData({id: name});
+
+            callBackData({id: name, fileSize: fileSize, fileType: fileType, fileName: n});
+
             uploadFile.on('state_changed', function (snapshot) {
                 var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                callBackData({progress: progress, element: name});
+                progress = Math.floor(progress);
+                callBackData({progress: progress, element: name, fileSize: fileSize, fileType: fileType, fileName: n});
             }, function (error) {
-                callBackData({error: error, element: name});
+                callBackData({error: error});
             }, function () {
                 var downloadURL = uploadFile.snapshot.downloadURL;
-                callBackData({downloadURL: downloadURL, element: name});
+                callBackData({downloadURL: downloadURL, element: name, fileSize: fileSize, fileType: fileType, fileName: n});
             });
-        }
+        },
+
+        /**
+         * Initiate Pagination
+         */
+        initLoadMore: function (params) {
+            var p =params.path;
+            var paginatorName = params.path;
+            var pageLimit = params.pageLimit;
+
+            if (!paginatorName) {
+                logMessage("path is required");
+                return false;
+            }
+            if (!pageLimit) {
+                logMessage("You need to specify a page limit");
+                return false;
+            }
+
+            localStorage.setItem(p+'_paginatorName', paginatorName);
+            localStorage.setItem(paginatorName + '-linkKey', '');
+            localStorage.setItem(paginatorName + '-pageLimit', params.pageLimit);
+            localStorage.setItem(paginatorName + '-pageCount', 0);
+            localStorage.setItem(paginatorName + '-path', params.path);
+
+            return FirebaseService;
+        },
+
+        /**
+         * Load more pagination
+         */
+        loadMore: function (params, callBackData) {
+            var p = params.path;
+
+            var paginatorName = localStorage.getItem(p+'_paginatorName');
+            var path = localStorage.getItem(paginatorName + '-path');
+            var pageCount = parseInt(localStorage.getItem(paginatorName + '-pageCount'));
+            var pageLimit = parseInt(localStorage.getItem(paginatorName + '-pageLimit'));
+            var linkKey = localStorage.getItem(paginatorName + '-linkKey');
+
+            var caterCount = pageLimit + 1;
+
+            var nodeRef;
+
+            if (!path) {
+                callBackData({error: 'path required'});
+            } else if (!pageLimit) {
+                callBackData({error: 'You need to specify a limit'});
+            } else if (pageLimit < 2) {
+                callBackData({error: 'You need to minimum limit of 2'});
+            } else {
+                pageCount++;
+                if (linkKey == '') {
+                    nodeRef = firebase.database().ref(path).orderByKey().limitToLast(caterCount);
+                } else {
+                    nodeRef = firebase.database().ref(path).orderByKey().limitToLast(caterCount).endAt(linkKey);
+                    caterCount = caterCount * pageCount;
+                }
+            }
+
+            var callBackResponseState;
+            FirebaseService.customRef({
+                customRef: nodeRef,
+                listenerType: 'once',
+                eventType: 'value',
+            }, function (response) {
+                response.data.reverse();
+                var isLastItem = setLastKey(paginatorName, response);
+                var chunkData = response.data.chunk_inefficient(pageLimit);
+                response.data = chunkData[0];
+
+                if (isLastItem == false) {
+                    callBackResponseState = {data: response.data};
+                } else {
+                    callBackResponseState = {error: 'No more data to fetch'};
+                }
+                callBackData(callBackResponseState);
+            });
+        },
 
     });
+
 
     function onListener(nodeRef, value, definedFunction, errorFunction) {
         nodeRef.on(value, definedFunction, errorFunction)
@@ -460,6 +554,51 @@ if (typeof firebase !== 'undefined') {
 
     function onceListener(nodeRef, value, definedFunction, errorFunction) {
         nodeRef.once(value, definedFunction, errorFunction)
+    }
+
+    setLastKey = function (modifiedData) {
+        var countReturned = modifiedData.data.length;
+        var lastOne = 0;
+        var lastItem = false;
+        if(countReturned > 0){
+            lastOne = countReturned - 1;
+        }
+        var lastObject = modifiedData.data[lastOne];
+        var lastItem = (linkKey == lastObject.key);
+        if(linkKey == lastObject.key){
+            lastItem = true;
+        }else{
+            lastItem = false;
+        }
+
+        logMessage("linkKey",linkKey,"lastObject",lastObject.key);
+
+        if(lastObject != null){
+            linkKey = lastObject.key.toString();
+        }
+
+
+        return lastItem;
+    };
+
+    Object.defineProperty(Array.prototype, 'chunk_inefficient', {
+        value: function(chunkSize) {
+            var array=this;
+            return [].concat.apply([],
+                array.map(function(elem,i) {
+                    return i%chunkSize ? [] : [array.slice(i,i+chunkSize)];
+                })
+            );
+        }
+    });
+
+    function formatBytes(bytes, decimals) {
+        if (bytes == 0) return '0 Byte';
+        var k = 1000;
+        var dm = decimals + 1 || 3;
+        var sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        var i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
     }
 
     /**
