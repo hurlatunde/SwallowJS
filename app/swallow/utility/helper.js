@@ -242,6 +242,11 @@ function getInputFile(element) {
     return $('#'+element)[0].files[0];
 }
 
+/**
+ *
+ * @param o
+ * @return {*}
+ */
 function shuffleArray(o) {
     for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
