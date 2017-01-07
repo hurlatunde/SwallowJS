@@ -250,8 +250,8 @@ if (typeof firebase !== 'undefined') {
          * @param params (String|Object)
          * @param callBackData function
          */
-        customRef: function (params, callBackData) {
-            var customRef = params.customRef;
+        customQuery: function (params, callBackData) {
+            var customRef = params.query;
             var listenerType = params.listenerType;
             var eventType = params.eventType;
             var nodeRef;
