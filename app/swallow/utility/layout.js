@@ -106,22 +106,25 @@ function includeElement(container, htmlSource, data) {
     parseTemplate(container, "layouts/elements/" + htmlSource + ".html", data);
 }
 
+/**
+ *
+ * @param container
+ * @param htmlSource
+ * @param data
+ */
 function appendElement(container, htmlSource, data) {
     container = $('#' + container);
     var htmlSource = "layouts/elements/" + htmlSource + ".html";
 
     $.get(htmlSource, function (template) {
+        Mustache.clearCache(template);
         Mustache.escape = function (value) {return value;};
         var rendered = Mustache.render(template, data);
-        Mustache.clearCache(template);
-        container.append(rendered).hide().show('slow');
+        container.append(rendered);
 
     }).error(function (jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error' && errorThrown == 'Not Found') {
             logMessage("Error parsing");
-            // data.error_message = "File not found ** " + htmlSource + " **";
-            // data.error_layout = htmlSource;
-            // data.not_found = false;
         }
     });
 }
