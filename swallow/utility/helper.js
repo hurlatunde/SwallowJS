@@ -95,12 +95,15 @@ function logMessage() {
 }
 
 /**
+ * array of javascript links
  *  \ref http://stackoverflow.com/questions/950087/how-to-include-a-javascript-file-in-another-javascript-file
  * @param url
  * @param callback
  */
-
 function loadScript(includePath) {
+    $('.javascript_include').each(function(i) {
+        $(this).remove();
+    });
     for (i = 0; i < includePath.length; i++) {
         var jsFilePath = includePath[i];
 
@@ -112,9 +115,10 @@ function loadScript(includePath) {
 
         var s = document.createElement("script");
         s.type = "text/javascript";
+        s.classList.add('javascript_include');
         s.src = jsFilePath;
         $('head').append(s);
-        // document.getElementsByTagName("head")[0].appendChild(s);
+        //document.getElementsByTagName("head")[0].appendChild(s);
     }
 }
 

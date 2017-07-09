@@ -24,11 +24,11 @@
  * landing page. (This is the first page you see)
  */
 Path.map("#/").to(function () {
-    renderLayout('home', swallowJsContainer);
+    renderView('home', swallowJsContainer);
 }).enter(clearPanel);
 
 Path.map("#/about").to(function () {
-    renderLayout('about', swallowJsContainer);
+    renderView('about', swallowJsContainer);
 }).enter(clearPanel);
 
 
