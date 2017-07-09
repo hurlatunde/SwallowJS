@@ -25,6 +25,7 @@ var CONFIG = (function () {
     var layout = {
         'home':              'layouts/home.html',
         'page_loading':      'layouts/page_loading.html',
+        'about':   'layouts/about.html',
         '404':               'layouts/error/404.html',
     };
 
