@@ -17,7 +17,7 @@ $().ready(function () {
     $('<link>')
         .appendTo('head')
         .attr({type: 'text/css', rel: 'stylesheet'})
-        .attr('href', '/swallow/utility/css/swallowjs.css');
+        .attr('href', 'swallow/utility/css/swallowjs.css');
 
     var includePath = [
         'swallow/utility/helper.js',
