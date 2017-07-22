@@ -94,6 +94,11 @@ function logMessage() {
     }
 }
 
+function console_view() {
+    if (!debug) return;
+    logMessage(arguments);
+}
+
 /**
  * array of javascript links
  *  \ref http://stackoverflow.com/questions/950087/how-to-include-a-javascript-file-in-another-javascript-file
@@ -255,3 +260,11 @@ function shuffleArray(o) {
     for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
     return o;
 };
+
+/**
+ * Set current page title
+ * @param title
+ */
+function setPageTitle(title) {
+    $(document).prop('title', title);
+}

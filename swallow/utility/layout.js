@@ -11,6 +11,7 @@
 var baseUrl = getAbsolutePath();
 var currentParentLayout = '';
 var swallowData = {};
+var swallowParentData = {};
 var inner = false;
 
 /**
@@ -37,11 +38,19 @@ function layoutUrl(p) {
         var parentLayout;
         for (i = 0; i < res.length; i++) {
             var str = res[i].trim();
-            if (str.indexOf("view:") >= 0) {
-                parentLayout = str.replace('view:','');
+            var pLayout;
+            if (str.indexOf("layout:") >= 0) {
+                pLayout = $.trim(str.replace('layout:',''));
+                if (str.indexOf("title:") >= 0) {
+                    var arr = pLayout.split('title:');
+                    pLayout = $.trim(arr['0']);
+                    setPageTitle($.trim(arr['1']));
+                }
+                // set parent layout
+                parentLayout = pLayout;
                 break;
             } else {
-                logMessage("Error parsing parent layout. please add view");
+                console_view("Error parsing parent layout. please add view");
                 break;
             }
         }
@@ -64,7 +73,7 @@ function layoutUrl(p) {
         // logMessage(inner);
 
         currentParentLayout = parentLayout;
-        parentLayout = "views/layout/"+parentLayout;
+        parentLayout = "views/layouts/"+parentLayout;
 
         // pathSting = p.pathSting;
         // pathSting = pathSting.trim().split('/');
@@ -82,6 +91,12 @@ function layoutUrl(p) {
             data.body = childLayout;
             parseTemplate(swallowJsContainer, parentLayout, data);
             return;
+
+            // swallowParentData.body = childLayout;
+            // parseTemplate(swallowJsContainer, parentLayout, swallowParentData);
+            // //delete swallowParentData["body"];
+            // console.log(swallowParentData);
+            // return;
         }
     }
 
@@ -138,6 +153,10 @@ function parseTemplate(container, htmlSource, data, p) {
         data = {};
     }
 
+    /**
+     * Default SwallowJs absolute Path
+     * getting current page
+     */
     var currentPage = getAbsolutePath(false);
 
     /**
@@ -204,8 +223,10 @@ function renderView(layout, container, dataSet) {
         dataSet = {};
     }
 
+    setPageTitle(layout);
+
     if (CONFIG.viewTemplates(layout) == undefined) {
-        dataSet.error_message = "No layout with " + layout + ".html declared in config.js";
+        dataSet.error_message = "No view with " + layout + ".html declared in config.js";
         dataSet.error_layout = layout;
         dataSet.not_found = true;
 
@@ -215,6 +236,7 @@ function renderView(layout, container, dataSet) {
         });
     } else {
         $.get(CONFIG.viewTemplates(layout), function (template) {
+            logMessage(template);
             if (template.indexOf("---") >= 0) {
                 //logMessage('parent');
                 parseTemplate(container, CONFIG.viewTemplates(layout), dataSet, true);

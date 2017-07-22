@@ -27,11 +27,19 @@
     .m-t-20 {
         margin-top: 20px !important;
     }
+    a {
+        padding: 20px;
+        /* margin-top: 20px; */
+        color: #2d353c;
+        text-decoration: none;
+        display: block;
+        font-size: 18px;
+    }
 
 </style>
 
 <div class="container">
-    <div class="error">
+    <div class="error" style="    padding: 68px;">
         {{#error_message}}
         <div class="error-code m-b-10 m-t-20"> Internal Error! <i class="fa fa-warning"></i></div>
         {{/error_message}}
@@ -49,9 +57,8 @@
             <pre>
                 <code class="language-html" data-lang="html">
 var layout = {
-......
-'{{error_layout}}':   'layouts/{{error_layout}}.html',
-......
+ ......
+  '{{error_layout}}':   'views/{{error_layout}}.html',......
 };</code>
             </pre>
         </figure>
@@ -61,8 +68,10 @@ var layout = {
         {{/error_message}}
 
         <div class="error-desc">
+            <p style="font-size: 16px; line-height: 25px; color: #647788;">
             Sorry, but the page you are looking for was either not found or does not exist. <br/>
-            Try refreshing the page or click the button below to go back to the Homepage. <br>
+            Try refreshing the page or click the button below to go back to the Homepage. </p>
+
 
             <div>
                 <a class=" login-detail-panel-button btn" href="#/">

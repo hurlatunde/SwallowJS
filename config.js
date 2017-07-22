@@ -59,8 +59,9 @@ var CONFIG = (function () {
 
 /**
  * Default SwallowJs main container
+ * Please do not remove line 65. The system needs to work properly
  */
-var swallowJsContainer = $('#' + CONFIG.private('main_container'));
+var swallowJsContainer  = $('#' + CONFIG.private('main_container'));
 
 /**
  *
@@ -72,4 +73,4 @@ var debug = CONFIG.private('debug');
 /**
  * Default SwallowJs firebaseConfig
  */
-var firebaseConfig = CONFIG.firebaseConfig('firebase_config')
+var firebaseConfig = CONFIG.firebaseConfig('firebase_config');
