@@ -5,6 +5,7 @@ A lightweight framework to help kick start your Javascript project to build inte
 - Fast without the need for compiling / optimization
 - "logic-less-view" because there are no if statements, else clauses, or for loops. Instead there are only tags.
 
+<img src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/swallow/utility/css/img/swallow.png" />
 
 # Special Thanks
 
