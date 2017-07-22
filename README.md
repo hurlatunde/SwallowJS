@@ -21,7 +21,7 @@ A lightweight framework to help kick start your Javascript project to build inte
 
 ## Documentation
 
-To check out live examples and docs, visit [docs-swallowjs.github.io](https://docs-swallowjs.github.io/.
+To check out live examples and docs, visit [docs-swallowjs.github.io](https://docs-swallowjs.github.io/).
 
 ## Questions
 
