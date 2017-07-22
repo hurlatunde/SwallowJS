@@ -10,7 +10,7 @@
 
 /**
  * !Warning ## Most not be a string and most not contain [space] ##
- * @type {{private, layoutTemplate, firebaseConfig, constants}}
+ * @type {{private, viewTemplates, firebaseConfig, constants}}
  */
 
 var CONFIG = (function () {
@@ -22,11 +22,10 @@ var CONFIG = (function () {
     };
 
     // Templates
-    var layout = {
-        'home':              'layouts/home.html',
-        'page_loading':      'layouts/page_loading.html',
-        'about':   'layouts/about.html',
-        '404':               'layouts/error/404.html',
+    var views = {
+        'home':              'views/home.html',
+        'page_loading':      'views/page_loading.html',
+        '404':               'views/error/404.html',
     };
 
     var constants = {
@@ -46,8 +45,8 @@ var CONFIG = (function () {
         private: function (name) {
             return SwallowJs[name];
         },
-        layoutTemplate: function (name) {
-            return layout[name];
+        viewTemplates: function (name) {
+            return views[name];
         },
         firebaseConfig: function () {
             return firebase_config;
@@ -60,8 +59,9 @@ var CONFIG = (function () {
 
 /**
  * Default SwallowJs main container
+ * Please do not remove line 65. The system needs to work properly
  */
-var swallowJsContainer = $('#' + CONFIG.private('main_container'));
+var swallowJsContainer  = $('#' + CONFIG.private('main_container'));
 
 /**
  *
@@ -73,4 +73,4 @@ var debug = CONFIG.private('debug');
 /**
  * Default SwallowJs firebaseConfig
  */
-var firebaseConfig = CONFIG.firebaseConfig('firebase_config')
+var firebaseConfig = CONFIG.firebaseConfig('firebase_config');

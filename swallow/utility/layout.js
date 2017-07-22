@@ -11,6 +11,7 @@
 var baseUrl = getAbsolutePath();
 var currentParentLayout = '';
 var swallowData = {};
+var swallowParentData = {};
 var inner = false;
 
 /**
@@ -37,11 +38,19 @@ function layoutUrl(p) {
         var parentLayout;
         for (i = 0; i < res.length; i++) {
             var str = res[i].trim();
-            if (str.indexOf("view:") >= 0) {
-                parentLayout = str.replace('view:','');
+            var pLayout;
+            if (str.indexOf("layout:") >= 0) {
+                pLayout = $.trim(str.replace('layout:',''));
+                if (str.indexOf("title:") >= 0) {
+                    var arr = pLayout.split('title:');
+                    pLayout = $.trim(arr['0']);
+                    setPageTitle($.trim(arr['1']));
+                }
+                // set parent layout
+                parentLayout = pLayout;
                 break;
             } else {
-                logMessage("Error parsing parent layout. please add view");
+                console_view("Error parsing parent layout. please add view");
                 break;
             }
         }
@@ -64,7 +73,7 @@ function layoutUrl(p) {
         // logMessage(inner);
 
         currentParentLayout = parentLayout;
-        parentLayout = "layouts/view/"+parentLayout;
+        parentLayout = "views/layouts/"+parentLayout;
 
         // pathSting = p.pathSting;
         // pathSting = pathSting.trim().split('/');
@@ -82,6 +91,12 @@ function layoutUrl(p) {
             data.body = childLayout;
             parseTemplate(swallowJsContainer, parentLayout, data);
             return;
+
+            // swallowParentData.body = childLayout;
+            // parseTemplate(swallowJsContainer, parentLayout, swallowParentData);
+            // //delete swallowParentData["body"];
+            // console.log(swallowParentData);
+            // return;
         }
     }
 
@@ -91,7 +106,7 @@ function layoutUrl(p) {
         if (htmlSource) {
             element.load(baseUrl+htmlSource);
         } else {
-            element.load(CONFIG.layoutTemplate('404'));
+            element.load(CONFIG.viewTemplates('404'));
         }
     }
 }
@@ -103,25 +118,28 @@ function layoutUrl(p) {
  */
 function includeElement(container, htmlSource, data) {
     container = $('#' + container);
-    parseTemplate(container, "layouts/elements/" + htmlSource + ".html", data);
+    parseTemplate(container, "views/elements/" + htmlSource + ".html", data);
 }
 
+/**
+ *
+ * @param container
+ * @param htmlSource
+ * @param data
+ */
 function appendElement(container, htmlSource, data) {
     container = $('#' + container);
-    var htmlSource = "layouts/elements/" + htmlSource + ".html";
+    var htmlSource = "views/elements/" + htmlSource + ".html";
 
     $.get(htmlSource, function (template) {
+        Mustache.clearCache(template);
         Mustache.escape = function (value) {return value;};
         var rendered = Mustache.render(template, data);
-        Mustache.clearCache(template);
-        container.append(rendered).hide().show('slow');
+        container.append(rendered);
 
     }).error(function (jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error' && errorThrown == 'Not Found') {
             logMessage("Error parsing");
-            // data.error_message = "File not found ** " + htmlSource + " **";
-            // data.error_layout = htmlSource;
-            // data.not_found = false;
         }
     });
 }
@@ -135,6 +153,10 @@ function parseTemplate(container, htmlSource, data, p) {
         data = {};
     }
 
+    /**
+     * Default SwallowJs absolute Path
+     * getting current page
+     */
     var currentPage = getAbsolutePath(false);
 
     /**
@@ -182,7 +204,7 @@ function parseTemplate(container, htmlSource, data, p) {
             data.error_message = "File not found ** " + htmlSource + " **";
             data.error_layout = htmlSource;
             data.not_found = false;
-            $.get(CONFIG.layoutTemplate('404'), function (template) {
+            $.get(CONFIG.viewTemplates('404'), function (template) {
                 Mustache.parse(template);
                 var rendered = Mustache.render(template, data);
                 layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
@@ -192,40 +214,43 @@ function parseTemplate(container, htmlSource, data, p) {
 }
 
 /**
- * @firstParams    layout name defined in config.js
+ * @firstParams    View name defined in config.js
  * @secondParams   parent container
  * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
-function renderLayout(layout, container, dataSet) {
+function renderView(layout, container, dataSet) {
     if (typeof dataSet === "undefined" || dataSet === null) {
         dataSet = {};
     }
 
-    if (CONFIG.layoutTemplate(layout) == undefined) {
-        dataSet.error_message = "No layout with " + layout + ".html declared in config.js";
+    setPageTitle(layout);
+
+    if (CONFIG.viewTemplates(layout) == undefined) {
+        dataSet.error_message = "No view with " + layout + ".html declared in config.js";
         dataSet.error_layout = layout;
         dataSet.not_found = true;
 
-        $.get(CONFIG.layoutTemplate('404'), function (template) {
+        $.get(CONFIG.viewTemplates('404'), function (template) {
             var rendered = Mustache.render(template, dataSet);
             layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
         });
     } else {
-        $.get(CONFIG.layoutTemplate(layout), function (template) {
+        $.get(CONFIG.viewTemplates(layout), function (template) {
+            logMessage(template);
             if (template.indexOf("---") >= 0) {
                 //logMessage('parent');
-                parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet, true);
+                parseTemplate(container, CONFIG.viewTemplates(layout), dataSet, true);
             } else {
                 //logMessage('no parent');
                 currentParentLayout = '';
-                parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet, false);
+                parseTemplate(container, CONFIG.viewTemplates(layout), dataSet, false);
             }
         });
         // console.log(SwallowParentTemplate);
-        // parseTemplate(container, CONFIG.layoutTemplate(layout), dataSet);
+        // parseTemplate(container, CONFIG.viewTemplates(layout), dataSet);
     }
 }
 
 if (CONFIG.private('loading') == true) {
-    layoutUrl({element: swallowJsContainer, htmlSource: CONFIG.layoutTemplate('page_loading')});
+    layoutUrl({element: swallowJsContainer, htmlSource: CONFIG.viewTemplates('page_loading')});
 }

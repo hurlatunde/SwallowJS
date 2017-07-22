@@ -12,7 +12,7 @@ var SwallowJsCONFIG;
 
 SwallowJsCONFIG = (function () {
     var SwallowJs = {
-        'app_version': 'v1.2',
+        'app_version': 'v2.1',
     };
 
     var constants = {
@@ -32,12 +32,6 @@ SwallowJsCONFIG = (function () {
 
 
 /**
- *
+ * Current app version
  */
 var swallowVersion = SwallowJsCONFIG.private('app_version');
-
-/**
- * Default SwallowJs absolute Path
- * getting current page
- */
-var currentPathPage = getAbsolutePath(false);

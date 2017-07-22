@@ -1,4 +1,4 @@
-<nav class="navbar navbar-default navbar-fixed-top">
+<!-- <nav class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
             <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
@@ -15,6 +15,25 @@
                 <li {{#home}} class="active" {{/home}}><a href="#/">Home</a></li>
                 <li {{#about}} class="active" {{/about}}><a href="#/about"> About </a></li>
             </ul>
-        </div><!--/.nav-collapse -->
+        </div>
     </div>
+    {{app_version}}
 </nav>
+-->
+
+<header class="cd-header">
+    <div id="cd-logo"><a href="#0">
+        <img src="../swallow/utility/css/img/swallo_logo_white.png" alt="Logo"
+             style="width: 154px;padding: 6px;"></a></div>
+    <a class="cd-menu-trigger" href="#main-nav">
+        copyright 2016, SwallowJs {{ app_version }}
+    </a>
+</header>
+<div class="cd-blurred-bg"></div>
+
+<div class="cd-nugget-info">
+    <a href="#/"> Home </a>
+    <a href="#/about"> About </a>
+    <a target="_BLANK" href="https://github.com/hurlatunde/swallow.js"> Documentation </a>
+</div>
+

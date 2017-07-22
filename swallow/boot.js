@@ -26,7 +26,6 @@ $().ready(function () {
         'swallow/plugins/mustache/mustache.min.js',
         'swallow/plugins/path/path.min.js',
         'swallow/service/initializeFirebaseConnection.js',
-        'swallow/service/initializeServerSideConnection.js',
         'swallow/utility/layout.js',
         'routes.js'
     ];

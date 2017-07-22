@@ -16,21 +16,42 @@
  */
 
 /**
- * add your route here
+ * Declare parent identifier here
+ * @type {any}
  */
+var default_container = $('#default_container');
+
 
 /**
+ * *******************
+ * add route below
+ * *******************
+ *
  * index.html
  * landing page. (This is the first page you see)
  */
 Path.map("#/").to(function () {
-    renderLayout('home', swallowJsContainer);
+
+    setPageTitle('Home Page Title');
+
+    var data = {
+        // "beatles": [
+        //     {"firstName": "John", "lastName": "Lennon"},
+        //     {"firstName": "Paul", "lastName": "McCartney"},
+        //     {"firstName": "George", "lastName": "Harrison"},
+        //     {"firstName": "Ringo", "lastName": "Starr"}
+        // ],
+        // "name": function () {
+        //     return this.firstName + " " + this.lastName;
+        // }
+    };
+
+    renderView('home', default_container, data);
 }).enter(clearPanel);
 
 Path.map("#/about").to(function () {
-    renderLayout('about', swallowJsContainer);
+    renderView('about', default_container);
 }).enter(clearPanel);
-
 
 // Path.map("#/users/:user_id/:user_family").to(function () {
 //     var data = {
@@ -39,7 +60,6 @@ Path.map("#/about").to(function () {
 //     };
 //     renderLayout('users', swallowJsContainer, data);
 // }).enter(clearPanel);
-
 
 /**
  * This is a route with optional components.  Optional components in a route are contained

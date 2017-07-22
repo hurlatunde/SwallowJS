@@ -526,8 +526,8 @@ if (typeof firebase !== 'undefined') {
             }
 
             var callBackResponseState;
-            FirebaseService.customRef({
-                customRef: nodeRef,
+            FirebaseService.customQuery({
+                query: nodeRef,
                 listenerType: 'once',
                 eventType: 'value',
             }, function (response) {
@@ -546,7 +546,6 @@ if (typeof firebase !== 'undefined') {
         },
 
     });
-
 
     function onListener(nodeRef, value, definedFunction, errorFunction) {
         nodeRef.on(value, definedFunction, errorFunction)
