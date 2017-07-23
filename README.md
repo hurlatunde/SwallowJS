@@ -70,7 +70,7 @@ Once finished, your directory setup should look something like the following:
       /assets
       /swallow
       /views
-      ,gitignore
+      .gitignore
       config.js
       favicon.ico
       index.html
@@ -81,6 +81,8 @@ Once finished, your directory setup should look something like the following:
 ```
 
 The public setting tells the firebase command which directory to upload to Firebase Hosting. This directory must be inside the project directory and must exist. The default value is a directory named "public" in your project directory.
+
+It’s our aim to increase productivity and make coding more enjoyable. we hope you see that important Firebase with SwallowJs is at easy as it could be.
 
 ## Documentation
 
