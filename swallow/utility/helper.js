@@ -78,25 +78,42 @@ function logMessage() {
         case 0:
             return;
         case 1:
+            console_view(arguments[0]);
             console.log(arguments[0]);
             break;
         case 2:
+            console_view(arguments[0], arguments[1]);
             console.log(arguments[0], arguments[1]);
             break;
         case 3:
+            console_view(arguments[0], arguments[1], arguments[2]);
             console.log(arguments[0], arguments[1], arguments[2]);
             break;
         case 4:
+            console_view(arguments[0], arguments[1], arguments[2], arguments[3]);
             console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
             break;
         default:
+            console_view(arguments);
             console.log(arguments);
     }
 }
 
-function console_view() {
-    if (!debug) return;
-    logMessage(arguments);
+function console_view(argument_1, argument_2, argument_3, argument_4) {
+    var str = argument_1+"|"+argument_2+"|"+argument_3+"|"+argument_4;
+    var temp = new Array();
+    temp = str.split("|");
+    var setData = new Array();
+    for (a in temp ) {
+        if (temp[a] != "undefined") {
+            setData.push('<p>'+temp[a]+'</p>');
+        }
+    }
+    if ($("#console_message").length) {
+        $('#console_message').prepend(setData);
+    } else {
+        $('body').append('<div id="swallow_console_view"><div id="close_console_view">Console Message</div><div id="console_message">' + setData + '</div></div>');
+    }
 }
 
 /**
@@ -174,7 +191,6 @@ function redirectUrl(redirect_url) {
     //     $(location).attr('href', baseUrl + '#/' + encoded);
     // }
 }
-
 
 /**
  *

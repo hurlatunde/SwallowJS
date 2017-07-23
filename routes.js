@@ -58,7 +58,7 @@ Path.map("#/about").to(function () {
 //         user_id: this.params["user_id"],
 //         user_family: this.params["user_family"],
 //     };
-//     renderLayout('users', swallowJsContainer, data);
+//     renderView('users', swallowJsContainer, data);
 // }).enter(clearPanel);
 
 /**

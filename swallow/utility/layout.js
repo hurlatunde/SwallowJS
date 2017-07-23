@@ -231,12 +231,13 @@ function renderView(layout, container, dataSet) {
         dataSet.not_found = true;
 
         $.get(CONFIG.viewTemplates('404'), function (template) {
+            currentParentLayout = '';
             var rendered = Mustache.render(template, dataSet);
-            layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
+            layoutUrl({element: swallowJsContainer, htmlSource: rendered, renderedHTML: true});
         });
     } else {
         $.get(CONFIG.viewTemplates(layout), function (template) {
-            logMessage(template);
+
             if (template.indexOf("---") >= 0) {
                 //logMessage('parent');
                 parseTemplate(container, CONFIG.viewTemplates(layout), dataSet, true);

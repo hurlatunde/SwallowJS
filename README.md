@@ -9,7 +9,6 @@
   <img src="https://img.shields.io/npm/l/vue.svg" alt="License">
 </p>
 
-## Intro
 A lightweight framework to help kick start your Javascript project to build interactive web interfaces. It's so <strong>Ridiculously Fast & Easy-To-Use</strong> You’ll think tt’s magic
 - Flexible
 - Fast without the need for compiling / optimization
