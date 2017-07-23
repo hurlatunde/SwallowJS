@@ -19,6 +19,69 @@ A lightweight framework to help kick start your Javascript project to build inte
 <img src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/swallow/utility/css/img/swallow.png" />
 <br>
 
+## Install the Firebase CLI <small>(if you have this in your system already you can just skip to the next step)</small>
+
+The Firebase CLI (Command Line Interface) requires Node.js and npm, which can both be installed by following the instructions on https://nodejs.org/. Installing Node.js also installs npm.
+
+Once you have Node.js and npm installed, you can install the Firebase CLI via npm:
+
+```bash
+$ npm install -g firebase-tools
+```
+More help here: [https://firebase.google.com/docs/hosting/quickstart](https://firebase.google.com/docs/hosting/quickstart)
+
+## Getting started
+
+Go into the folder in which want your project, then:
+
+```bash
+$ git clone git://github.com/hurlatunde/swallow.js.git app
+```
+
+```bash
+$ cd your-project-folder
+```
+
+Then, you need to get the firebase.json file
+
+```bash
+$ firebase init
+```
+The firebase init command creates a firebase.json configuration file in the root of your project's directory. Your default firebase.json Hosting configuration will look like this:
+
+```json
+{
+    "hosting": {
+        "public": "app",
+        "ignore": [
+            "firebase.json",
+            "**/.*",
+            "**/node_modules/**"
+        ]
+    }
+}
+```
+
+Once finished, your directory setup should look something like the following:
+
+```html
+/path_to_document_root
+   /app
+      /assets
+      /swallow
+      /views
+      ,gitignore
+      config.js
+      favicon.ico
+      index.html
+      LICENSE
+      README.md
+      route.js
+   firebase.json
+```
+
+The public setting tells the firebase command which directory to upload to Firebase Hosting. This directory must be inside the project directory and must exist. The default value is a directory named "public" in your project directory.
+
 ## Documentation
 
 To check out live examples and docs, visit [docs-swallowjs.github.io](https://docs-swallowjs.github.io/).
@@ -36,7 +99,6 @@ For the latest releases and announcements, follow on Twitter: [@hurlatunde](http
 SwallowJs wouldn't kick ass if it weren't for these great souls:
 
 <ul>
-<li> Femi TAIWO / dftaiwo </li>
-<li> Sunday AKINSETE / akindroid </li>
-<li> William nwogbo / williamnwogbo </li>
+<li> Femi TAIWO / @dftaiwo </li>
+<li> Sunday AKINSETE / @akindroid </li>
 </ul>
