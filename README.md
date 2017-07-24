@@ -37,7 +37,7 @@ More help here: [https://firebase.google.com/docs/hosting/quickstart](https://fi
 Go into the folder in which want your project, then:
 
 ```bash
-$ git clone git://github.com/hurlatunde/swallow.js.git app
+$ git clone git://github.com/hurlatunde/swallow.js.git your-project-folder/app
 ```
 
 ```bash
@@ -67,7 +67,7 @@ The firebase init command creates a firebase.json configuration file in the root
 Once finished, your directory setup should look something like the following:
 
 ```html
-/path_to_document_root
+/your-project-folder
    /app
       /assets
       /swallow
@@ -82,8 +82,11 @@ Once finished, your directory setup should look something like the following:
    firebase.json
 ```
 
-The public setting tells the firebase command which directory to upload to Firebase Hosting. This directory must be inside the project directory and must exist. The default value is a directory named "public" in your project directory.
+The public setting tells the firebase command which directory to upload to Firebase Hosting. This directory must be inside the project directory and must exist. The default key is a directory named "public" in your project directory.
 
+```bash
+$ firebase serve
+```
 It’s our aim to increase productivity and make coding more enjoyable. we hope you see that important Firebase with SwallowJs is at easy as it could be.
 
 ## Documentation
