@@ -9,11 +9,14 @@
   <img src="https://img.shields.io/npm/l/vue.svg" alt="License">
 </p>
 
-A lightweight framework to help kick start your Javascript project to build interactive web interfaces. It's so <strong>Ridiculously Fast & Easy-To-Use</strong> You’ll think tt’s magic
+A lightweight framework to help kick start your <b>Firebase</b> project to build interactive web interfaces. It's so <strong>Ridiculously Fast & Easy-To-Use</strong> You’ll think it’s magic
+- Easy Firebase Integration
+- Fast & Easy-To-Use
 - Flexible
 - Fast without the need for compiling / optimization
-- "logic-less-view" because there are no if statements, else clauses, or for loops. Instead there are only tags.
+- "Logic-less-view" because there are no if statements, else clauses, or for loops. Instead there are only tags.
 
+The most important parts of the SwallowJs Framework are the simple included set of different functions. It's build mainly mainly on PathJs for routing, MustacheJs for view and depend more on Firebase for data-source. It that simply
 <br>
 <img src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/swallow/utility/css/img/swallow.png" />
 <br>
