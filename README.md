@@ -37,7 +37,7 @@ More help here: [https://firebase.google.com/docs/hosting/quickstart](https://fi
 Go into the folder in which want your project, then:
 
 ```bash
-$ git clone git://github.com/hurlatunde/swallow.js.git your-project-folder/app
+$ git clone git://github.com/hurlatunde/swallow.js.git your-project-folder
 ```
 
 ```bash
@@ -72,13 +72,13 @@ Once finished, your directory setup should look something like the following:
       /assets
       /swallow
       /views
-      .gitignore
       config.js
       favicon.ico
       index.html
-      LICENSE
-      README.md
       route.js
+   LICENSE
+   README.md
+   .gitignore
    firebase.json
 ```
 
@@ -108,4 +108,5 @@ SwallowJs wouldn't kick ass if it weren't for these great souls:
 <ul>
 <li> Femi TAIWO / @dftaiwo </li>
 <li> Sunday AKINSETE / @akindroid </li>
+<li> Abolaji Sulaiman B / @abolaji_dev </li>
 </ul>
