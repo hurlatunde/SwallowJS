@@ -1,7 +1,7 @@
 
 <p align="center">
 <a href="https://docs-swallowjs.github.io/" target="_blank">
-<img width="220"src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/swallow/utility/css/img/swallo_logo_footer.png">
+<img width="220"src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/app/swallow/utility/css/img/swallo_logo_footer.png">
 </a>
 </p>
 
@@ -18,7 +18,7 @@ A lightweight framework to help kick start your <b>Firebase</b> project to build
 
 The most important parts of the SwallowJs Framework are the simple included set of different functions. It's build mainly mainly on PathJs for routing, MustacheJs for view and depend more on Firebase for data-source. It that simply
 <br>
-<img src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/swallow/utility/css/img/swallow.png" />
+<img src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/app/swallow/utility/css/img/swallow.png" />
 <br>
 
 ## Install the Firebase CLI <small>(if you have this in your system already you can just skip to the next step)</small>
