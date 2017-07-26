@@ -118,18 +118,16 @@ function console_view(argument_1, argument_2, argument_3, argument_4) {
 
 /**
  * array of javascript links
- *  \ref http://stackoverflow.com/questions/950087/how-to-include-a-javascript-file-in-another-javascript-file
  * @param url
  * @param callback
  */
-function loadScript(includePath) {
+function loadScripts(includePath) {
     $('.javascript_include').each(function(i) {
         $(this).remove();
     });
     for (i = 0; i < includePath.length; i++) {
         var jsFilePath = includePath[i];
 
-        //http://stackoverflow.com/questions/15987668/only-add-script-to-head-if-doesnt-exist
         var exitingScript = $('head script[src="' + jsFilePath + '"]');
         if (exitingScript.length > 0) {
             exitingScript.remove();
@@ -159,20 +157,28 @@ var getSc = function (firstPath, includePath, f) {
 };
 
 /**
- *  \ref http://stackoverflow.com/questions/5680657/adding-css-file-with-jquery
  * @param href
  */
-function loadCss(href) {
-    var ss = document.styleSheets;
-    for (var i = 0, max = ss.length; i < max; i++) {
-        if (ss[i].href == href)
-            return;
+function loadStyles(includePath) {
+    $('.style_include').each(function(i) {
+        $(this).remove();
+    });
+
+    for (i = 0; i < includePath.length; i++) {
+        var cssFilePath = includePath[i];
+
+        var exitingStyle = $('head link[href="' + cssFilePath + '"]');
+        if (exitingStyle.length > 0) {
+            exitingStyle.remove();
+        }
+
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.classList.add('style_include');
+        link.type = "text/css";
+        link.href = cssFilePath;
+        document.getElementsByTagName("head")[0].appendChild(link);
     }
-    var link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = href;
-    document.getElementsByTagName("head")[0].appendChild(link);
 }
 
 /**
@@ -181,15 +187,8 @@ function loadCss(href) {
  * @param params       '/users/122/884
  */
 function redirectUrl(redirect_url) {
-    //var encoded = encodeURIComponent(redirect_url);
     var encoded = redirect_url;
     $(location).attr('href', baseUrl + '#/' + encoded);
-    // if (params) {
-    //     var p = params.join('/');
-    //     $(location).attr('href', baseUrl + '#/' + encoded + '/' + p);
-    // } else {
-    //     $(location).attr('href', baseUrl + '#/' + encoded);
-    // }
 }
 
 /**

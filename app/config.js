@@ -16,6 +16,7 @@
 var CONFIG = (function () {
     var SwallowJs = {
         'main_container': 'swallow',
+        'remove_swallow_css': false,
         'beta': true,
         'loading': true,
         'debug': true

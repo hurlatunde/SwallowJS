@@ -255,3 +255,10 @@ function renderView(layout, container, dataSet) {
 if (CONFIG.private('loading') == true) {
     layoutUrl({element: swallowJsContainer, htmlSource: CONFIG.viewTemplates('page_loading')});
 }
+
+if (CONFIG.private('remove_swallow_css') == true) {
+    var removeSwallowCss = CONFIG.private('remove_swallow_css');
+    $('.swallow_stylesheet').each(function(i) {
+        $(this).remove();
+    });
+}
