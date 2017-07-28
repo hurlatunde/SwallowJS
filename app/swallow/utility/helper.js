@@ -188,7 +188,7 @@ function loadStyles(includePath) {
  */
 function redirectUrl(redirect_url) {
     var encoded = redirect_url;
-    $(location).attr('href', baseUrl + '#/' + encoded);
+    $(location).attr('href', baseUrl + '#' + encoded);
 }
 
 /**
