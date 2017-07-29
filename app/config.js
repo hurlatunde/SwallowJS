@@ -26,6 +26,7 @@ var CONFIG = (function () {
     var views = {
         'home':              'views/home.html',
         'page_loading':      'views/page_loading.html',
+        'about':   'views/about.html',
         '404':               'views/error/404.html',
     };
 

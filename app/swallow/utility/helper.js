@@ -283,3 +283,44 @@ function shuffleArray(o) {
 function setPageTitle(title) {
     $(document).prop('title', title);
 }
+
+/**
+ * 1 - success
+ * 2 - info // passing information
+ * 3 - warning // light error
+ * 4 - danger //error
+ *
+ * Show error message or alert massages
+ * @param element
+ * @param message
+ * @param alertType
+ */
+function showAlert(element, message, alertType) {
+    var type;
+    switch (alertType) {
+        case 1:
+            type = 'alert-success';
+            break;
+        case 2:
+            type = 'alert-info';
+            break;
+        case 3:
+            type = 'alert-warning';
+            break;
+        default :
+            type = 'alert-danger';
+    }
+
+    var alert = '<div class="alert ' + type + ' alert-dismissible fade in" role="alert">' +
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+        '<span aria-hidden="true">&times;</span>' +
+        '</button>' + message + '</div>';
+    $('#' + element).html(alert);
+    alertTimeout(3000);
+
+    function alertTimeout(wait) {
+        setTimeout(function () {
+            $('#' + element).children('.alert:first-child').remove();
+        }, wait);
+    }
+}
