@@ -324,3 +324,10 @@ function showAlert(element, message, alertType) {
         }, wait);
     }
 }
+
+/**
+ * Exit kills functions
+ */
+function exit() {
+    return;
+}
