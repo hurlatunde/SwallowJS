@@ -188,8 +188,19 @@ function loadStyles(includePath) {
  */
 function redirectUrl(redirect_url) {
     var encoded = redirect_url;
-    $(location).attr('href', baseUrl + '#' + encoded);
+    if (encoded.indexOf("#/") >= 0) {
+        encoded = encoded.replace('#/', '');
+    }
+    $(location).attr('href', baseUrl + '#/' + encoded);
+
+    // if (params) {
+    //     var p = params.join('/');
+    //     $(location).attr('href', baseUrl + '#/' + encoded + '/' + p);
+    // } else {
+    //     $(location).attr('href', baseUrl + '#/' + encoded);
+    // }
 }
+
 
 /**
  *
