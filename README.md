@@ -29,10 +29,8 @@ The Firebase CLI (Command Line Interface) requires Node.js and npm, which can bo
 
 Once you have Node.js and npm installed, you can install the Firebase CLI via npm:
 
-```bash
-$ npm install -g firebase-tools
-```
-####Step by step explanation of how to get firebase up and running
+
+###Step by step explanation of how to get firebase up and running : author Abolaji Sulaiman B / @abolaji_dev
 
 ```bash
 step1. install nodejs with npm and firebase-cli, then head to your firebase console and create a project
@@ -47,6 +45,10 @@ step9. you'd be asked what directory to use as your public directory, type `app`
 step10. next is to choose whether to configure the project as a single-app or not, type `y` and press enter.
 step11. type `n` and press in the next step in other to use the existing index.html. (this step is important).
 step12. You're done run the command `firebase serve` to start your swallow app.
+```
+
+```bash
+$ npm install -g firebase-tools
 ```
 
 More help here: [https://firebase.google.com/docs/hosting/quickstart](https://firebase.google.com/docs/hosting/quickstart)
