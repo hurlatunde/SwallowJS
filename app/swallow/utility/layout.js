@@ -33,7 +33,13 @@ function layoutUrl(p) {
     if (htmlSource.indexOf("---") >= 0) {
         res = htmlSource.split("---");
         res = cleanArray(res);
-        var childLayout = res.pop();
+
+        if (res.length >= 2 ) {
+            var childLayout = res.pop();
+        } else {
+            // nothing in view
+            var childLayout = '';
+        }
 
         var parentLayout;
         for (i = 0; i < res.length; i++) {
