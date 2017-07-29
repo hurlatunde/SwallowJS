@@ -5,6 +5,7 @@
  * For full copyright and license information, please see the LICENSE.txt
  *
  * @link          http://docs.swallow.js SwallowJs(tm) Project
+ * @link          https://api.jquery.com/jquery.getscript/
  * @package       swallow.boot.js
  * @since         SwallowJs(tm) v 0.2.9
  */
