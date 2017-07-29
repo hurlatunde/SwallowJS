@@ -30,7 +30,7 @@ The Firebase CLI (Command Line Interface) requires Node.js and npm, which can bo
 Once you have Node.js and npm installed, you can install the Firebase CLI via npm:
 
 
-###Step by step explanation of how to get firebase up and running : author Abolaji Sulaiman B / @abolaji_dev
+#### Step by step explanation of how to get firebase up and running : author Abolaji Sulaiman B / @abolaji_dev
 
 ```bash
 step1. install nodejs with npm and firebase-cli, then head to your firebase console and create a project
