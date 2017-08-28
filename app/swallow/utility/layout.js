@@ -50,7 +50,8 @@ function layoutUrl(p) {
                 if (str.indexOf("title:") >= 0) {
                     var arr = pLayout.split('title:');
                     pLayout = $.trim(arr['0']);
-                    setPageTitle($.trim(arr['1']));
+                    var rendered = Mustache.render(arr['1'], swallowData);
+                    setPageTitle($.trim(rendered));
                 }
                 // set parent layout
                 parentLayout = pLayout;
