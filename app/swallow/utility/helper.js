@@ -78,41 +78,56 @@ function logMessage() {
         case 0:
             return;
         case 1:
+            console_view(arguments[0]);
             console.log(arguments[0]);
             break;
         case 2:
+            console_view(arguments[0], arguments[1]);
             console.log(arguments[0], arguments[1]);
             break;
         case 3:
+            console_view(arguments[0], arguments[1], arguments[2]);
             console.log(arguments[0], arguments[1], arguments[2]);
             break;
         case 4:
+            console_view(arguments[0], arguments[1], arguments[2], arguments[3]);
             console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
             break;
         default:
+            console_view(arguments);
             console.log(arguments);
     }
 }
 
-function console_view() {
-    if (!debug) return;
-    logMessage(arguments);
+function console_view(argument_1, argument_2, argument_3, argument_4) {
+    var str = argument_1+"|"+argument_2+"|"+argument_3+"|"+argument_4;
+    var temp = new Array();
+    temp = str.split("|");
+    var setData = new Array();
+    for (a in temp ) {
+        if (temp[a] != "undefined") {
+            setData.push('<p>'+temp[a]+'</p>');
+        }
+    }
+    if ($("#console_message").length) {
+        $('#console_message').prepend(setData);
+    } else {
+        $('body').append('<div id="swallow_console_view"><div id="close_console_view">Console Message</div><div id="console_message">' + setData + '</div></div>');
+    }
 }
 
 /**
  * array of javascript links
- *  \ref http://stackoverflow.com/questions/950087/how-to-include-a-javascript-file-in-another-javascript-file
  * @param url
  * @param callback
  */
-function loadScript(includePath) {
+function loadScripts(includePath) {
     $('.javascript_include').each(function(i) {
         $(this).remove();
     });
     for (i = 0; i < includePath.length; i++) {
         var jsFilePath = includePath[i];
 
-        //http://stackoverflow.com/questions/15987668/only-add-script-to-head-if-doesnt-exist
         var exitingScript = $('head script[src="' + jsFilePath + '"]');
         if (exitingScript.length > 0) {
             exitingScript.remove();
@@ -142,20 +157,28 @@ var getSc = function (firstPath, includePath, f) {
 };
 
 /**
- *  \ref http://stackoverflow.com/questions/5680657/adding-css-file-with-jquery
  * @param href
  */
-function loadCss(href) {
-    var ss = document.styleSheets;
-    for (var i = 0, max = ss.length; i < max; i++) {
-        if (ss[i].href == href)
-            return;
+function loadStyles(includePath) {
+    $('.style_include').each(function(i) {
+        $(this).remove();
+    });
+
+    for (i = 0; i < includePath.length; i++) {
+        var cssFilePath = includePath[i];
+
+        var exitingStyle = $('head link[href="' + cssFilePath + '"]');
+        if (exitingStyle.length > 0) {
+            exitingStyle.remove();
+        }
+
+        var link = document.createElement("link");
+        link.rel = "stylesheet";
+        link.classList.add('style_include');
+        link.type = "text/css";
+        link.href = cssFilePath;
+        document.getElementsByTagName("head")[0].appendChild(link);
     }
-    var link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.type = "text/css";
-    link.href = href;
-    document.getElementsByTagName("head")[0].appendChild(link);
 }
 
 /**
@@ -164,9 +187,12 @@ function loadCss(href) {
  * @param params       '/users/122/884
  */
 function redirectUrl(redirect_url) {
-    //var encoded = encodeURIComponent(redirect_url);
     var encoded = redirect_url;
+    if (encoded.indexOf("#/") >= 0) {
+        encoded = encoded.replace('#/', '');
+    }
     $(location).attr('href', baseUrl + '#/' + encoded);
+
     // if (params) {
     //     var p = params.join('/');
     //     $(location).attr('href', baseUrl + '#/' + encoded + '/' + p);
@@ -267,4 +293,52 @@ function shuffleArray(o) {
  */
 function setPageTitle(title) {
     $(document).prop('title', title);
+}
+
+/**
+ * 1 - success
+ * 2 - info // passing information
+ * 3 - warning // light error
+ * 4 - danger //error
+ *
+ * Show error message or alert massages
+ * @param element
+ * @param message
+ * @param alertType
+ */
+function showAlert(element, message, alertType) {
+    var type;
+    switch (alertType) {
+        case 1:
+            type = 'alert-success';
+            break;
+        case 2:
+            type = 'alert-info';
+            break;
+        case 3:
+            type = 'alert-warning';
+            break;
+        default :
+            type = 'alert-danger';
+    }
+
+    var alert = '<div class="alert ' + type + ' alert-dismissible fade in" role="alert">' +
+        '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+        '<span aria-hidden="true">&times;</span>' +
+        '</button>' + message + '</div>';
+    $('#' + element).html(alert);
+    alertTimeout(3000);
+
+    function alertTimeout(wait) {
+        setTimeout(function () {
+            $('#' + element).children('.alert:first-child').remove();
+        }, wait);
+    }
+}
+
+/**
+ * Exit kills functions
+ */
+function exit() {
+    return;
 }

@@ -33,7 +33,13 @@ function layoutUrl(p) {
     if (htmlSource.indexOf("---") >= 0) {
         res = htmlSource.split("---");
         res = cleanArray(res);
-        var childLayout = res.pop();
+
+        if (res.length >= 2 ) {
+            var childLayout = res.pop();
+        } else {
+            // nothing in view
+            var childLayout = '';
+        }
 
         var parentLayout;
         for (i = 0; i < res.length; i++) {
@@ -232,12 +238,13 @@ function renderView(layout, container, dataSet) {
         dataSet.not_found = true;
 
         $.get(CONFIG.viewTemplates('404'), function (template) {
+            currentParentLayout = '';
             var rendered = Mustache.render(template, dataSet);
-            layoutUrl({element: container, htmlSource: rendered, renderedHTML: true});
+            layoutUrl({element: swallowJsContainer, htmlSource: rendered, renderedHTML: true});
         });
     } else {
         $.get(CONFIG.viewTemplates(layout), function (template) {
-            logMessage(template);
+
             if (template.indexOf("---") >= 0) {
                 //logMessage('parent');
                 parseTemplate(container, CONFIG.viewTemplates(layout), dataSet, true);
@@ -254,4 +261,11 @@ function renderView(layout, container, dataSet) {
 
 if (CONFIG.private('loading') == true) {
     layoutUrl({element: swallowJsContainer, htmlSource: CONFIG.viewTemplates('page_loading')});
+}
+
+if (CONFIG.private('remove_swallow_css') == true) {
+    var removeSwallowCss = CONFIG.private('remove_swallow_css');
+    $('.swallow_stylesheet').each(function(i) {
+        $(this).remove();
+    });
 }

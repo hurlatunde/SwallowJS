@@ -16,6 +16,7 @@
 var CONFIG = (function () {
     var SwallowJs = {
         'main_container': 'swallow',
+        'remove_swallow_css': false,
         'beta': true,
         'loading': true,
         'debug': true
@@ -25,6 +26,7 @@ var CONFIG = (function () {
     var views = {
         'home':              'views/home.html',
         'page_loading':      'views/page_loading.html',
+        'about':   'views/about.html',
         '404':               'views/error/404.html',
     };
 
