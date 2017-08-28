@@ -32,8 +32,9 @@ var default_container = $('#default_container');
  */
 Path.map("#/").to(function () {
 
-    //An example of an array
+    // An example of an array
     // var data = {
+    //     "full_name": "Olatunde owokoniran",
     //     "beatles": [
     //         {"firstName": "John", "lastName": "Lennon"},
     //         {"firstName": "Paul", "lastName": "McCartney"},
@@ -44,7 +45,7 @@ Path.map("#/").to(function () {
     //         return this.firstName + " " + this.lastName;
     //     }
     // };
-
+    //
     // renderView('home', default_container, data);
     renderView('home', default_container);
 }).enter(clearPanel);
