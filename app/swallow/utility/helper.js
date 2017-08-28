@@ -112,7 +112,7 @@ function console_view(argument_1, argument_2, argument_3, argument_4) {
     if ($("#console_message").length) {
         $('#console_message').prepend(setData);
     } else {
-        $('body').append('<div id="swallow_console_view"><div id="close_console_view">Console Message</div><div id="console_message">' + setData + '</div></div>');
+        //$('body').append('<div id="swallow_console_view"><div id="close_console_view">Console Message</div><div id="console_message">' + setData + '</div></div>');
     }
 }
 
