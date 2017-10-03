@@ -47,12 +47,15 @@ Path.map("#/").to(function () {
     // };
     //
     // renderView('home', default_container, data);
+
     renderView('home', default_container);
-}).enter(clearPanel);
+}).enter(function () {
+    logMessage('entering the view');
+});
 
 Path.map("#/about").to(function () {
     renderView('about', default_container);
-}).enter(clearPanel);
+});
 
 // Path.map("#/users/:user_id/:user_family").to(function () {
 //     var data = {
@@ -60,7 +63,7 @@ Path.map("#/about").to(function () {
 //         user_family: this.params["user_family"],
 //     };
 //     renderView('users', swallowJsContainer, data);
-// }).enter(clearPanel);
+// });
 
 /**
  * This is a route with optional components.  Optional components in a route are contained
