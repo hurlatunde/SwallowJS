@@ -1,7 +1,7 @@
 
 <p align="center">
 <a href="https://docs-swallowjs.github.io/" target="_blank">
-<img width="220"src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/app/swallow/utility/css/img/swallo_logo_footer.png">
+<img width="220"src="https://raw.githubusercontent.com/hurlatunde/swallow.js/master/app/swallow/utility/css/img/logo_tech.svg">
 </a>
 </p>
 

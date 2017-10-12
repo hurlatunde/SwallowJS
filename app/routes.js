@@ -45,12 +45,10 @@ Path.map("#/").to(function () {
     //     }
     // };
 
-    //
-    renderView('home', default_container);
 
-    // renderView('home', default_container);
+    renderView('home', default_container);
 }).enter(function () {
-    //logMessage('entering the view');
+    //logMessage('Y');
 });
 
 // Path.map("#/about").to(function () {
