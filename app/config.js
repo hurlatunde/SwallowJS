@@ -25,7 +25,6 @@ var CONFIG = (function () {
     // Templates
     var views = {
         'home':              'views/home.html',
-        'about':              'views/about.html',
         'page_loading':      'views/page_loading.html',
         '404':               'views/error/404.html',
     };

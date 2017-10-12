@@ -8,6 +8,8 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
+var temp = new Array();
+
 /**
  *
  * @param parameters
@@ -78,43 +80,107 @@ function logMessage() {
         case 0:
             return;
         case 1:
-            console_view(arguments[0]);
+            temp.push(arguments[0]);
             console.log(arguments[0]);
             break;
         case 2:
-            console_view(arguments[0], arguments[1]);
+            temp.push(arguments[0], arguments[1]);
             console.log(arguments[0], arguments[1]);
             break;
         case 3:
-            console_view(arguments[0], arguments[1], arguments[2]);
+            temp.push(arguments[0], arguments[1], arguments[2]);
             console.log(arguments[0], arguments[1], arguments[2]);
             break;
         case 4:
-            console_view(arguments[0], arguments[1], arguments[2], arguments[3]);
+            temp.push(arguments[0], arguments[1], arguments[2], arguments[3]);
             console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
             break;
         default:
-            console_view(arguments);
             console.log(arguments);
+            temp.push(arguments);
     }
 }
 
-function console_view(argument_1, argument_2, argument_3, argument_4) {
-    var str = argument_1+"|"+argument_2+"|"+argument_3+"|"+argument_4;
-    var temp = new Array();
-    temp = str.split("|");
-    var setData = new Array();
-    for (a in temp ) {
-        if (temp[a] != "undefined") {
-            setData.push('<p>'+temp[a]+'</p>');
-        }
-    }
-    if ($("#console_message").length) {
-        $('#console_message').prepend(setData);
-    } else {
-        //$('body').append('<div id="swallow_console_view"><div id="close_console_view">Console Message</div><div id="console_message">' + setData + '</div></div>');
-    }
+function console_view(argument) {
+
+    // console.log(argument);
+    // return;
+    //
+    //
+    // var str = argument_1 + "|" + argument_2 + "|" + argument_3 + "|" + argument_4;
+    // var temp = new Array();
+    // temp = str.split("|");
+    //
+    // var setData = new Array();
+    // for (var a in temp) {
+    //     if (temp[a] != "undefined") {
+    //         setData.push(temp[a]);
+    //     }
+    // }
+    //
+    // jsonview(setData);
+
+    // JSON.stringify(arguments, undefined, 1)
+    //$('body').append('<div id="swallow_console_view"><div id="close_console_view">Console Message</div><div id="console_message"></div></div>');
+
+
+    // var setData = new Array();
+    // for (var a in temp) {
+    //     if (temp[a] != "undefined") {
+    //         //     console.log(temp[a]);
+    //         //     setData.push('<pre>'+temp[a]+'</pre>');
+    //         //
+    //         // return this.each(function () {
+    //         //     );
+    //         //     if (typeof json == 'string') {
+    //         //         self.data('json', json);
+    //         //     }var self = $(this
+    //         //     else if (typeof json == 'object') {
+    //         //         self.data('json', JSON.stringify(json))
+    //         //     }
+    //         //     else {
+    //         //         self.data('json', '');
+    //         //     }
+    //         //     new JsonViewer(self, options);
+    //         // });
+    //         var self = temp[a];
+    //         // if (typeof temp[a] == 'string') {
+    //         //     self.data('json', temp[a]);
+    //         // }
+    //         console.log(self);
+    //     }
+    // }
+    //console.log(setData);
+
+    // if ($("#console_message").length) {
+    //     $('#console_message').jsonview(str);
+    //     // $('#console_message').prepend(setData);
+    // } else {
+    //     $('#console_message').jsonview(str);
+    // }
+    //$('#console_message').jsonview(str);
 }
+
+jsonview = function (json, options) {
+    return this.each(function () {
+        var self = $(this);
+        console.log(self);
+        // if (typeof json == 'string') {
+        //     self.data('json', json);
+        // }
+        // else if (typeof json == 'object') {
+        //     self.data('json', JSON.stringify(json))
+        // }
+        // else {
+        //     self.data('json', '');
+        // }
+       // new JsonViewer(self, options);
+    });
+};
+
+/**
+ *
+ */
 
 /**
  * array of javascript links
@@ -122,7 +188,7 @@ function console_view(argument_1, argument_2, argument_3, argument_4) {
  * @param callback
  */
 function loadScripts(includePath) {
-    $('.javascript_include').each(function(i) {
+    $('.javascript_include').each(function (i) {
         $(this).remove();
     });
     for (i = 0; i < includePath.length; i++) {
@@ -160,7 +226,7 @@ var getSc = function (firstPath, includePath, f) {
  * @param href
  */
 function loadStyles(includePath) {
-    $('.style_include').each(function(i) {
+    $('.style_include').each(function (i) {
         $(this).remove();
     });
 
@@ -274,7 +340,7 @@ function numberFormart(value) {
  * @return {*}
  */
 function getInputFile(element) {
-    return $('#'+element)[0].files[0];
+    return $('#' + element)[0].files[0];
 }
 
 /**
@@ -283,7 +349,7 @@ function getInputFile(element) {
  * @return {*}
  */
 function shuffleArray(o) {
-    for(var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
+    for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x) ;
     return o;
 };
 

@@ -21,7 +21,6 @@
  */
 var default_container = $('#default_container');
 
-
 /**
  * *******************
  * add route below
@@ -45,12 +44,13 @@ Path.map("#/").to(function () {
     //         return this.firstName + " " + this.lastName;
     //     }
     // };
-    //
-    // renderView('home', default_container, data);
 
+    //
     renderView('home', default_container);
+
+    // renderView('home', default_container);
 }).enter(function () {
-    logMessage('entering the view');
+    //logMessage('entering the view');
 });
 
 Path.map("#/about").to(function () {
@@ -72,4 +72,3 @@ Path.map("#/about").to(function () {
 // Path.map("#/about(/author)").to(function(){
 //
 // });
-

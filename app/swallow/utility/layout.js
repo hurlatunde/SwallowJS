@@ -34,7 +34,7 @@ function layoutUrl(p) {
         res = htmlSource.split("---");
         res = cleanArray(res);
 
-        if (res.length >= 2 ) {
+        if (res.length >= 2) {
             var childLayout = res.pop();
         } else {
             // nothing in view
@@ -46,11 +46,11 @@ function layoutUrl(p) {
             var str = res[i].trim();
             var pLayout;
             if (str.indexOf("layout:") >= 0) {
-                pLayout = $.trim(str.replace('layout:',''));
+                pLayout = $.trim(str.replace('layout:', ''));
                 if (str.indexOf("title:") >= 0) {
                     var arr = pLayout.split('title:');
                     pLayout = $.trim(arr['0']);
-                    var rendered = Mustache.render(arr['1'], swallowData);
+                    var rendered = compileView(arr['1'], swallowData);
                     setPageTitle($.trim(rendered));
                 }
                 // set parent layout
@@ -80,7 +80,7 @@ function layoutUrl(p) {
         // logMessage(inner);
 
         currentParentLayout = parentLayout;
-        parentLayout = "views/layouts/"+parentLayout;
+        parentLayout = "views/layouts/" + parentLayout;
 
         // pathSting = p.pathSting;
         // pathSting = pathSting.trim().split('/');
@@ -89,22 +89,18 @@ function layoutUrl(p) {
 
         if (inner == true) {
             var newElement = element.selector;
-            newElement = newElement.replace('#','');
-            newElement = $('#'+isBlank(newElement));
-            var rendered = Mustache.render(childLayout, swallowData);
+            newElement = newElement.replace('#', '');
+            newElement = $('#' + isBlank(newElement));
+            var rendered = compileView(childLayout, swallowData, true);
             layoutUrl({element: newElement, htmlSource: rendered, renderedHTML: true});
             return;
         } else {
+            //logMessage(childLayout);
+            //return;
             data.body = childLayout;
+            data.opt = true;
             parseTemplate(swallowJsContainer, parentLayout, data);
             return;
-
-            
-            // swallowParentData.body = childLayout;
-            // parseTemplate(swallowJsContainer, parentLayout, swallowParentData);
-            // //delete swallowParentData["body"];
-            // console.log(swallowParentData);
-            // return;
         }
     }
 
@@ -112,7 +108,7 @@ function layoutUrl(p) {
         element.html(htmlSource);
     } else {
         if (htmlSource) {
-            element.load(baseUrl+htmlSource);
+            element.load(baseUrl + htmlSource);
         } else {
             element.load(CONFIG.viewTemplates('404'));
         }
@@ -140,9 +136,9 @@ function appendElement(container, htmlSource, data) {
     var htmlSource = "views/elements/" + htmlSource + ".html";
 
     $.get(htmlSource, function (template) {
-        Mustache.clearCache(template);
-        Mustache.escape = function (value) {return value;};
-        var rendered = Mustache.render(template, data);
+        // Mustache.clearCache(template);
+        // Mustache.escape = function (value) {return value;};
+        var rendered = compileView(template, data);
         container.append(rendered);
 
     }).error(function (jqXHR, textStatus, errorThrown) {
@@ -177,7 +173,7 @@ function parseTemplate(container, htmlSource, data, p) {
      * Default SwallowJs current page URL
      */
 
-    data.here = baseUrl+window.location.hash;
+    data.here = baseUrl + window.location.hash;
 
     /**
      * Default SwallowJs absolute Path
@@ -191,21 +187,24 @@ function parseTemplate(container, htmlSource, data, p) {
      */
     data.app_version = swallowVersion;
 
-    if (currentPage == "/"){
+    if (currentPage == "/") {
         data.home = true;
     }
 
-    if (currentPage != "/"){
+    if (currentPage != "/") {
         data[currentPage] = true;
     }
 
     swallowData = data;
     $.get(htmlSource, function (template) {
-        Mustache.escape = function (value) {return value;};
-        var rendered = Mustache.render(template, data);
-        Mustache.clearCache(template);
-        //layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, pathSting: htmlSource});
+        // Mustache.escape = function (value) {return value;};
+        var rendered = compileView(template, data);
+
+        if (data.opt !== null && data.opt == true) {
+            //console.log('hreeeee');
+        }
         layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
+
     }).error(function (jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error' && errorThrown == 'Not Found') {
             logMessage("Error parsing");
@@ -213,8 +212,8 @@ function parseTemplate(container, htmlSource, data, p) {
             data.error_layout = htmlSource;
             data.not_found = false;
             $.get(CONFIG.viewTemplates('404'), function (template) {
-                Mustache.parse(template);
-                var rendered = Mustache.render(template, data);
+                //Mustache.parse(template);
+                var rendered = compileView(template, data);
                 layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
             });
         }
@@ -240,7 +239,7 @@ function renderView(layout, container, dataSet) {
 
         $.get(CONFIG.viewTemplates('404'), function (template) {
             currentParentLayout = '';
-            var rendered = Mustache.render(template, dataSet);
+            var rendered = compileView(template, dataSet);
             layoutUrl({element: swallowJsContainer, htmlSource: rendered, renderedHTML: true});
         });
     } else {
@@ -266,7 +265,18 @@ if (CONFIG.private('loading') == true) {
 
 if (CONFIG.private('remove_swallow_css') == true) {
     var removeSwallowCss = CONFIG.private('remove_swallow_css');
-    $('.swallow_stylesheet').each(function(i) {
+    $('.swallow_stylesheet').each(function (i) {
         $(this).remove();
     });
+}
+
+/**
+ * SwallowJS Interpolator
+ * @param template
+ * @param data
+ * @return {*}
+ */
+function compileView(tempD, data, int) {
+    var template = Handlebars.compile(tempD, {noEscape: true});
+    return template(data);
 }
