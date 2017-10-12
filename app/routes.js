@@ -53,9 +53,9 @@ Path.map("#/").to(function () {
     //logMessage('entering the view');
 });
 
-Path.map("#/about").to(function () {
-    renderView('about', default_container);
-});
+// Path.map("#/about").to(function () {
+//     renderView('about', default_container);
+// });
 
 // Path.map("#/users/:user_id/:user_family").to(function () {
 //     var data = {
