@@ -45,17 +45,15 @@ Path.map("#/").to(function () {
     //     }
     // };
 
-    //
+
     renderView('home', default_container);
-
-    // renderView('home', default_container);
 }).enter(function () {
-    //logMessage('entering the view');
+    //logMessage('Y');
 });
 
-Path.map("#/about").to(function () {
-    renderView('about', default_container);
-});
+// Path.map("#/about").to(function () {
+//     renderView('about', default_container);
+// });
 
 // Path.map("#/users/:user_id/:user_family").to(function () {
 //     var data = {
