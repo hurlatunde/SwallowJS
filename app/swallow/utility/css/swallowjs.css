@@ -147,10 +147,10 @@ Main components
     left: 0;
     width: 100%;
     height: 100%;
-    background: url("img/firebase_bg.png") no-repeat center center;
-    background-size: cover;
-    -webkit-filter: blur(4px);
-    filter: blur(4px);
+    /*background: url("img/firebase_bg.png") no-repeat center center;*/
+    /*background-size: cover;*/
+    /*-webkit-filter: blur(4px);*/
+    /*filter: blur(4px);*/
 }
 .no-js .cd-blurred-bg {
     display: none;
@@ -422,15 +422,15 @@ Main components
 .inf h1 {
     margin-bottom: 20px;
     font-weight: 800;
-    font-size: 47px;
+    font-size: 36px;
     line-height: 54px;
     color: #424242;
 }
 
 .inf p {
     font-family: "Product Sans",arial,sans-serif;
-    font-size: 28px;
-    line-height: 1.29;
+    font-size: 18px;
+    line-height: 24px;
     color: #424242;
 }
 
@@ -490,7 +490,7 @@ Main components
     padding: 12px;
     background: #f5f5f5;
     border-top: 2px solid #797676;
-    display: none;
+    display: block;
 }
 
 p {
@@ -511,4 +511,90 @@ p {
     font-weight: 700;
     cursor: pointer;
     border-top: 2px solid #797676;
+}
+
+.json-container {
+    font-size: 13px;
+    line-height: 1.2;
+    font-family: monospace;
+    padding-left: 0;
+    margin-left: 20px;
+}
+.json-container,
+.json-container ul{
+    list-style: none !important;
+}
+.json-container ul{
+    padding: 0px !important;
+    padding-left: 20px !important;
+    margin: 0px !important;
+}
+
+.json-container li {
+    position: relative;
+}
+
+.json-container > li  > .key,
+.json-container .array .key{
+    display: none;
+}
+
+.json-container .array .object .key{
+    display: inline;
+}
+
+.json-container li:after {
+    content: ",";
+}
+
+.json-container li:last-child:after {
+    content: "";
+}
+
+.json-container .null{
+    color: #999;
+}
+.json-container .string{
+    color: #4e9a06;
+}
+.json-container .number{
+    color: #a40000;
+}
+.json-container .boolean{
+    color: #c4a000;
+}
+.json-container .key{
+    color: #204a87;
+}
+.json-container .expanded{
+    cursor: pointer;
+}
+
+.json-container .expanded:before{
+    content: "-";
+    font-size: 16px;
+    width: 13px;
+    text-align: center;
+    line-height: 13px;
+    font-family: sans-serif;
+    color: #933;
+    position: absolute;
+    left: -15px;
+    top: 3px;
+}
+
+.json-container .collapsed:before{
+    content: "+";
+    font-size: 14px;
+    color: #000;
+    top: 1px;
+}
+
+.json-container li .collapsed ~ .close:before {
+    content: "... ";
+    color: #999;
+}
+
+.json-container .hidden ~ ul {
+    display: none;
 }
