@@ -12,7 +12,7 @@ var SwallowJsCONFIG;
 
 SwallowJsCONFIG = (function () {
     var SwallowJs = {
-        'app_version': 'v2.1',
+        'app_version': 'v2.2',
     };
 
     var constants = {
