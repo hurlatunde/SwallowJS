@@ -19,7 +19,7 @@
  * Declare parent identifier here
  * @type {any}
  */
-var default_container = $('#default_container');
+var default_container = 'default_container';
 
 /**
  * *******************
@@ -32,28 +32,28 @@ var default_container = $('#default_container');
 Path.map("#/").to(function () {
 
     // An example of an array
-    // var data = {
-    //     "full_name": "Olatunde owokoniran",
-    //     "beatles": [
-    //         {"firstName": "John", "lastName": "Lennon"},
-    //         {"firstName": "Paul", "lastName": "McCartney"},
-    //         {"firstName": "George", "lastName": "Harrison"},
-    //         {"firstName": "Ringo", "lastName": "Starr"}
-    //     ],
-    //     "name": function () {
-    //         return this.firstName + " " + this.lastName;
-    //     }
-    // };
+    var data = {
+        "full_name": "Olatunde owokoniran",
+        "beatles": [
+            {"firstName": "John", "lastName": "Lennon"},
+            {"firstName": "Paul", "lastName": "McCartney"},
+            {"firstName": "George", "lastName": "Harrison"},
+            {"firstName": "Ringo", "lastName": "Starr"}
+        ],
+        "name": function () {
+            return this.firstName + " " + this.lastName;
+        }
+    };
 
+    renderView('home', default_container, data);
 
-    renderView('home', default_container);
 }).enter(function () {
     //logMessage('Y');
 });
 
-// Path.map("#/about").to(function () {
-//     renderView('about', default_container);
-// });
+Path.map("#/about").to(function () {
+    renderView('about', default_container);
+});
 
 // Path.map("#/users/:user_id/:user_family").to(function () {
 //     var data = {

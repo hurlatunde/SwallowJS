@@ -57,7 +57,7 @@ function layoutUrl(p) {
                 parentLayout = pLayout;
                 break;
             } else {
-                console_view("Error parsing parent layout. please add view");
+                logMessage("Error parsing parent layout. please add view");
                 break;
             }
         }
@@ -87,14 +87,14 @@ function layoutUrl(p) {
         // pathSting = pathSting.pop();
         // pathSting = pathSting.replace('.html','');
 
-        if (inner == true) {
-            var newElement = element.selector;
-            newElement = newElement.replace('#', '');
-            newElement = $('#' + isBlank(newElement));
+        if (inner === true) {
+            var newElement;
+            newElement = $('#' + isBlank(element));
             var rendered = compileView(childLayout, swallowData, true);
             layoutUrl({element: newElement, htmlSource: rendered, renderedHTML: true});
             return;
         } else {
+            logMessage('got here');
             //logMessage(childLayout);
             //return;
             data.body = childLayout;
@@ -102,15 +102,22 @@ function layoutUrl(p) {
             parseTemplate(swallowJsContainer, parentLayout, data);
             return;
         }
+    // } else {
+    //     logMessage('ddddd');
+    //     data.body = childLayout;
+    //     data.opt = true;
+    //     parseTemplate(swallowJsContainer, parentLayout, data);
+    //     // return;
     }
 
+    var blankElement = $('#'+element);
     if (typeof renderedHTML !== "undefined" || renderedHTML == true) {
-        element.html(htmlSource);
+        blankElement.html(htmlSource);
     } else {
         if (htmlSource) {
-            element.load(baseUrl + htmlSource);
+            blankElement.load(baseUrl + htmlSource);
         } else {
-            element.load(CONFIG.viewTemplates('404'));
+            blankElement.load(CONFIG.viewTemplates('404'));
         }
     }
 }
@@ -121,7 +128,7 @@ function layoutUrl(p) {
  * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
 function includeElement(container, htmlSource, data) {
-    container = $('#' + container);
+    //container = $('#' + container);
     parseTemplate(container, "views/elements/" + htmlSource + ".html", data);
 }
 
@@ -132,7 +139,7 @@ function includeElement(container, htmlSource, data) {
  * @param data
  */
 function appendElement(container, htmlSource, data) {
-    container = $('#' + container);
+    //container = $('#' + container);
     var htmlSource = "views/elements/" + htmlSource + ".html";
 
     $.get(htmlSource, function (template) {
@@ -141,7 +148,7 @@ function appendElement(container, htmlSource, data) {
         var rendered = compileView(template, data);
         container.append(rendered);
 
-    }).error(function (jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error' && errorThrown == 'Not Found') {
             logMessage("Error parsing");
         }
@@ -205,7 +212,7 @@ function parseTemplate(container, htmlSource, data, p) {
         }
         layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
 
-    }).error(function (jqXHR, textStatus, errorThrown) {
+    }).fail(function (jqXHR, textStatus, errorThrown) {
         if (textStatus == 'error' && errorThrown == 'Not Found') {
             logMessage("Error parsing");
             data.error_message = "File not found ** " + htmlSource + " **";
@@ -277,6 +284,18 @@ if (CONFIG.private('remove_swallow_css') == true) {
  * @return {*}
  */
 function compileView(tempD, data, int) {
+
+    /**
+     * if_eq
+     */
+    Handlebars.registerHelper('if_eq', function (a, b, opts) {
+        if (a == b) {
+            return opts.fn(this);
+        } else {
+            return opts.inverse(this);
+        }
+    });
+
     var template = Handlebars.compile(tempD, {noEscape: true});
     return template(data);
 }
