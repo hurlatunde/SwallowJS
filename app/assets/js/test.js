@@ -16,17 +16,22 @@
     //
     //
 
-    swallowObserver.subscribe(function(data){
+    swallowBroadcast.subscribe(function (data) {
         console.log(data)
     });
 
+    //swallowBroadcast.init(swallowBroadcast.onRecBroadcast);
+    // swallowObserver.subscribe(function(data){
+    //     console.log(data)
+    // });
 
+    swallowBroadcast.setBroadcast({type: 'INCREMENT'});
 
+    // swallowBroadcast({type: 'INCREMENT'});
 
-    swallowBroadcast({type: 'INCREMENT'});
-    store.dispatch({type: 'INCREMENT'});
-    store.dispatch({type: 'INCREMENT'});
-    store.dispatch({type: 'INCREMENT'});
-    store.dispatch({type: 'INCREMENT'});
+    // store.dispatch({type: 'INCREMENT'});
+    // store.dispatch({type: 'INCREMENT'});
+    // store.dispatch({type: 'INCREMENT'});
+    // store.dispatch({type: 'INCREMENT'});
 
 })(jQuery);
