@@ -21,36 +21,36 @@ $().ready(function () {
         .attr('href', 'swallow/utility/css/swallowjs.css');
 
     var includePath = [
+        'swallow/plugins/Rx.js',
+        'swallow/plugins/redux.min.js',
+        'swallow/plugins/es6-promise.auto.js',
         'swallow/utility/helper.js',
         'swallow/utility/bootstrap.js',
         'config.js',
-        // 'swallow/plugins/mustache/mustache.min.js',
         'swallow/plugins/handlebars/handlebars.js',
         'swallow/plugins/path/path.min.js',
         'swallow/service/initializeFirebaseConnection.js',
         'swallow/utility/layout.js',
+        'broadcast.js',
         'routes.js'
     ];
 
     var loadScript = function (includePath){
         var f = 0;
-        var firstPath = includePath[f];
+        var fPath = includePath[f];
 
-        var getSc = function (firstPath){
-            $.getScript(firstPath, function( data, textStatus, jqxhr ) {
-                if (textStatus === "success") {
-                    f++;
-                    firstPath = includePath[f];
-                    getSc(firstPath);
-                }
-
-                if (f == (includePath.length)) {
+        var getSc = function (fPath){
+            $.getScript(fPath, function( data, textStatus, jqxhr ) {
+                if (f === (includePath.length -1)) {
                     $(initPath);
                     logMessage('**** SwallowJs is working perfectly ****');
+                } else if (textStatus === "success") {
+                    f++;
+                    getSc(includePath[f]);
                 }
             });
         };
-        getSc(firstPath);
+        getSc(fPath);
     };
     loadScript(includePath);
 });

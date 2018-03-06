@@ -8,7 +8,6 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
-var temp = new Array();
 
 /**
  *
@@ -71,40 +70,76 @@ function cleanArray(actual) {
 }
 
 /**
- *
  * @author Femi TAIWO
  */
 function logMessage() {
+
     if (!debug) return;
     switch (arguments.length) {
         case 0:
             return;
         case 1:
-            temp.push(arguments[0]);
+            console_view(arguments[0]);
             console.log(arguments[0]);
             break;
         case 2:
-            temp.push(arguments[0], arguments[1]);
+            console_view(arguments[0], arguments[1]);
             console.log(arguments[0], arguments[1]);
             break;
         case 3:
-            temp.push(arguments[0], arguments[1], arguments[2]);
+            console_view(arguments[0], arguments[1], arguments[2]);
             console.log(arguments[0], arguments[1], arguments[2]);
             break;
         case 4:
-            temp.push(arguments[0], arguments[1], arguments[2], arguments[3]);
+            console_view(arguments[0], arguments[1], arguments[2], arguments[3]);
             console.log(arguments[0], arguments[1], arguments[2], arguments[3]);
             break;
         default:
             console.log(arguments);
-            temp.push(arguments);
+            console_view(arguments);
     }
 }
 
-function console_view(argument) {
+function JsonViewer(self, options) {
+    var json = $.parseJSON(self.data('json'));
+    options = $.extend({}, this.defaults, options);
+    var expanderClasses = getExpanderClasses(options.expanded);
+    self.html('<ul class="json-container"></ul>');
+    self.find('.json-container').append(json2html([json], expanderClasses));
+}
 
-    // console.log(argument);
-    // return;
+function console_view(argument_1, argument_2, argument_3, argument_4) {
+    // $('body').append('<div id="swallow_console_view"><div id="close_console_view">Console Message</div><div id="console_message"></div></div>');
+    //
+    // var str = argument_1 + "|" + argument_2 + "|" + argument_3 + "|" + argument_4;
+    // var temp = new Array();
+    // temp = str.split("|");
+    // var setData = {};
+    // for (var a in temp) {
+    //     if (temp[a] != "undefined") {
+    //         setData[a] = temp[a];
+    //     }
+    // }
+    //
+    // var consoleLogMessagessHolder = $('#console_message');
+    // console.log(consoleLogMessagessHolder);
+
+
+   // new JsonViewer(self, options);
+
+//     var self = $(this
+// else
+//     if (typeof json == 'object') {
+//         self.data('json', JSON.stringify(json))
+//     }
+//     else {
+//         self.data('json', '');
+//     }
+//     new JsonViewer(self, options);
+//     console.log(setData);
+//     return;
+
+
     //
     //
     // var str = argument_1 + "|" + argument_2 + "|" + argument_3 + "|" + argument_4;
@@ -165,6 +200,7 @@ jsonview = function (json, options) {
     return this.each(function () {
         var self = $(this);
         console.log(self);
+
         // if (typeof json == 'string') {
         //     self.data('json', json);
         // }
@@ -174,7 +210,7 @@ jsonview = function (json, options) {
         // else {
         //     self.data('json', '');
         // }
-       // new JsonViewer(self, options);
+        // new JsonViewer(self, options);
     });
 };
 

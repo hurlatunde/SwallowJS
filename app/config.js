@@ -25,6 +25,7 @@ var CONFIG = (function () {
     // Templates
     var views = {
         'home':              'views/home.html',
+        'about':              'views/about.html',
         'page_loading':      'views/page_loading.html',
         '404':               'views/error/404.html',
     };
@@ -62,7 +63,7 @@ var CONFIG = (function () {
  * Default SwallowJs main container
  * Please do not remove line 65. The system needs to work properly
  */
-var swallowJsContainer  = $('#' + CONFIG.private('main_container'));
+var swallowJsContainer  = CONFIG.private('main_container');
 
 /**
  *
