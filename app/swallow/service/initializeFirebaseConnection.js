@@ -23,7 +23,7 @@ if (typeof firebase !== 'undefined') {
      */
     if (firebaseConfig.apiKey != 'APP-API-KEY' || firebaseConfig.databaseURL != 'APP-DATABASE-URL') {
         logMessage('**** Firebase database config. ****');
-        var mainApp = firebase.initializeApp(firebaseConfig);
+        // var mainApp = firebase.initializeApp(firebaseConfig);
 
         /**
          * Connecting to Firebase database system
