@@ -21,6 +21,8 @@ $().ready(function () {
         .attr('href', 'swallow/utility/css/swallowjs.css');
 
     var includePath = [
+        'swallow/plugins/Firebase/firebase.js',
+        'swallow/plugins/Firebase/firebase-firestore.js',
         'swallow/plugins/Rx.js',
         'swallow/plugins/redux.min.js',
         'swallow/plugins/es6-promise.auto.js',

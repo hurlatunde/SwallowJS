@@ -76,3 +76,10 @@ var debug = CONFIG.private('debug');
  * Default SwallowJs firebaseConfig
  */
 var firebaseConfig = CONFIG.firebaseConfig('firebase_config');
+
+/**
+ * Firebase init
+ * @Firebase https://firebase.google.com/docs
+ * This as to be
+ */
+var mainApp = firebase.initializeApp(firebaseConfig);
