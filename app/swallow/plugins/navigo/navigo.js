@@ -443,7 +443,7 @@ Navigo.prototype = {
     return '';
   },
   _findLinks: function _findLinks() {
-    return [].slice.call(document.querySelectorAll('[data-navigo]'));
+    return [].slice.call(document.querySelectorAll('[swRoute]'));
   },
   _onLocationChange: function _onLocationChange() {
     this.resolve();
