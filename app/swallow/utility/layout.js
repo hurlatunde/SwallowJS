@@ -64,10 +64,11 @@ let swLayout = (function () {
     }
 
     function outPut(renderedHTML, htmlSource, element) {
-        let instanceElement = document.getElementById(element);
-        console.log(htmlSource);
+        // let instanceElement = document.getElementById(element);
+        // console.log(htmlSource);
+        let blankElement = $('#'+element);
         if (typeof renderedHTML !== "undefined" || renderedHTML === true) {
-            instanceElement.innerHTML = htmlSource;
+            blankElement.html(htmlSource);
         } else {
             if (!swHelper.empty(htmlSource)) {
                 blankElement.load(baseUrl + htmlSource);
@@ -250,8 +251,7 @@ function layoutUrl(p) {
  * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
 function includeElement(container, htmlSource, data) {
-    container = $('#' + container);
-    parseTemplate(container, "views/elements/" + htmlSource + ".html", data);
+    parseTemplate(container, "/views/elements/" + htmlSource + ".html", data);
 }
 
 /**
@@ -260,13 +260,9 @@ function includeElement(container, htmlSource, data) {
  * @param data
  */
 function appendElement(container, htmlSource, data) {
-    //container = $('#' + container);
-    var htmlSource = "views/elements/" + htmlSource + ".html";
-
-    $.get(htmlSource, function (template) {
+    swLayout.getContent("/views/elements/" + htmlSource + ".html", function (template) {
         // Mustache.clearCache(template);
-        // Mustache.escape = function (value) {return value;};
-        var rendered = compileView(template, data);
+        let rendered = swLayout.compile(template, data);
         container.append(rendered);
 
     }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -331,8 +327,6 @@ function parseTemplate(container, htmlSource, data, p) {
         if (data.opt !== null && data.opt === true) {
             //console.log('hreeeee');
         }
-
-        console.log(container, template);
 
         layoutUrl({
             element: container,
