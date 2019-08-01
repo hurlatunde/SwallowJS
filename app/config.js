@@ -22,14 +22,6 @@ var CONFIG = (function () {
         'debug': true
     };
 
-    // Templates
-    var views = {
-        'home':              'views/home.html',
-        'about':              'views/about.html',
-        'page_loading':      'views/page_loading.html',
-        '404':               'views/error/404.html',
-    };
-
     var constants = {
         // define constants here
         'true': '1',
@@ -46,9 +38,6 @@ var CONFIG = (function () {
     return {
         private: function (name) {
             return SwallowJs[name];
-        },
-        viewTemplates: function (name) {
-            return views[name];
         },
         firebaseConfig: function () {
             return firebase_config;
