@@ -92,15 +92,28 @@ let swHelper = {
             if (jsFilePath.toString().indexOf('_js?_=') >= 0) {
                 let jsFilePathParticles = jsFilePath.split('._js?_=');
                 let jsFile = jsFilePathParticles[0];
-                let nodeId = jsFilePathParticles[1];
+                let parentScript = false;
+                let nodeId;
+
+                if ((jsFilePathParticles[1].indexOf('_parentLayout') >= 0)) {
+                    parentScript = true;
+                    nodeId = jsFilePathParticles[1].replace('_parentLayout', '');
+                } else {
+                    nodeId = jsFilePathParticles[1];
+                }
 
                 let ref = document.getElementsByTagName( "script" )[ 0 ];
+
                 let script = document.createElement("script");
                 script.type = "text/javascript";
-                script.classList.add('javascript_include');
+                script.classList.add('swInclude');
                 script.setAttribute('data-swNode', nodeId);
                 script.src = `${jsFile}.js`;
-                ref.parentNode.insertBefore( script, ref );
+                if (parentScript) {
+                    ref.parentNode.appendChild(script);
+                } else {
+                    ref.parentNode.appendChild(script);
+                }
             }
         }
     }
