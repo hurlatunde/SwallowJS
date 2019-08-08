@@ -15,10 +15,10 @@ if ("undefined" == typeof jQuery)
 
 $().ready(function () {
 
-    $('<link>')
-        .appendTo('head')
-        .attr({type: 'text/css', rel: 'stylesheet', class: 'swallow_stylesheet'})
-        .attr('href', 'swallow/utility/css/swallowjs.css');
+    // $('<link>')
+    //     .appendTo('head')
+    //     .attr({type: 'text/css', rel: 'stylesheet', class: 'swallow_stylesheet'})
+    //     .attr('href', 'swallow/utility/css/swallowjs.css');
 
     var includePath = [
         'swallow/utility/helper.js',
@@ -45,7 +45,6 @@ $().ready(function () {
         let getSc = function (fPath){
             $.getScript(fPath, function( data, textStatus, jqxhr ) {
                 if (f === (includePath.length -1)) {
-                    //$(initPath);
                     logMessage('**** SwallowJs is working perfectly ****');
                 } else if (textStatus === "success") {
                     f++;

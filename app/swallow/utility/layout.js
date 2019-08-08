@@ -14,7 +14,8 @@ let swallowData = {};
 let swallowParentData = {};
 let inner = false;
 let layoutKeyLength = 12;
-let swallowJsElement = swallowJsContainer
+let nodeId;
+let swallowJsElement = swallowJsContainer;
 
 
 let swLayout = (function () {
@@ -23,13 +24,15 @@ let swLayout = (function () {
         '404': '/views/error/404.html',
     }
 
-    function getContentFromPath(htmlSource, callBack) {
+    let layoutNodeId;
+
+    function getContentFromPath(htmlSource, node_id, callBack) {
         try {
             $.get(htmlSource, function (template) {
                 // if (data.opt !== null && data.opt == true) {
                 //     //console.log('hreeeee');
                 // }
-                return callBack(template);
+                return callBack([template, node_id]);
             }).fail(function (jqXHR, textStatus, errorThrown) {
                 if (textStatus === 'error' && errorThrown === 'Not Found') {
                     $.get(swLayout.error404, function (template) {
@@ -63,10 +66,9 @@ let swLayout = (function () {
         return randomString;
     }
 
-    function outPut(renderedHTML, htmlSource, element) {
-        // let instanceElement = document.getElementById(element);
-        // console.log(htmlSource);
-        let blankElement = $('#'+element);
+    function outPut(renderedHTML, htmlSource, element, nodeId) {
+        let blankElement = $('#' + element);
+        blankElement.attr('data-swNode', nodeId);
         if (typeof renderedHTML !== "undefined" || renderedHTML === true) {
             blankElement.html(htmlSource);
         } else {
@@ -76,6 +78,8 @@ let swLayout = (function () {
                 blankElement.load(layoutInterface['404']);
             }
         }
+
+        updateSwLinks()
     }
 
     /**
@@ -100,23 +104,46 @@ let swLayout = (function () {
         return template(data);
     }
 
+    function tempInterpolator(template, nodeId) {
+
+        //check for scripts included ~ loadScripts
+        if (template.indexOf("loadScripts") >= 0) {
+            let regex = /(?=loadScripts\(\[)(.|(\s|\S))*?(?=\]\))/gm; // check for loaded loadScripts
+            let regExp = regex.exec(template)
+            if (!swHelper.empty(regExp[0])) {
+                let regExpString = regExp[0];
+                let regExpStringReplaced = regExpString.replace(/\.js/g, `._js?_=${nodeId}`);
+                return template.replace(regExpString, regExpStringReplaced);
+            } else {
+                return template;
+            }
+        }
+
+    }
+
     return {
         viewTemplates: function (view) {
             return layoutInterface[view];
         },
-        outPutView: function (renderedHTML, htmlSource, element) {
-            return outPut(renderedHTML, htmlSource, element)
+        outPutView: function (renderedHTML, htmlSource, element, node_id) {
+            return outPut(renderedHTML, htmlSource, element, node_id)
         },
-        getContent: function (htmlSource, callback) {
-            return getContentFromPath(htmlSource, function (data) {
+        getContent: function (htmlSource, node_id, callback) {
+            return getContentFromPath(htmlSource, node_id, function (data) {
                 return callback(data);
             });
         },
         generateNode: function (length) {
             return randomString(length)
         },
-        compile: function(template, data) {
+        compile: function (template, data) {
             return compileView(template, data);
+        },
+        templateInterpolator: function (template, nodeId) {
+            return tempInterpolator(template, nodeId);
+        },
+        nodeId: function () {
+            return self.layoutNodeId;
         },
         error404: layoutInterface['404']
     }
@@ -125,13 +152,13 @@ let swLayout = (function () {
 
 function layoutUrl(p) {
 
-    var element = p.element;
-    var htmlSource = p.htmlSource;
-    var renderedHTML = p.renderedHTML;
-    var logic = p.logic;
-    var res;
-    var data = {};
-    var parentLayoutSet;
+    let element = p.element;
+    let htmlSource = p.htmlSource;
+    let renderedHTML = p.renderedHTML;
+    let logic = p.logic;
+    let res;
+    let data = {};
+    let parentLayoutSet;
 
     if (typeof logic === "undefined" || logic === null) {
         logic = false;
@@ -193,31 +220,35 @@ function layoutUrl(p) {
         // pathSting = pathSting.replace('.html','');
 
         if (inner === true) {
-            var newElement;
-            newElement = $('#' + $.trim(element));
-            var rendered = compileView(childLayout, swallowData, true);
+            swallowData.swNode = p.generatedNode;
 
             layoutUrl({
-                element: newElement,
+                element: $.trim(element),
                 parentInt: element,
-                htmlSource: rendered,
+                htmlSource: swLayout.compile(childLayout, swallowData, true),
                 renderedHTML: true
             });
             return;
         } else {
             data.body = childLayout;
-            data.swNode = swLayout.generateNode(layoutKeyLength);
+            data.swNode = p.generatedNode; //swLayout.generateNode(layoutKeyLength);
             data.parentInt = element;
             data.opt = true;
 
-            swLayout.getContent(parentLayout, function (content) {
+            swLayout.getContent(parentLayout, data.swNode, function (response) {
+                swHelper.swGlobalId = swLayout.generateNode(layoutKeyLength);
+                let content = response[0];
+                let node_id = swHelper.swGlobalId;
+
                 if (content.indexOf(element) >= 0) {
                     let re = new RegExp('(?=' + element + ').*?(?=<)');
                     let regExp = content.match(re);
                     if (!swHelper.empty(regExp[0])) {
                         let ex = regExp[0];
-                        content = content.replace(ex, ex + " {{body}} ");
+                        let exString = ex.replace('>', ` data-swNode='${node_id}'> {{body}}`);
+                        content = swLayout.templateInterpolator(content.replace(ex, exString), node_id)
                         layoutUrl({
+                            generatedNode: p.generatedNode,
                             element: element,
                             element: swallowJsElement,
                             htmlSource: swLayout.compile(content, data),
@@ -231,7 +262,6 @@ function layoutUrl(p) {
                 }
             });
             return;
-
         }
 
         // } else {
@@ -242,7 +272,8 @@ function layoutUrl(p) {
         //     // return;
 
     }
-    swLayout.outPutView(renderedHTML, htmlSource, element);
+
+    swLayout.outPutView(renderedHTML, htmlSource, element, p.generatedNode);
 }
 
 /**
@@ -273,7 +304,6 @@ function appendElement(container, htmlSource, data) {
 }
 
 /**
- *
  * $Data params as to be an object
  */
 function parseTemplate(container, htmlSource, data, p) {
@@ -296,7 +326,6 @@ function parseTemplate(container, htmlSource, data, p) {
     /**
      * Default SwallowJs current page URL
      */
-
     data.here = baseUrl + window.location.hash;
 
     /**
@@ -306,21 +335,26 @@ function parseTemplate(container, htmlSource, data, p) {
     data.current_page = currentPage;
 
     /**
-     *
      * @type {any}
      */
     data.app_version = swallowVersion;
 
-    if (currentPage == "/") {
+    let generatedString = swLayout.generateNode(12);
+
+    if (currentPage === "/") {
         data.home = true;
     }
 
-    if (currentPage != "/") {
+    if (currentPage !== "/") {
         data[currentPage] = true;
     }
 
     swallowData = data;
-    swLayout.getContent(htmlSource, function (template) {
+    data.generatedNode = generatedString;
+    swHelper.swGlobalId = generatedString;
+
+    swLayout.getContent(htmlSource, data.generatedNode, function (response) {
+        let template = response[0];
         // Mustache.escape = function (value) {return value;};
         //var rendered = swLayout.compile(template, data);
 
@@ -328,36 +362,15 @@ function parseTemplate(container, htmlSource, data, p) {
             //console.log('hreeeee');
         }
 
+        template = swLayout.templateInterpolator(template, data.generatedNode)
         layoutUrl({
             element: container,
             htmlSource: swLayout.compile(template, data),
             renderedHTML: true,
-            logic: p
+            logic: p,
+            generatedNode: data.generatedNode
         });
     });
-
-    // $.get(htmlSource, function (template) {
-    //     // Mustache.escape = function (value) {return value;};
-    //     var rendered = compileView(template, data);
-    //
-    //     if (data.opt !== null && data.opt == true) {
-    //         //console.log('hreeeee');
-    //     }
-    //     layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
-    //
-    // }).fail(function (jqXHR, textStatus, errorThrown) {
-    //     if (textStatus === 'error' && errorThrown == 'Not Found') {
-    //         logMessage("Error parsing");
-    //         data.error_message = "File not found ** " + htmlSource + " **";
-    //         data.error_layout = htmlSource;
-    //         data.not_found = false;
-    //         $.get(swLayout.error404, function (template) {
-    //             //Mustache.parse(template);
-    //             var rendered = compileView(template, data);
-    //             layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
-    //         });
-    //     }
-    // });
 }
 
 /**
@@ -383,7 +396,8 @@ function renderView(layout, container, dataSet) {
         dataSet.error_layout = layout;
         dataSet.not_found = true;
 
-        swLayout.getContent(swLayout.error404, function (template) {
+        swLayout.getContent(swLayout.error404, function (response) {
+            let template = response[0];
             //currentParentLayout = '';
             //let rendered = swLayout.compile(template, dataSet);
             layoutUrl({
@@ -393,9 +407,10 @@ function renderView(layout, container, dataSet) {
             });
         });
 
-            //$.get(swLayout.error404, function (template) {
     } else {
-        swLayout.getContent(layout, function (template) {
+        // swLayout.getContent(layout, function (response) {
+        //     let template = response[0];
+
             // if (template.indexOf("---") >= 0) {
             //     parseTemplate(container, layout, dataSet, true);
             // } else {
@@ -403,7 +418,7 @@ function renderView(layout, container, dataSet) {
             //     parseTemplate(container, layout, dataSet, false);
             // }
             parseTemplate(container, layout, dataSet, true);
-        })
+        // })
         // $.get(layout, function (template) {
         // });
     }

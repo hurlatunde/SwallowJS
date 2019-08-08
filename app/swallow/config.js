@@ -13,3 +13,6 @@ let useHash = true; // Defaults to: false
 let hash = '#!'; // Defaults to: '#'
 let swRouter = new Navigo(root, useHash, hash);
 
+let updateSwLinks = function () {
+    swRouter.updatePageLinks();
+}

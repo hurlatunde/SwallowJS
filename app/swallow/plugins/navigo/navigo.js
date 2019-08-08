@@ -326,7 +326,6 @@ Navigo.prototype = {
             return false;
           }
           var location = self.getLinkPath(link);
-
           if (!self._destroyed) {
             e.preventDefault();
             self.navigate(location.replace(/\/+$/, '').replace(/^\/+/, '/'));
