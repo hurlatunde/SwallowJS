@@ -104,7 +104,7 @@ let swLayout = (function () {
         return template(data);
     }
 
-    function tempInterpolator(template, nodeId) {
+    function tempInterpolator(template, nodeId, view = false) {
 
         //check for scripts included ~ loadScripts
         if (template.indexOf("loadScripts") >= 0) {
@@ -112,7 +112,8 @@ let swLayout = (function () {
             let regExp = regex.exec(template)
             if (!swHelper.empty(regExp[0])) {
                 let regExpString = regExp[0];
-                let regExpStringReplaced = regExpString.replace(/\.js/g, `._js?_=${nodeId}`);
+                let viewType = (view) ? `._js?_=${nodeId}_parentLayout` : `._js?_=${nodeId}`;
+                let regExpStringReplaced = regExpString.replace(/\.js/g, viewType);
                 return template.replace(regExpString, regExpStringReplaced);
             } else {
                 return template;
@@ -139,8 +140,8 @@ let swLayout = (function () {
         compile: function (template, data) {
             return compileView(template, data);
         },
-        templateInterpolator: function (template, nodeId) {
-            return tempInterpolator(template, nodeId);
+        templateInterpolator: function (template, nodeId, view) {
+            return tempInterpolator(template, nodeId, view);
         },
         nodeId: function () {
             return self.layoutNodeId;
@@ -223,6 +224,7 @@ function layoutUrl(p) {
             swallowData.swNode = p.generatedNode;
 
             layoutUrl({
+                generatedNode: swallowData.swNode,
                 element: $.trim(element),
                 parentInt: element,
                 htmlSource: swLayout.compile(childLayout, swallowData, true),
@@ -231,24 +233,23 @@ function layoutUrl(p) {
             return;
         } else {
             data.body = childLayout;
-            data.swNode = p.generatedNode; //swLayout.generateNode(layoutKeyLength);
+            data.swNode = swLayout.generateNode(layoutKeyLength);
             data.parentInt = element;
             data.opt = true;
 
             swLayout.getContent(parentLayout, data.swNode, function (response) {
-                swHelper.swGlobalId = swLayout.generateNode(layoutKeyLength);
                 let content = response[0];
-                let node_id = swHelper.swGlobalId;
+                let node_id = p.generatedNode;
 
                 if (content.indexOf(element) >= 0) {
                     let re = new RegExp('(?=' + element + ').*?(?=<)');
                     let regExp = content.match(re);
                     if (!swHelper.empty(regExp[0])) {
                         let ex = regExp[0];
-                        let exString = ex.replace('>', ` data-swNode='${node_id}'> {{body}}`);
-                        content = swLayout.templateInterpolator(content.replace(ex, exString), node_id)
+                        let exString = ex.replace('>', ` data-swNode='${p.generatedNode}'> {{body}}`);
+                        content = swLayout.templateInterpolator(content.replace(ex, exString), data.swNode, true)
                         layoutUrl({
-                            generatedNode: p.generatedNode,
+                            generatedNode: data.swNode,
                             element: element,
                             element: swallowJsElement,
                             htmlSource: swLayout.compile(content, data),
