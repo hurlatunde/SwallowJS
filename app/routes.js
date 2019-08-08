@@ -51,6 +51,10 @@ swRouter.on('/', function () {
     );
 }).resolve();
 
+swRouter.on('/about', function () {
+  console.log('got here');
+}).resolve();
+
 // In the case of the default handler and notFound handler the function receives only query as parameter.
 swRouter.notFound(function (query) {
     // ...
