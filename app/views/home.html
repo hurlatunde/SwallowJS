@@ -3,28 +3,25 @@ layout: default.html
 title:  {{full_name}}
 ---
 
-
 <script>
     loadScripts([
         '/assets/js/test.js'
     ]);
 </script>
 
-<main id="cd-main-content">
-    <section id="cd-intro">
-        <div class="inf">
-            <h1> SwallowJs starter Framework </h1>
-            <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text
-                and a mostly barebones HTML document.</p>
-            <!--<a href="https://docs-swallowjs.github.io" class="bt" target="_blank"> Documentation </a>-->
-        {{ full_name }}
-        </div>
-        <div id="header"></div>
-        <script>includeElement('header', 'header-element');</script>
-    </section>
-</main>
-
-<div class="cd-shadow-layer"></div>
-
-<div id="footer"></div>
-<script>includeElement('footer', 'footer-element');</script>
+<div>
+    <div style="text-align: center;">
+        <main id="cd-main-content">
+            <section id="cd-intro">
+                <div class="inf">
+                    <h1> SwallowJs starter Framework </h1>
+                    <p class="lead">Use this document as a way to quickly start any new project.<br> All you get is this text
+                        and a mostly barebones HTML document.</p>
+                    <a href="https://docs-swallowjs.github.io" class="bt" target="_blank"> Documentation </a>
+                </div>
+                <div id="header"></div>
+                <script>includeElement('header', 'header-element');</script>
+            </section>
+        </main>
+    </div>
+</div>

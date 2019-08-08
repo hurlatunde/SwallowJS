@@ -103,45 +103,34 @@
 
 <div class="container">
     <div class="error" style="    padding: 68px;">
-        {{#error_message}}
+        {{#if error_message}}
         <div class="error-code m-b-10 m-t-20"> Internal Error! <i class="fa fa-warning"></i></div>
-        {{/error_message}}
-
-        {{^error_message}}
+        {{else}}
         <div class="error-code m-b-10 m-t-20">404 Page Not Found <i class="fa fa-warning"></i></div>
-        {{/error_message}}
+        {{/if}}
 
-        {{#error_message}}
-        <h3 class="font-bold" style="font-size: 18px;margin: 25px 0;">{{error_message}}</h3>
+        {{#if error_message}}
+            <h3 class="font-bold" style="font-size: 18px;margin: 25px 0;">{{error_message}}</h3>
 
-        {{#not_found}}
-        <div style="width: 33%; margin: 0 auto; text-align: left! important">
-            <figure class="highlight">
-            <pre>
-                <code class="language-html" data-lang="html">var layout = {
-  ......
-  '{{error_layout}}':   'views/{{error_layout}}.html',
-  ......
-};</code>
-            </pre>
-            </figure>
-        </div>
-        {{/not_found}}
+            {{#if not_found}}
+                <div style="width: 33%; margin: 0 auto; text-align: left! important">
+                    <figure class="highlight">
+                    <pre>
+                        <code class="language-html" data-lang="html">var layout = {
+                          ......
+                          '{{error_layout}}':   'views/{{error_layout}}.html',
+                          ......
+                        };</code>
+                    </pre>
+                    </figure>
+                </div>
+            {{/if}}
 
-        {{/error_message}}
+        {{/if}}
 
         <div class="error-desc">
             <p style="font-size: 16px; line-height: 25px; color: #647788;">
-                Sorry, but the page you are looking for was either not found or does not exist. <br/>
-                Try refreshing the page or click the button below to go back to the Homepage. </p>
-
-
-            <div>
-                <a class=" login-detail-panel-button btn" href="#/">
-                    <i class="fa fa-arrow-left"></i>
-                    Go back to Homepage
-                </a>
-            </div>
+                Sorry, but the page you are looking for was either not found or does not exist.  </p>
 
         </div>
     </div>

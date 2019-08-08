@@ -15,36 +15,36 @@ if ("undefined" == typeof jQuery)
 
 $().ready(function () {
 
-    $('<link>')
-        .appendTo('head')
-        .attr({type: 'text/css', rel: 'stylesheet', class: 'swallow_stylesheet'})
-        .attr('href', 'swallow/utility/css/swallowjs.css');
+    // $('<link>')
+    //     .appendTo('head')
+    //     .attr({type: 'text/css', rel: 'stylesheet', class: 'swallow_stylesheet'})
+    //     .attr('href', 'swallow/utility/css/swallowjs.css');
 
     var includePath = [
+        'swallow/utility/helper.js',
+        'swallow/plugins/handlebars/handlebars.js',
+        'swallow/plugins/navigo/navigo.js',
         'swallow/plugins/Firebase/firebase.js',
         'swallow/plugins/Firebase/firebase-firestore.js',
+        'swallow/utility/bootstrap.js',
+        'swallow/config.js',
+        'config.js',
+        'swallow/service/initializeFirebaseConnection.js',
         'swallow/plugins/Rx.js',
         'swallow/plugins/redux.min.js',
         'swallow/plugins/es6-promise.auto.js',
-        'swallow/utility/helper.js',
-        'swallow/utility/bootstrap.js',
-        'config.js',
-        'swallow/plugins/handlebars/handlebars.js',
-        'swallow/plugins/path/path.min.js',
-        'swallow/service/initializeFirebaseConnection.js',
         'swallow/utility/layout.js',
         'broadcast.js',
         'routes.js'
     ];
 
-    var loadScript = function (includePath){
-        var f = 0;
-        var fPath = includePath[f];
+    let loadScript = function (includePath){
+        let f = 0;
+        let fPath = includePath[f];
 
-        var getSc = function (fPath){
+        let getSc = function (fPath){
             $.getScript(fPath, function( data, textStatus, jqxhr ) {
                 if (f === (includePath.length -1)) {
-                    $(initPath);
                     logMessage('**** SwallowJs is working perfectly ****');
                 } else if (textStatus === "success") {
                     f++;

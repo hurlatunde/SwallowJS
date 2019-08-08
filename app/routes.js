@@ -13,24 +13,23 @@
  * @link          http://docs.swallow.js SwallowJs(tm) Project
  * @package       routes.js
  * @since         SwallowJs(tm) v 0.2.9
+ * @plugin        Navigo: https://github.com/krasimir/navigo
  */
 
 /**
  * Declare parent identifier here
  * @type {any}
  */
-var default_container = 'default_container';
 
-/**
- * *******************
- * add route below
- * *******************
- *
- * index.html
- * landing page. (This is the first page you see)
- */
-Path.map("#/").to(function () {
+let views = {
+    'home': 'views/home.html',
+    'about': 'views/about.html',
+    'page_loading': 'views/page_loading.html',
+    '404': 'views/error/404.html',
+};
 
+
+swRouter.on('/', function () {
     // An example of an array
     var data = {
         "full_name": "Olatunde owokoniran",
@@ -45,28 +44,37 @@ Path.map("#/").to(function () {
         }
     };
 
-    renderView('home', default_container, data);
+    renderView(
+        views.home,
+        'default_container',
+        data
+    );
+}).resolve();
 
-}).enter(function () {
-    //logMessage('Y');
+swRouter.on('/about', function () {
+  console.log('got here');
+}).resolve();
+
+// In the case of the default handler and notFound handler the function receives only query as parameter.
+swRouter.notFound(function (query) {
+    // ...
 });
 
-Path.map("#/about").to(function () {
-    renderView('about', default_container);
-});
+//Wild card is also supported:
+swRouter.on('/user/*', function () {
+    // This function will be called on every
+    // URL that starts with /user
+}).resolve();
 
-// Path.map("#/users/:user_id/:user_family").to(function () {
-//     var data = {
-//         user_id: this.params["user_id"],
-//         user_family: this.params["user_family"],
-//     };
-//     renderView('users', swallowJsContainer, data);
-// });
+// swRouter.on('/user/:id/:action', function (params) {
+//     // If we have http://site.com/user/42/save as a url then
+//     // params.id = 42
+//     // params.action = save
+// }).resolve();
 
-/**
- * This is a route with optional components.  Optional components in a route are contained
- *  within brackets.  The route below will match both "#/about" and "#/about/author".
- */
-// Path.map("#/about(/author)").to(function(){
-//
-// });
+// swRouter.on('/user/:id/:action', function (params, query) {
+//     // If we have http://site.com/user/42/save?answer=42 as a url then
+//     // params.id = 42
+//     // params.action = save
+//     // query = answer=42
+// }).resolve();

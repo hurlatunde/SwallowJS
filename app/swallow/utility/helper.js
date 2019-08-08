@@ -9,6 +9,118 @@
  */
 
 
+let swHelper = {
+
+    swGlobalId: null,
+
+    /**
+     * @param baseUrl
+     * @returns {string}
+     */
+    getAbsolutePath: function (baseUrl) {
+        let loc = window.location;
+        if (baseUrl === false) {
+            let hash = window.location.hash;
+            hash = hash.trim().split('/');
+            hash = this.cleanArray(hash);
+            return hash[1];
+        }
+        let pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
+        return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
+    },
+
+    /**
+     *  Will remove all false values: undefined, null, 0, false, NaN and "" (empty string)
+     * @param params
+     * @return {Array}
+     */
+    cleanArray: function (params) {
+        let newArray = [];
+        for (let i = 0; i < params.length; i++) {
+            if (params[i]) {
+                newArray.push(params[i]);
+            }
+        }
+        return newArray;
+    },
+
+    /**
+     * @param pString
+     * @returns {boolean}
+     */
+    isBlank: function (pString) {
+        if (!pString || pString.length === 0) {
+            return true;
+        }
+        // checks for a non-white space character
+        // which I think [citation needed] is faster
+        // than removing all the whitespace and checking
+        // against an empty string
+        return !/[^\s]+/.test(pString);
+    },
+
+    /**
+     * @param e
+     * @returns {boolean}
+     */
+    empty: function (e) {
+        switch (e) {
+            case typeof (e) === 'string':
+                return !e.trim();
+            case "":
+            case 0:
+            case "0":
+            case null:
+            case typeof (e) === 'object':
+                if (JSON.stringify(e) === '{}' || JSON.stringify(e) === '[]') {
+                    return true;
+                } else if (!e) {
+                    return true;
+                }
+                return false;
+            case false:
+            case typeof this == "undefined":
+                return true;
+            default:
+                return false;
+        }
+    },
+
+    loadScripts: function(includePath)  {
+        for (let i = 0; i < includePath.length; i++) {
+            let jsFilePath = includePath[i];
+            if (jsFilePath.toString().indexOf('_js?_=') >= 0) {
+                let jsFilePathParticles = jsFilePath.split('._js?_=');
+                let jsFile = jsFilePathParticles[0];
+                let nodeId = jsFilePathParticles[1];
+
+                let ref = document.getElementsByTagName( "script" )[ 0 ];
+                let script = document.createElement("script");
+                script.type = "text/javascript";
+                script.classList.add('javascript_include');
+                script.setAttribute('data-swNode', nodeId);
+                script.src = `${jsFile}.js`;
+                ref.parentNode.insertBefore( script, ref );
+            }
+        }
+    }
+
+}
+
+
+let error = {
+
+    /**
+     * @param error
+     * @returns {*}
+     */
+    throwError: function (error) {
+        throw new Error(error)
+    }
+
+}
+
+
 /**
  *
  * @param parameters
@@ -21,7 +133,7 @@ function swallowLoading(parameters) {
 
     if (typeof element === "undefined" || element === null) {
         parentElement = $('body');
-        //parentElement.css('position', 'relative');
+        //parentElement.css('position', 'relativegetAbsolutePath');
     } else {
         parentElement = $("#" + element);
         //parentElement.css('position', 'relative');
@@ -52,21 +164,6 @@ function swallowLoading(parameters) {
         $("#" + element + " #modal_loading").html('');
     }
 
-}
-
-/**
- *  Will remove all false values: undefined, null, 0, false, NaN and "" (empty string)
- * @param actual
- * @return {Array}
- */
-function cleanArray(actual) {
-    var newArray = new Array();
-    for (var i = 0; i < actual.length; i++) {
-        if (actual[i]) {
-            newArray.push(actual[i]);
-        }
-    }
-    return newArray;
 }
 
 /**
@@ -125,7 +222,7 @@ function console_view(argument_1, argument_2, argument_3, argument_4) {
     // console.log(consoleLogMessagessHolder);
 
 
-   // new JsonViewer(self, options);
+    // new JsonViewer(self, options);
 
 //     var self = $(this
 // else
@@ -214,36 +311,6 @@ jsonview = function (json, options) {
     });
 };
 
-/**
- *
- */
-
-/**
- * array of javascript links
- * @param url
- * @param callback
- */
-function loadScripts(includePath) {
-    $('.javascript_include').each(function (i) {
-        $(this).remove();
-    });
-    for (i = 0; i < includePath.length; i++) {
-        var jsFilePath = includePath[i];
-
-        var exitingScript = $('head script[src="' + jsFilePath + '"]');
-        if (exitingScript.length > 0) {
-            exitingScript.remove();
-        }
-
-        var s = document.createElement("script");
-        s.type = "text/javascript";
-        s.classList.add('javascript_include');
-        s.src = jsFilePath;
-        $('head').append(s);
-        //document.getElementsByTagName("head")[0].appendChild(s);
-    }
-}
-
 var getSc = function (firstPath, includePath, f) {
     logMessage(firstPath);
     var length = includePath.length;
@@ -321,15 +388,6 @@ function formToArray(element) {
 
 /**
  *
- * @param value
- * @return {string|*}
- */
-function isBlank(value) {
-    return $.trim(value);
-}
-
-/**
- *
  * @param length
  * @returns {string}
  */
@@ -342,23 +400,6 @@ function generateRandomString(length) {
         pass += chars.charAt(i);
     }
     return pass;
-}
-
-/**
- *
- * @param baseUrl
- * @returns {string}
- */
-function getAbsolutePath(baseUrl) {
-    var loc = window.location;
-    if (baseUrl == false) {
-        var hash = window.location.hash;
-        hash = hash.trim().split('/');
-        hash = cleanArray(hash);
-        return hash[1];
-    }
-    var pathName = loc.pathname.substring(0, loc.pathname.lastIndexOf('/') + 1);
-    return loc.href.substring(0, loc.href.length - ((loc.pathname + loc.search + loc.hash).length - pathName.length));
 }
 
 /**
@@ -387,14 +428,6 @@ function getInputFile(element) {
 function shuffleArray(o) {
     for (var j, x, i = o.length; i; j = parseInt(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x) ;
     return o;
-};
-
-/**
- * Set current page title
- * @param title
- */
-function setPageTitle(title) {
-    $(document).prop('title', title);
 }
 
 /**

@@ -8,23 +8,157 @@
  * @since         SwallowJs(tm) v 0.2.9
  */
 
-var baseUrl = getAbsolutePath();
-var currentParentLayout = '';
-var swallowData = {};
-var swallowParentData = {};
-var inner = false;
+let baseUrl = swHelper.getAbsolutePath();
+let currentParentLayout = '';
+let swallowData = {};
+let swallowParentData = {};
+let inner = false;
+let layoutKeyLength = 12;
+let nodeId;
+let swallowJsElement = swallowJsContainer;
 
-/**
- *
- */
+
+let swLayout = (function () {
+    let self = this;
+    let layoutInterface = {
+        '404': '/views/error/404.html',
+    }
+
+    let layoutNodeId;
+
+    function getContentFromPath(htmlSource, node_id, callBack) {
+        try {
+            $.get(htmlSource, function (template) {
+                // if (data.opt !== null && data.opt == true) {
+                //     //console.log('hreeeee');
+                // }
+                return callBack([template, node_id]);
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                if (textStatus === 'error' && errorThrown === 'Not Found') {
+                    $.get(swLayout.error404, function (template) {
+                        let rendered = compileView(template, {
+                            'error_message': "File not found (<strong>" + htmlSource + "</strong>). Please check and try again",
+                            'error_layout': htmlSource,
+                            'not_found': false,
+                        });
+                        layoutUrl({
+                            element: swallowJsElement,
+                            htmlSource: rendered,
+                            renderedHTML: true,
+                            logic: true
+                        });
+                    });
+                }
+            });
+        } catch (e) {
+            console.log(e);
+            return;
+        }
+    }
+
+    function randomString(len, charSet) {
+        charSet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        let randomString = '';
+        for (let i = 0; i < len; i++) {
+            let randomPoz = Math.floor(Math.random() * charSet.length);
+            randomString += charSet.substring(randomPoz, randomPoz + 1);
+        }
+        return randomString;
+    }
+
+    function outPut(renderedHTML, htmlSource, element, nodeId) {
+        let blankElement = $('#' + element);
+        blankElement.attr('data-swNode', nodeId);
+        if (typeof renderedHTML !== "undefined" || renderedHTML === true) {
+            blankElement.html(htmlSource);
+        } else {
+            if (!swHelper.empty(htmlSource)) {
+                blankElement.load(baseUrl + htmlSource);
+            } else {
+                blankElement.load(layoutInterface['404']);
+            }
+        }
+
+        updateSwLinks()
+    }
+
+    /**
+     * SwallowJS Interpolator
+     * @param template
+     * @param data
+     */
+    function compileView(tempD, data, int) {
+
+        /**
+         * if_eq
+         */
+        Handlebars.registerHelper('if_eq', function (a, b, opts) {
+            if (a == b) {
+                return opts.fn(this);
+            } else {
+                return opts.inverse(this);
+            }
+        });
+
+        var template = Handlebars.compile(tempD, {noEscape: true});
+        return template(data);
+    }
+
+    function tempInterpolator(template, nodeId) {
+
+        //check for scripts included ~ loadScripts
+        if (template.indexOf("loadScripts") >= 0) {
+            let regex = /(?=loadScripts\(\[)(.|(\s|\S))*?(?=\]\))/gm; // check for loaded loadScripts
+            let regExp = regex.exec(template)
+            if (!swHelper.empty(regExp[0])) {
+                let regExpString = regExp[0];
+                let regExpStringReplaced = regExpString.replace(/\.js/g, `._js?_=${nodeId}`);
+                return template.replace(regExpString, regExpStringReplaced);
+            } else {
+                return template;
+            }
+        }
+
+    }
+
+    return {
+        viewTemplates: function (view) {
+            return layoutInterface[view];
+        },
+        outPutView: function (renderedHTML, htmlSource, element, node_id) {
+            return outPut(renderedHTML, htmlSource, element, node_id)
+        },
+        getContent: function (htmlSource, node_id, callback) {
+            return getContentFromPath(htmlSource, node_id, function (data) {
+                return callback(data);
+            });
+        },
+        generateNode: function (length) {
+            return randomString(length)
+        },
+        compile: function (template, data) {
+            return compileView(template, data);
+        },
+        templateInterpolator: function (template, nodeId) {
+            return tempInterpolator(template, nodeId);
+        },
+        nodeId: function () {
+            return self.layoutNodeId;
+        },
+        error404: layoutInterface['404']
+    }
+})();
+
+
 function layoutUrl(p) {
-    var element = p.element;
-    var htmlSource = p.htmlSource;
-    var renderedHTML = p.renderedHTML;
-    var logic = p.logic;
-    var res;
-    var data = {};
-    var parentLayoutSet;
+
+    let element = p.element;
+    let htmlSource = p.htmlSource;
+    let renderedHTML = p.renderedHTML;
+    let logic = p.logic;
+    let res;
+    let data = {};
+    let parentLayoutSet;
 
     if (typeof logic === "undefined" || logic === null) {
         logic = false;
@@ -32,32 +166,30 @@ function layoutUrl(p) {
 
     if (htmlSource.indexOf("---") >= 0) {
         res = htmlSource.split("---");
-        res = cleanArray(res);
+        res = swHelper.cleanArray(res);
 
-        if (res.length >= 2) {
-            var childLayout = res.pop();
-        } else {
-            // nothing in view
-            var childLayout = '';
-        }
+        let parentLayout;
+        let childLayout = (res.length >= 2) ? res.pop() : "";
+        // if (res.length >= 2) {
+        //     childLayout = res.pop();
+        // }
 
-        var parentLayout;
-        for (i = 0; i < res.length; i++) {
-            var str = res[i].trim();
-            var pLayout;
+        for (let i = 0; i < res.length; i++) {
+            let str = res[i].trim();
+            let pLayout;
             if (str.indexOf("layout:") >= 0) {
                 pLayout = $.trim(str.replace('layout:', ''));
                 if (str.indexOf("title:") >= 0) {
-                    var arr = pLayout.split('title:');
+                    let arr = pLayout.split('title:');
                     pLayout = $.trim(arr['0']);
-                    var rendered = compileView(arr['1'], swallowData);
+                    let rendered = swLayout.compile(arr['1'], swallowData);
                     setPageTitle($.trim(rendered));
                 }
                 // set parent layout
                 parentLayout = pLayout;
                 break;
             } else {
-                logMessage("Error parsing parent layout. please add view");
+                error.throwError("Error parsing parent layout. please add view");
                 break;
             }
         }
@@ -88,38 +220,60 @@ function layoutUrl(p) {
         // pathSting = pathSting.replace('.html','');
 
         if (inner === true) {
-            var newElement;
-            newElement = $('#' + isBlank(element));
-            var rendered = compileView(childLayout, swallowData, true);
-            layoutUrl({element: newElement, htmlSource: rendered, renderedHTML: true});
+            swallowData.swNode = p.generatedNode;
+
+            layoutUrl({
+                element: $.trim(element),
+                parentInt: element,
+                htmlSource: swLayout.compile(childLayout, swallowData, true),
+                renderedHTML: true
+            });
             return;
         } else {
-            logMessage('got here');
-            //logMessage(childLayout);
-            //return;
             data.body = childLayout;
+            data.swNode = p.generatedNode; //swLayout.generateNode(layoutKeyLength);
+            data.parentInt = element;
             data.opt = true;
-            parseTemplate(swallowJsContainer, parentLayout, data);
+
+            swLayout.getContent(parentLayout, data.swNode, function (response) {
+                swHelper.swGlobalId = swLayout.generateNode(layoutKeyLength);
+                let content = response[0];
+                let node_id = swHelper.swGlobalId;
+
+                if (content.indexOf(element) >= 0) {
+                    let re = new RegExp('(?=' + element + ').*?(?=<)');
+                    let regExp = content.match(re);
+                    if (!swHelper.empty(regExp[0])) {
+                        let ex = regExp[0];
+                        let exString = ex.replace('>', ` data-swNode='${node_id}'> {{body}}`);
+                        content = swLayout.templateInterpolator(content.replace(ex, exString), node_id)
+                        layoutUrl({
+                            generatedNode: p.generatedNode,
+                            element: element,
+                            element: swallowJsElement,
+                            htmlSource: swLayout.compile(content, data),
+                            renderedHTML: true
+                        });
+                    } else {
+                        error.throwError(' (' + element + ') could not be found');
+                    }
+                } else {
+                    error.throwError(' (' + element + ') could not be found in the ~' + parentLayout + '.');
+                }
+            });
             return;
         }
-    // } else {
-    //     logMessage('ddddd');
-    //     data.body = childLayout;
-    //     data.opt = true;
-    //     parseTemplate(swallowJsContainer, parentLayout, data);
-    //     // return;
+
+        // } else {
+        //     logMessage('ddddd');
+        //     data.body = childLayout;
+        //     data.opt = true;
+        //     parseTemplate(swallowJsContainer, parentLayout, data);
+        //     // return;
+
     }
 
-    var blankElement = $('#'+element);
-    if (typeof renderedHTML !== "undefined" || renderedHTML == true) {
-        blankElement.html(htmlSource);
-    } else {
-        if (htmlSource) {
-            blankElement.load(baseUrl + htmlSource);
-        } else {
-            blankElement.load(CONFIG.viewTemplates('404'));
-        }
-    }
+    swLayout.outPutView(renderedHTML, htmlSource, element, p.generatedNode);
 }
 
 /**
@@ -128,24 +282,18 @@ function layoutUrl(p) {
  * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
 function includeElement(container, htmlSource, data) {
-    //container = $('#' + container);
-    parseTemplate(container, "views/elements/" + htmlSource + ".html", data);
+    parseTemplate(container, "/views/elements/" + htmlSource + ".html", data);
 }
 
 /**
- *
  * @param container
  * @param htmlSource
  * @param data
  */
 function appendElement(container, htmlSource, data) {
-    //container = $('#' + container);
-    var htmlSource = "views/elements/" + htmlSource + ".html";
-
-    $.get(htmlSource, function (template) {
+    swLayout.getContent("/views/elements/" + htmlSource + ".html", function (template) {
         // Mustache.clearCache(template);
-        // Mustache.escape = function (value) {return value;};
-        var rendered = compileView(template, data);
+        let rendered = swLayout.compile(template, data);
         container.append(rendered);
 
     }).fail(function (jqXHR, textStatus, errorThrown) {
@@ -156,7 +304,6 @@ function appendElement(container, htmlSource, data) {
 }
 
 /**
- *
  * $Data params as to be an object
  */
 function parseTemplate(container, htmlSource, data, p) {
@@ -168,7 +315,7 @@ function parseTemplate(container, htmlSource, data, p) {
      * Default SwallowJs absolute Path
      * getting current page
      */
-    var currentPage = getAbsolutePath(false);
+    let currentPage = swHelper.getAbsolutePath(false);
 
     /**
      * Default SwallowJs main page URL
@@ -179,7 +326,6 @@ function parseTemplate(container, htmlSource, data, p) {
     /**
      * Default SwallowJs current page URL
      */
-
     data.here = baseUrl + window.location.hash;
 
     /**
@@ -189,113 +335,98 @@ function parseTemplate(container, htmlSource, data, p) {
     data.current_page = currentPage;
 
     /**
-     *
      * @type {any}
      */
     data.app_version = swallowVersion;
 
-    if (currentPage == "/") {
+    let generatedString = swLayout.generateNode(12);
+
+    if (currentPage === "/") {
         data.home = true;
     }
 
-    if (currentPage != "/") {
+    if (currentPage !== "/") {
         data[currentPage] = true;
     }
 
     swallowData = data;
-    $.get(htmlSource, function (template) {
-        // Mustache.escape = function (value) {return value;};
-        var rendered = compileView(template, data);
+    data.generatedNode = generatedString;
+    swHelper.swGlobalId = generatedString;
 
-        if (data.opt !== null && data.opt == true) {
+    swLayout.getContent(htmlSource, data.generatedNode, function (response) {
+        let template = response[0];
+        // Mustache.escape = function (value) {return value;};
+        //var rendered = swLayout.compile(template, data);
+
+        if (data.opt !== null && data.opt === true) {
             //console.log('hreeeee');
         }
-        layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
 
-    }).fail(function (jqXHR, textStatus, errorThrown) {
-        if (textStatus == 'error' && errorThrown == 'Not Found') {
-            logMessage("Error parsing");
-            data.error_message = "File not found ** " + htmlSource + " **";
-            data.error_layout = htmlSource;
-            data.not_found = false;
-            $.get(CONFIG.viewTemplates('404'), function (template) {
-                //Mustache.parse(template);
-                var rendered = compileView(template, data);
-                layoutUrl({element: container, htmlSource: rendered, renderedHTML: true, logic: p});
-            });
-        }
+        template = swLayout.templateInterpolator(template, data.generatedNode)
+        layoutUrl({
+            element: container,
+            htmlSource: swLayout.compile(template, data),
+            renderedHTML: true,
+            logic: p,
+            generatedNode: data.generatedNode
+        });
     });
 }
 
 /**
- * @firstParams    View name defined in config.js
- * @secondParams   parent container
- * @thirdParams    (Optional) "Data"- data to be sent to the layout
+ * Set current page title
+ * @param title
+ */
+function setPageTitle(title) {
+    $(document).prop('title', title);
+}
+
+/**
+ * @param layout    : layout to view
+ * @param container : parent container
+ * @param dataSet   : (Optional) "Data"- data to be sent to the layout
  */
 function renderView(layout, container, dataSet) {
     if (typeof dataSet === "undefined" || dataSet === null) {
         dataSet = {};
     }
 
-    setPageTitle(layout);
-
-    if (CONFIG.viewTemplates(layout) == undefined) {
-        dataSet.error_message = "No view with " + layout + ".html declared in config.js";
+    if (swHelper.empty(layout) || layout === undefined) {
+        dataSet.error_message = "No view with " + layout + " found. please check the file try again";
         dataSet.error_layout = layout;
         dataSet.not_found = true;
 
-        $.get(CONFIG.viewTemplates('404'), function (template) {
-            currentParentLayout = '';
-            var rendered = compileView(template, dataSet);
-            layoutUrl({element: swallowJsContainer, htmlSource: rendered, renderedHTML: true});
+        swLayout.getContent(swLayout.error404, function (response) {
+            let template = response[0];
+            //currentParentLayout = '';
+            //let rendered = swLayout.compile(template, dataSet);
+            layoutUrl({
+                element: swallowJsContainer,
+                htmlSource: swLayout.compile(template, dataSet),
+                renderedHTML: true
+            });
         });
-    } else {
-        $.get(CONFIG.viewTemplates(layout), function (template) {
 
-            if (template.indexOf("---") >= 0) {
-                //logMessage('parent');
-                parseTemplate(container, CONFIG.viewTemplates(layout), dataSet, true);
-            } else {
-                //logMessage('no parent');
-                currentParentLayout = '';
-                parseTemplate(container, CONFIG.viewTemplates(layout), dataSet, false);
-            }
-        });
-        // console.log(SwallowParentTemplate);
-        // parseTemplate(container, CONFIG.viewTemplates(layout), dataSet);
+    } else {
+        // swLayout.getContent(layout, function (response) {
+        //     let template = response[0];
+
+            // if (template.indexOf("---") >= 0) {
+            //     parseTemplate(container, layout, dataSet, true);
+            // } else {
+            //     currentParentLayout = '';
+            //     parseTemplate(container, layout, dataSet, false);
+            // }
+            parseTemplate(container, layout, dataSet, true);
+        // })
+        // $.get(layout, function (template) {
+        // });
     }
 }
 
-if (CONFIG.private('loading') == true) {
-    layoutUrl({element: swallowJsContainer, htmlSource: CONFIG.viewTemplates('page_loading')});
-}
-
-if (CONFIG.private('remove_swallow_css') == true) {
-    var removeSwallowCss = CONFIG.private('remove_swallow_css');
-    $('.swallow_stylesheet').each(function (i) {
-        $(this).remove();
-    });
-}
-
-/**
- * SwallowJS Interpolator
- * @param template
- * @param data
- * @return {*}
- */
-function compileView(tempD, data, int) {
-
-    /**
-     * if_eq
-     */
-    Handlebars.registerHelper('if_eq', function (a, b, opts) {
-        if (a == b) {
-            return opts.fn(this);
-        } else {
-            return opts.inverse(this);
-        }
-    });
-
-    var template = Handlebars.compile(tempD, {noEscape: true});
-    return template(data);
-}
+// if (CONFIG.private('remove_swallow_css') == true) {
+//     var removeSwallowCss = CONFIG.private('remove_swallow_css');
+//     $('.swallow_stylesheet').each(function (i) {
+//         $(this).remove();
+//     });
+// }
