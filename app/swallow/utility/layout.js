@@ -66,7 +66,11 @@ let swLayout = (function () {
     }
 
     function outPut(renderedHTML, htmlSource, element, nodeId, callback) {
+
         let blankElement = $('#' + element);
+        if (typeof  blankElement[0] == "undefined") {
+            blankElement = $('#'+swallowJsElement);
+        }
         blankElement.attr('data-swNode', nodeId);
         if (typeof renderedHTML !== "undefined" || renderedHTML === true) {
             blankElement.html(htmlSource);
@@ -106,18 +110,21 @@ let swLayout = (function () {
 
     function tempInterpolator(template, nodeId, view = false) {
 
-        //check for scripts included ~ loadScripts
-        if (template.indexOf("loadScripts") >= 0) {
-            let regex = /(?=loadScripts\(\[)(.|(\s|\S))*?(?=\]\))/gm; // check for loaded loadScripts
-            let regExp = regex.exec(template);
-            if (!swHelper.empty(regExp[0])) {
-                let regExpString = regExp[0];
-                let viewType = (view) ? `._js?_=${nodeId}_parentLayout` : `._js?_=${nodeId}`;
-                let regExpStringReplaced = regExpString.replace(/\.js/g, viewType);
-                return template.replace(regExpString, regExpStringReplaced);
-            } else {
-                return template;
-            }
+        switch (template.indexOf("loadScripts") >= 0) {
+            case true: //check for scripts included ~ loadScripts
+                let regex = /(?=loadScripts\(\[)(.|(\s|\S))*?(?=\]\))/gm; // check for loaded loadScripts
+                let regExp = regex.exec(template);
+                if (!swHelper.empty(regExp[0])) {
+                    let regExpString = regExp[0];
+                    let viewType = (view) ? `._js?_=${nodeId}_parentLayout` : `._js?_=${nodeId}`;
+                    let regExpStringReplaced = regExpString.replace(/\.js/g, viewType);
+                    return template.replace(regExpString, regExpStringReplaced);
+                } else {
+                    return template;
+                }
+                break;
+            default:
+                return template
         }
 
     }
@@ -390,6 +397,7 @@ function parseTemplate(container, htmlSource, data, p, callback) {
         let logic = (typeof p !== "string");
 
         template = swLayout.templateInterpolator(template, data.generatedNode);
+
         layoutUrl({
             element: container,
             htmlSource: swLayout.compile(template, data),
@@ -398,9 +406,18 @@ function parseTemplate(container, htmlSource, data, p, callback) {
             generatedNode: data.generatedNode
         }, function (res) {
 
-            if (p === 'includeElement_') {
-                // store.dispatch(actions.didLoad(res));
-                swDispatch.dispatch(observer, actions.didLoad(res));
+            // if (p === 'includeElement_') {
+            //     // store.dispatch(actions.didLoad(res));
+            //     swDispatch.dispatch(observer, actions.didLoad(res));
+            // }
+
+            switch (p) {
+                case 'renderView_':
+                    swDispatch.dispatch(observer, actions.didLoad(res));
+                    break;
+                case 'includeElement_':
+                    swDispatch.dispatch(observer, actions.didLoad(res));
+                    break;
             }
 
             if (typeof callback == "function")
@@ -414,6 +431,7 @@ function parseTemplate(container, htmlSource, data, p, callback) {
             return callback(observer, data.generatedNode);
         }
     }
+
 }
 
 /**
@@ -450,21 +468,44 @@ function renderView(layout, container, dataSet) {
             });
         });
 
-    } else {
-        // swLayout.getContent(layout, function (response) {
-        //     let template = response[0];
-
-        // if (template.indexOf("---") >= 0) {
-        //     parseTemplate(container, layout, dataSet, true);
-        // } else {
-        //     currentParentLayout = '';
-        //     parseTemplate(container, layout, dataSet, false);
-        // }
-        parseTemplate(container, layout, dataSet, true);
-        // })
-        // $.get(layout, function (template) {
-        // });
     }
+
+    // swLayout.getContent(layout, function (response) {
+    //     let template = response[0];
+
+    // if (template.indexOf("---") >= 0) {
+    //     parseTemplate(container, layout, dataSet, true);
+    // } else {
+    //     currentParentLayout = '';
+    //     parseTemplate(container, layout, dataSet, false);
+    // }
+
+    //parseTemplate(container, layout, dataSet, true);
+
+    let elementNode = null;
+    let observable = null;
+
+    let initParseTemplate = parseTemplate(container, layout, dataSet, 'renderView_');
+
+    initParseTemplate.parseTemplateWillLoad(function (observer, node_id) {
+        setElementNode(`renderView_${node_id}`);
+        observable = observer;
+        swDispatch.dispatch(observer, actions.willLoad(node_id));
+    });
+
+    function setElementNode(eNode) {
+        elementNode = eNode
+    }
+
+    return {
+        observable: observable,
+        node_id: elementNode
+    }
+
+    // })
+    // $.get(layout, function (template) {
+    // });
+
 }
 
 // if (CONFIG.private('remove_swallow_css') == true) {
