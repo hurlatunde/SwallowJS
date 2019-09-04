@@ -21,20 +21,20 @@ $().ready(function () {
     //     .attr('href', 'swallow/utility/css/swallowjs.css');
 
     var includePath = [
+        'swallow/utility/bootstrap.js',
         'swallow/utility/helper.js',
         'swallow/plugins/handlebars/handlebars.js',
         'swallow/plugins/navigo/navigo.js',
         'swallow/plugins/Firebase/firebase.js',
         'swallow/plugins/Firebase/firebase-firestore.js',
-        'swallow/utility/bootstrap.js',
         'swallow/config.js',
         'config.js',
         'swallow/service/initializeFirebaseConnection.js',
         'swallow/plugins/Rx.js',
         'swallow/plugins/redux.min.js',
         'swallow/plugins/es6-promise.auto.js',
+        'swallow/utility/broadcast.js',
         'swallow/utility/layout.js',
-        'broadcast.js',
         'routes.js'
     ];
 

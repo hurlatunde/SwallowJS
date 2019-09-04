@@ -17,12 +17,11 @@ let layoutKeyLength = 12;
 let nodeId;
 let swallowJsElement = swallowJsContainer;
 
-
 let swLayout = (function () {
     let self = this;
     let layoutInterface = {
         '404': '/views/error/404.html',
-    }
+    };
 
     let layoutNodeId;
 
@@ -52,7 +51,7 @@ let swLayout = (function () {
             });
         } catch (e) {
             console.log(e);
-            return;
+
         }
     }
 
@@ -66,7 +65,7 @@ let swLayout = (function () {
         return randomString;
     }
 
-    function outPut(renderedHTML, htmlSource, element, nodeId) {
+    function outPut(renderedHTML, htmlSource, element, nodeId, callback) {
         let blankElement = $('#' + element);
         blankElement.attr('data-swNode', nodeId);
         if (typeof renderedHTML !== "undefined" || renderedHTML === true) {
@@ -79,7 +78,8 @@ let swLayout = (function () {
             }
         }
 
-        updateSwLinks()
+        updateSwLinks();
+        return callback(nodeId)
     }
 
     /**
@@ -109,7 +109,7 @@ let swLayout = (function () {
         //check for scripts included ~ loadScripts
         if (template.indexOf("loadScripts") >= 0) {
             let regex = /(?=loadScripts\(\[)(.|(\s|\S))*?(?=\]\))/gm; // check for loaded loadScripts
-            let regExp = regex.exec(template)
+            let regExp = regex.exec(template);
             if (!swHelper.empty(regExp[0])) {
                 let regExpString = regExp[0];
                 let viewType = (view) ? `._js?_=${nodeId}_parentLayout` : `._js?_=${nodeId}`;
@@ -126,8 +126,10 @@ let swLayout = (function () {
         viewTemplates: function (view) {
             return layoutInterface[view];
         },
-        outPutView: function (renderedHTML, htmlSource, element, node_id) {
-            return outPut(renderedHTML, htmlSource, element, node_id)
+        outPutView: function (renderedHTML, htmlSource, element, node_id, callback) {
+            return outPut(renderedHTML, htmlSource, element, node_id, function (node) {
+                return callback(node)
+            })
         },
         getContent: function (htmlSource, node_id, callback) {
             return getContentFromPath(htmlSource, node_id, function (data) {
@@ -143,15 +145,12 @@ let swLayout = (function () {
         templateInterpolator: function (template, nodeId, view) {
             return tempInterpolator(template, nodeId, view);
         },
-        nodeId: function () {
-            return self.layoutNodeId;
-        },
         error404: layoutInterface['404']
     }
 })();
 
 
-function layoutUrl(p) {
+function layoutUrl(p, callback) {
 
     let element = p.element;
     let htmlSource = p.htmlSource;
@@ -247,7 +246,7 @@ function layoutUrl(p) {
                     if (!swHelper.empty(regExp[0])) {
                         let ex = regExp[0];
                         let exString = ex.replace('>', ` data-swNode='${p.generatedNode}'> {{body}}`);
-                        content = swLayout.templateInterpolator(content.replace(ex, exString), data.swNode, true)
+                        content = swLayout.templateInterpolator(content.replace(ex, exString), data.swNode, true);
                         layoutUrl({
                             generatedNode: data.swNode,
                             element: element,
@@ -274,16 +273,39 @@ function layoutUrl(p) {
 
     }
 
-    swLayout.outPutView(renderedHTML, htmlSource, element, p.generatedNode);
+    swLayout.outPutView(renderedHTML, htmlSource, element, p.generatedNode, function (node) {
+        if (typeof callback == "function")
+            callback(node)
+    });
 }
+
 
 /**
  * @firstParams    layout name defined in config.js
  * @secondParams   parent container
  * @thirdParams    (Optional) "Data"- data to be sent to the layout
  */
-function includeElement(container, htmlSource, data) {
-    parseTemplate(container, "/views/elements/" + htmlSource + ".html", data);
+function includeElement(container, htmlSource, data = []) {
+    let filePath = `/views/elements/${htmlSource}.html`;
+    let elementNode = null;
+    let observable = null;
+
+    let initParseTemplate = parseTemplate(container, filePath, data, 'includeElement_');
+
+    initParseTemplate.parseTemplateWillLoad(function (observer, node_id) {
+        setElementNode(`includeElement_${node_id}`);
+        observable = observer
+        swDispatch.dispatch(observer, actions.willLoad(node_id));
+    });
+
+    function setElementNode(eNode) {
+        elementNode = eNode
+    }
+
+    return {
+        observable: observable,
+        node_id: elementNode
+    }
 }
 
 /**
@@ -307,7 +329,7 @@ function appendElement(container, htmlSource, data) {
 /**
  * $Data params as to be an object
  */
-function parseTemplate(container, htmlSource, data, p) {
+function parseTemplate(container, htmlSource, data, p, callback) {
     if (typeof data === "undefined" || data === null) {
         data = {};
     }
@@ -354,6 +376,8 @@ function parseTemplate(container, htmlSource, data, p) {
     data.generatedNode = generatedString;
     swHelper.swGlobalId = generatedString;
 
+    let observer = swDispatch.observableCl(generatedString) // init ob
+
     swLayout.getContent(htmlSource, data.generatedNode, function (response) {
         let template = response[0];
         // Mustache.escape = function (value) {return value;};
@@ -363,15 +387,33 @@ function parseTemplate(container, htmlSource, data, p) {
             //console.log('hreeeee');
         }
 
-        template = swLayout.templateInterpolator(template, data.generatedNode)
+        let logic = (typeof p !== "string");
+
+        template = swLayout.templateInterpolator(template, data.generatedNode);
         layoutUrl({
             element: container,
             htmlSource: swLayout.compile(template, data),
             renderedHTML: true,
-            logic: p,
+            logic: logic,
             generatedNode: data.generatedNode
+        }, function (res) {
+
+            if (p === 'includeElement_') {
+                // store.dispatch(actions.didLoad(res));
+                swDispatch.dispatch(observer, actions.didLoad(res));
+            }
+
+            if (typeof callback == "function")
+                return callback(res)
+
         });
     });
+
+    return {
+        parseTemplateWillLoad: function (callback) {
+            return callback(observer, data.generatedNode);
+        }
+    }
 }
 
 /**
@@ -412,13 +454,13 @@ function renderView(layout, container, dataSet) {
         // swLayout.getContent(layout, function (response) {
         //     let template = response[0];
 
-            // if (template.indexOf("---") >= 0) {
-            //     parseTemplate(container, layout, dataSet, true);
-            // } else {
-            //     currentParentLayout = '';
-            //     parseTemplate(container, layout, dataSet, false);
-            // }
-            parseTemplate(container, layout, dataSet, true);
+        // if (template.indexOf("---") >= 0) {
+        //     parseTemplate(container, layout, dataSet, true);
+        // } else {
+        //     currentParentLayout = '';
+        //     parseTemplate(container, layout, dataSet, false);
+        // }
+        parseTemplate(container, layout, dataSet, true);
         // })
         // $.get(layout, function (template) {
         // });
